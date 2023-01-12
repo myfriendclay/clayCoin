@@ -13,16 +13,19 @@ const privateKey = key.getPrivate('hex');
 const key2 = ec.genKeyPair();
 const publicKey2 = key.getPublic('hex');
 const privateKey2 = key.getPrivate('hex');
+let newBlock
+let testTransactions
 
 describe('Block class', () => {
+  beforeEach(() => {
+    testTransactions = [
+      { amount: 10, fromAddress: "test_from_1", toAddress: "test_to_1" },
+      { amount: 25, fromAddress: "test_from_2", toAddress: "test_to_2" },
+    ]
+    newBlock = new Block("01/5/2023", testTransactions, 4, 'test_prev_hash', 23)
+  });
 
-  const test_transactions = [
-    { amount: 10, fromAddress: "test_from_1", toAddress: "test_to_1" },
-    { amount: 25, fromAddress: "test_from_2", toAddress: "test_to_2" },
-  ]
-
-  test('Created block contains all 5 properties', () => {
-    const newBlock = new Block("01/5/2023", test_transactions, 4, 'test_prev_hash', 23)
+  test('Created block contains all 7 properties', () => {
     expect(newBlock).toHaveProperty('timestamp');
     expect(newBlock).toHaveProperty('transactions');
     expect(newBlock).toHaveProperty('previousHash');
@@ -33,31 +36,62 @@ describe('Block class', () => {
   });
   
   test('Hash is calculated correctly', () => {
-    const newBlock = new Block("01/5/2023", test_transactions, 4, 'test_prev_hash', 23)
     expect(newBlock.hash).toBe('3cb69bc3d3a225bec1b40c461dcd4c0abd73953e4ca06fdddfb4be2fb2de6148')
+  });
+
+  test('calculateHash returns correct SHA256 hash', () => {
+    expect(newBlock.calculateHash()).toBe("3cb69bc3d3a225bec1b40c461dcd4c0abd73953e4ca06fdddfb4be2fb2de6148")
   });
   
   test('calculateHash updates hash when nonce is updated', () => {
-    const newBlock = new Block("01/5/2023", test_transactions, 4, 'test_prev_hash', 23)
-    expect(newBlock.calculateHash()).toBe('3cb69bc3d3a225bec1b40c461dcd4c0abd73953e4ca06fdddfb4be2fb2de6148')
     newBlock.nonce = 364245
     expect(newBlock.calculateHash()).toBe('a4068954ab7ee9727debdd8aff42253bc3d8411c05fa1921fada728abf90a0dd')
   });
   
-  test('mineBlock function works', () => {
-
-    const newBlock = new Block("01/5/2023", test_transactions, 4, 'test_prev_hash', 23)
+  test('mineBlock updates first d number of characters of hash to 0 (where d = difficulty)', () => {
     const { difficulty, hash } = newBlock
     const targetHash = "0".repeat(difficulty)
     let hashHeader = hash.substring(0, difficulty)
     expect(hashHeader).not.toBe(targetHash)
     newBlock.mineBlock(difficulty)
-  
+    hashHeader = newBlock.hash.substring(0, difficulty)
+    expect(hashHeader).toBe(targetHash)
+  });
+
+  test('mineBlock updates first d number of characters when d changes', () => {
+    newBlock.difficulty = 3
+    const targetHash = "0".repeat(newBlock.difficulty)
+    let hashHeader = newBlock.hash.substring(0, newBlock.difficulty)
+    expect(hashHeader).not.toBe(targetHash)
+    newBlock.mineBlock(newBlock.difficulty)
     hashHeader = newBlock.hash.substring(0, newBlock.difficulty)
     expect(hashHeader).toBe(targetHash)
   });
-  test.todo('HasValidTransactions verifies returns false if one transaction is invalid')
-  test.todo('HasValidTransactions verifies returns true only if all transactions are valid')
+
+  test('getProofOfWorkHash returns valid hash first d number of characters of 0 (where d = difficulty)', () => {
+    const { difficulty, hash } = newBlock
+    const proofOfWork = newBlock.getProofOfWorkHash()
+    const proofOfWorkHeader = proofOfWork.substring(0, difficulty)
+    const targetHashHeader = "0".repeat(difficulty)
+    expect(proofOfWorkHeader).toBe(targetHashHeader)
+    expect(proofOfWork).toBe("000010cab4995bec65b844442e2a647bf331447c3d6658de9fa32ce837e849a1")
+  });
+
+  test('hasValidTransactions verifies returns false if one transaction is invalid', () => {
+
+    // const MockTransaction = jest.createMockFromModule('./Transaction.js');
+
+    // expect(MockTransaction.object).toBe('Transaction');
+
+    
+  })
+  test.todo('hasValidTransactions returns true only if all transactions are valid')
+  test.todo('hasProofOfWork returns true positive')
+  test.todo('hasProofOfWork returns true negative')
+  test.todo('hasValidHash returns true positive')
+  test.todo('hasValidHash returns true negative')
+  test.todo("isValidBlock returns true positive")
+  test.todo("isValidBlock returns true negative")
 
 });
 
@@ -122,7 +156,6 @@ describe('Transaction class', () => {
 describe('Blockchain class', () => {
 
   describe('Creation', () => {
-
     test('Create blockchainj successfully with all 4 properties', () => {
       const testCoin = new Blockchain()
       expect(testCoin).toHaveProperty('chain');
