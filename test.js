@@ -76,17 +76,32 @@ describe('Block class', () => {
     expect(proofOfWorkHeader).toBe(targetHashHeader)
     expect(proofOfWork).toBe("000010cab4995bec65b844442e2a647bf331447c3d6658de9fa32ce837e849a1")
   });
-
+  
   test('hasValidTransactions verifies returns false if one transaction is invalid', () => {
-
-    // const MockTransaction = jest.createMockFromModule('./Transaction.js');
-
-    // expect(MockTransaction.object).toBe('Transaction');
-
+    let tx1 = new Transaction("fromAddress", "toAddress", 45);
+    let tx2 = new Transaction("fromAddress", "toAddress", 35);
+    let tx3 = new Transaction("fromAddress", "toAddress", 35);
+    jest.spyOn(tx1, 'isValid').mockImplementation(() => true);
+    jest.spyOn(tx2, 'isValid').mockImplementation(() => false);
+    jest.spyOn(tx3, 'isValid').mockImplementation(() => true);
+    newBlock.transactions = [tx1, tx2, tx3]
+    expect(newBlock.hasValidTransactions()).toBe(false)
     
   })
-  test.todo('hasValidTransactions returns true only if all transactions are valid')
-  test.todo('hasProofOfWork returns true positive')
+  test('hasValidTransactions returns true only if all transactions are valid', () => {
+    let tx1 = new Transaction("fromAddress", "toAddress", 45);
+    let tx2 = new Transaction("fromAddress", "toAddress", 35);
+    let tx3 = new Transaction("fromAddress", "toAddress", 35);
+    jest.spyOn(tx1, 'isValid').mockImplementation(() => true);
+    jest.spyOn(tx2, 'isValid').mockImplementation(() => true);
+    jest.spyOn(tx3, 'isValid').mockImplementation(() => true);
+    newBlock.transactions = [tx1, tx2, tx3]
+    expect(newBlock.hasValidTransactions()).toBe(true)
+  })
+  test('hasProofOfWork returns true positive', () => {
+    newBlock.hash = "000010cab4995bec65b844442e2a647bf331447c3d6658de9fa32ce837e849a1"
+    expect(newBlock.hasProofOfWork()).toBe(true)
+  })
   test.todo('hasProofOfWork returns true negative')
   test.todo('hasValidHash returns true positive')
   test.todo('hasValidHash returns true negative')
