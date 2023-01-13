@@ -99,10 +99,13 @@ describe('Block class', () => {
     expect(newBlock.hasValidTransactions()).toBe(true)
   })
   test('hasProofOfWork returns true positive', () => {
-    newBlock.hash = "000010cab4995bec65b844442e2a647bf331447c3d6658de9fa32ce837e849a1"
+    newBlock.hash = "0".repeat(newBlock.difficulty)
     expect(newBlock.hasProofOfWork()).toBe(true)
   })
-  test.todo('hasProofOfWork returns true negative')
+  test('hasProofOfWork returns true negative', () => {
+    newBlock.hash = "noproofincludedinthishash"
+    expect(newBlock.hasProofOfWork()).toBe(false)
+  })
   test.todo('hasValidHash returns true positive')
   test.todo('hasValidHash returns true negative')
   test.todo("isValidBlock returns true positive")
