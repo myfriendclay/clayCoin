@@ -4,13 +4,13 @@ const ec = new EC.ec('secp256k1')
 import { v4 as uuidv4 } from 'uuid';
 
 export default class Transaction {
-  constructor(fromAddress, toAddress, amount, timestamp, memo = "") {
+  constructor(fromAddress, toAddress, amount, memo = "") {
     this.fromAddress = fromAddress
     this.toAddress = toAddress
     this.amount = amount
-    this.timestamp = timestamp
     this.memo = memo
     this.uuid = uuidv4()
+    this.timestamp = Date.now()
   }
 
   calculateHash() {
@@ -28,21 +28,28 @@ export default class Transaction {
     this.signature = signature.toDER('hex')
   }
 
-  isValid() {
+  hasValidSignature() {
+    if (this.signature) {
+      const publicKey = ec.keyFromPublic(this.fromAddress, 'hex')
+      return publicKey.verify(this.calculateHash(), this.signature)
+    } else {
+      return false
+    }
+  }
+
+  isCoinbaseTransaction() {
     //For mining reward:
-    if (this.fromAddress === "Coinbase Tx") {
+    return this.fromAddress === "Coinbase Tx"
+  }
+
+  hasRequiredFields() {
+    return !!(this.fromAddress && this.toAddress && this.amount > 0)
+  }
+
+  isValid() {
+    if (this.isCoinbaseTransaction()) {
       return true
     }
-    if (!this.fromAddress || !this.toAddress) {
-      throw new Error("Transaction must include from and to address ")
-    }
-    if (this.amount <= 0) {
-      throw new Error("Amount must be greater than 0!")
-    }
-    if (!this.signature) {
-      throw new Error("All transactions must be signed")
-    }
-    const publicKey = ec.keyFromPublic(this.fromAddress, 'hex')
-    return publicKey.verify(this.calculateHash(), this.signature)
+    return this.hasRequiredFields() && this.hasValidSignature()
   }
 }

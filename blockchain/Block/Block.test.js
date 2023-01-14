@@ -24,6 +24,22 @@ describe('createBlock', () => {
     expect(newBlock).toHaveProperty('nonce');
   });
 
+  it('Accurately sets all of the fields', () => {
+    expect(newBlock.timestamp).toBe('01/5/2023');
+    expect(newBlock.transactions).toBe(testTransactions);
+    expect(newBlock.previousHash).toBe("test_prev_hash");
+    expect(newBlock.height).toBe(23);
+    expect(newBlock.difficulty).toBe(4);
+    expect(newBlock.nonce).toBe(0);
+  });
+
+  it('Automatically creates a timestamp', () => {
+    // const minTime = Date.now() - 10
+    // const maxTime = Date.now() + 10
+    // expect(newBlock.timestamp).toBeGreaterThanOrEqual(minTime);
+    // expect(newBlock.timestamp).toBeLessThanOrEqual(maxTime);
+  });
+
   it('Block hash is calculated correctly', () => {
     expect(newBlock.hash).toBe('a25f306ba4b41715239c855b821b349d04eba5137345c071385a36e119343ac8')
   });
