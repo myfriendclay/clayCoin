@@ -1,14 +1,13 @@
 import SHA256 from "crypto-js/sha256.js"
 
 export default class Block {
-  constructor(timestamp, transactions, difficulty, previousHash = '', height = null) {
-    this.timestamp = timestamp
+  constructor(transactions, difficulty, previousHash = '', height = null) {
     this.transactions = transactions
     this.previousHash = previousHash
     this.height = height
     this.difficulty = difficulty
     this.nonce = 0
-    this.hash = this.calculateHash()
+    this.timestamp = Date.now()
   }
 
   calculateHash() {
@@ -16,15 +15,17 @@ export default class Block {
   }
 
   mineBlock() {
-    return this.getProofOfWorkHash()
+    this.hash = this.getProofOfWorkHash()
   }
 
   getProofOfWorkHash() {
-    while (this.hash.substring(0, this.difficulty) !== "0".repeat(this.difficulty)) {
+    // this.hash = this.calculateHash()
+    let hash = ""
+    while (hash.substring(0, this.difficulty) !== "0".repeat(this.difficulty)) {
         this.nonce ++
-        this.hash = this.calculateHash()
+        hash = this.calculateHash()
     }
-    return this.hash
+    return hash
   }
 
   hasValidTransactions() {

@@ -10,7 +10,8 @@ beforeEach(() => {
     { amount: 10, fromAddress: "test_from_1", toAddress: "test_to_1" },
     { amount: 25, fromAddress: "test_from_2", toAddress: "test_to_2" },
   ]
-  newBlock = new Block("01/5/2023", testTransactions, 4, 'test_prev_hash', 23)
+  newBlock = new Block(testTransactions, 4, 'test_prev_hash', 23)
+  newBlock.timestamp = 1
 });
 
 describe('createBlock', () => {
@@ -20,12 +21,10 @@ describe('createBlock', () => {
     expect(newBlock).toHaveProperty('previousHash');
     expect(newBlock).toHaveProperty('height');
     expect(newBlock).toHaveProperty('difficulty');
-    expect(newBlock).toHaveProperty('hash');
     expect(newBlock).toHaveProperty('nonce');
   });
 
   it('Accurately sets all of the fields', () => {
-    expect(newBlock.timestamp).toBe('01/5/2023');
     expect(newBlock.transactions).toBe(testTransactions);
     expect(newBlock.previousHash).toBe("test_prev_hash");
     expect(newBlock.height).toBe(23);
@@ -34,24 +33,23 @@ describe('createBlock', () => {
   });
 
   it('Automatically creates a timestamp', () => {
-    // const minTime = Date.now() - 10
-    // const maxTime = Date.now() + 10
-    // expect(newBlock.timestamp).toBeGreaterThanOrEqual(minTime);
-    // expect(newBlock.timestamp).toBeLessThanOrEqual(maxTime);
-  });
-
-  it('Block hash is calculated correctly', () => {
-    expect(newBlock.hash).toBe('a25f306ba4b41715239c855b821b349d04eba5137345c071385a36e119343ac8')
+    const timestampBlock = new Block(testTransactions, 4, 'test_prev_hash', 23)
+    const minTime = Date.now() - 10
+    const maxTime = Date.now() + 10
+    expect(timestampBlock.timestamp).toBeGreaterThanOrEqual(minTime);
+    expect(timestampBlock.timestamp).toBeLessThanOrEqual(maxTime);
   });
 })
 
 describe('calculateHash', () => {
+
   beforeEach(() => {
+    newBlock.timestamp = 1
     originalHash = newBlock.calculateHash()
   });
 
   it('returns correct SHA256 hash', () => {
-    expect(newBlock.calculateHash()).toBe("a25f306ba4b41715239c855b821b349d04eba5137345c071385a36e119343ac8")
+    expect(newBlock.calculateHash()).toBe("ba8b1c70c3f454e745fb06cc7d6dc374506df2e6ff3c334ecf4d359129c6549f")
   });
 
   it('updates hash when timestamp is updated', () => {
@@ -87,28 +85,25 @@ describe('calculateHash', () => {
 })
 
 describe('mineBlock', () => {
+
   it('updates first d number of characters of hash to 0 (where d = difficulty)', () => {
     const { difficulty } = newBlock
     const targetHash = "0".repeat(difficulty)
-    let hashHeader = newBlock.hash.substring(0, difficulty)
-    expect(hashHeader).not.toBe(targetHash)
     newBlock.mineBlock(difficulty)
-    hashHeader = newBlock.hash.substring(0, difficulty)
+    const hashHeader = newBlock.hash.substring(0, difficulty)
     expect(hashHeader).toBe(targetHash)
   });
 
   it('produces valid hash', () => {
     newBlock.mineBlock(4)
-    expect(newBlock.hash).toBe("000062c6a9eee8ba674551d798fe337b27fc91457121aa99a94e3b6ee14362c1")
+    expect(newBlock.hash).toBe("00008c2a05e26de0b59a85f6958424fa6df0e0683e5dc7b993483498a39b948f")
   });
   
   it('updates first d number of characters when d changes', () => {
     newBlock.difficulty = 3
     const targetHash = "0".repeat(newBlock.difficulty)
-    let hashHeader = newBlock.hash.substring(0, newBlock.difficulty)
-    expect(hashHeader).not.toBe(targetHash)
     newBlock.mineBlock(newBlock.difficulty)
-    hashHeader = newBlock.hash.substring(0, newBlock.difficulty)
+    const hashHeader = newBlock.hash.substring(0, newBlock.difficulty)
     expect(hashHeader).toBe(targetHash)
   });
 
@@ -126,12 +121,12 @@ describe('mineBlock', () => {
 
 describe('getProofOfWorkHash', () => {
   it('returns valid hash first d number of characters of 0 (where d = difficulty)', () => {
-    const { difficulty, hash } = newBlock
+    const { difficulty } = newBlock
     const proofOfWork = newBlock.getProofOfWorkHash()
     const proofOfWorkHeader = proofOfWork.substring(0, difficulty)
     const targetHashHeader = "0".repeat(difficulty)
     expect(proofOfWorkHeader).toBe(targetHashHeader)
-    expect(proofOfWork).toBe("000062c6a9eee8ba674551d798fe337b27fc91457121aa99a94e3b6ee14362c1")
+    expect(proofOfWork).toBe("00008c2a05e26de0b59a85f6958424fa6df0e0683e5dc7b993483498a39b948f")
   });
 })
 
@@ -181,13 +176,18 @@ describe('hasProofOfWork', () => {
 })
 
 describe('hasValidHash', () => {
+
+  beforeEach(() => {
+    newBlock.hash = "ba8b1c70c3f454e745fb06cc7d6dc374506df2e6ff3c334ecf4d359129c6549f"
+  });
+
   it('returns true positive', () => {
-    newBlock.hash = "a25f306ba4b41715239c855b821b349d04eba5137345c071385a36e119343ac8"
+    newBlock.hash = "ba8b1c70c3f454e745fb06cc7d6dc374506df2e6ff3c334ecf4d359129c6549f"
     expect(newBlock.hasValidHash()).toBe(true)
   })
   
   it('returns true negative', () => {
-    newBlock.hash = "Ncb69bc3d3a225bec1b40c461dcd4c0abd73953e4ca06fdddfb4be2fb2de6148"
+    newBlock.hash = "falsec70c3f454e745fb06cc7d6dc374506df2e6ff3c334ecf4d359129c6549f"
     expect(newBlock.hasValidHash()).toBe(false)
   })
 
