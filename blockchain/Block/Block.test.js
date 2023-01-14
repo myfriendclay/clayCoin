@@ -155,38 +155,18 @@ describe('hasValidTransactions', () => {
   })
 })
 
-describe('hasProofOfWork', () => {
-  it('returns true if hash is valid and first d (difficulty) characters are zero', () => {
-    jest.spyOn(newBlock, 'hasValidHash').mockImplementation(() => true);
-    newBlock.hash = "000062c6a9eee8ba674551d798fe337b27fc91457121aa99a94e3b6ee14362c1"
-    expect(newBlock.hasProofOfWork()).toBe(true)
-  })
-  
-  it('returns false if hash is invalid', () => {
-    jest.spyOn(newBlock, 'hasValidHash').mockImplementation(() => false);
-    newBlock.hash = "0000invalidbogus"
-    expect(newBlock.hasProofOfWork()).toBe(false)
-  })
-
-  it('returns false if hash does not contain first d (difficulty) characters of zero', () => {
-    jest.spyOn(newBlock, 'hasValidHash').mockImplementation(() => true);
-    newBlock.hash = "000162c6a9eee8ba674551d798fe337b27fc91457121aa99a94e3b6ee14362c1"
-    expect(newBlock.hasProofOfWork()).toBe(false)
-  })
-})
-
 describe('hasValidHash', () => {
 
   beforeEach(() => {
     newBlock.hash = "ba8b1c70c3f454e745fb06cc7d6dc374506df2e6ff3c334ecf4d359129c6549f"
   });
 
-  it('returns true positive', () => {
+  it('returns true if hash is valid', () => {
     newBlock.hash = "ba8b1c70c3f454e745fb06cc7d6dc374506df2e6ff3c334ecf4d359129c6549f"
     expect(newBlock.hasValidHash()).toBe(true)
   })
   
-  it('returns true negative', () => {
+  it('returns true if hash is invalid', () => {
     newBlock.hash = "falsec70c3f454e745fb06cc7d6dc374506df2e6ff3c334ecf4d359129c6549f"
     expect(newBlock.hasValidHash()).toBe(false)
   })
@@ -228,26 +208,56 @@ describe('hasValidHash', () => {
   });
 })
 
+describe('firstDCharsAreZero', () => {
+  it('returns true if first d (difficulty) chars are 0', () => {
+    newBlock.hash = "0".repeat(newBlock.difficulty) + "blahblah"
+    expect(newBlock.firstDCharsAreZero()).toBe(true)
+  })
+  
+  it('returns false first d (difficulty) chars are not 0', () => {
+    newBlock.hash = "0".repeat(newBlock.difficulty - 1) + "blahblah"
+    expect(newBlock.firstDCharsAreZero()).toBe(false)
+  })
+
+})
+
+describe('hasProofOfWork', () => {
+  it('returns true if hash is valid and first d (difficulty) characters are zero', () => {
+    jest.spyOn(newBlock, 'hasValidHash').mockImplementation(() => true);
+    jest.spyOn(newBlock, 'firstDCharsAreZero').mockImplementation(() => true);
+    expect(newBlock.hasProofOfWork()).toBe(true)
+  })
+  
+  it('returns false if hash is invalid', () => {
+    jest.spyOn(newBlock, 'hasValidHash').mockImplementation(() => false);
+    jest.spyOn(newBlock, 'firstDCharsAreZero').mockImplementation(() => true);
+    expect(newBlock.hasProofOfWork()).toBe(false)
+  })
+
+  it('returns false if hash does not contain first d (difficulty) characters of zero', () => {
+    jest.spyOn(newBlock, 'hasValidHash').mockImplementation(() => true);
+    jest.spyOn(newBlock, 'firstDCharsAreZero').mockImplementation(() => false);
+    expect(newBlock.hasProofOfWork()).toBe(false)
+  })
+})
+
 describe('isValidBlock', () => {
   it("returns false if all transactions aren't valid", () => {
-    let inValidBlock = new Block("01/5/2023", testTransactions, 4, 'test_prev_hash', 23)
-    jest.spyOn(inValidBlock, 'hasValidTransactions').mockImplementation(() => false);
-    jest.spyOn(inValidBlock, 'hasProofOfWork').mockImplementation(() => true);
-    expect(inValidBlock.isValidBlock()).toBe(false)
+    jest.spyOn(newBlock, 'hasValidTransactions').mockImplementation(() => false);
+    jest.spyOn(newBlock, 'hasProofOfWork').mockImplementation(() => true);
+    expect(newBlock.isValidBlock()).toBe(false)
   })
 
   it("returns false if doesn't have proof of work", () => {
-    let inValidBlock = new Block("01/5/2023", testTransactions, 4, 'test_prev_hash', 23)
-    jest.spyOn(inValidBlock, 'hasValidTransactions').mockImplementation(() => true);
-    jest.spyOn(inValidBlock, 'hasProofOfWork').mockImplementation(() => false);
-    expect(inValidBlock.isValidBlock()).toBe(false)
+    jest.spyOn(newBlock, 'hasValidTransactions').mockImplementation(() => true);
+    jest.spyOn(newBlock, 'hasProofOfWork').mockImplementation(() => false);
+    expect(newBlock.isValidBlock()).toBe(false)
   })
 
-  it("returns true if all transactions are valid, has proof of work, and valid hash", () => {
-    let inValidBlock = new Block("01/5/2023", testTransactions, 4, 'test_prev_hash', 23)
-    jest.spyOn(inValidBlock, 'hasValidTransactions').mockImplementation(() => true);
-    jest.spyOn(inValidBlock, 'hasProofOfWork').mockImplementation(() => true);
-    expect(inValidBlock.isValidBlock()).toBe(true)
+  it("returns true if all transactions are valid and has proof of work", () => {
+    jest.spyOn(newBlock, 'hasValidTransactions').mockImplementation(() => true);
+    jest.spyOn(newBlock, 'hasProofOfWork').mockImplementation(() => true);
+    expect(newBlock.isValidBlock()).toBe(true)
   })
 })
 

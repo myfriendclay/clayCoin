@@ -23,6 +23,22 @@ export default class Blockchain {
     return this.chain[this.chain.length - 1]
   }
 
+  getBalanceOfAddress(address) {
+    let balance = 0
+    for (const block of this.chain) {
+      for (const transaction of block.transactions) {
+        if (transaction.fromAddress === address) {
+          balance -= transaction.amount
+        }
+
+        if (transaction.toAddress === address) {
+          balance += transaction.amount
+        }
+      }
+    }
+    return balance
+  }
+
   getTotalPendingOwedByWallet(transaction) {
     const pendingTransactionsForWallet = this.pendingTransactions.filter(tx => tx.fromAddress === transaction.fromAddress)
     const totalPendingAmount = pendingTransactionsForWallet.map(tx => tx.amount).reduce((prev, curr) => prev + curr, 0)
@@ -49,8 +65,8 @@ export default class Blockchain {
 
   minePendingTransactions(miningRewardAddress) {
     //Mining reward:
-    this.pendingTransactions.push(new Transaction("Coinbase Tx", miningRewardAddress, this.miningReward, Date.now(), "Mining reward transaction"))
-    let block = new Block(Date.now(), this.pendingTransactions, this.difficulty, this.getLatestBlock().calculateHash(), this.chain.length)
+    this.pendingTransactions.push(new Transaction("Coinbase Tx", miningRewardAddress, this.miningReward, "Mining reward transaction"))
+    let block = new Block(this.pendingTransactions, this.difficulty, this.getLatestBlock().calculateHash(), this.chain.length)
     
     block.mineBlock(block.difficulty)
     this.chain.push(block)
@@ -58,22 +74,6 @@ export default class Blockchain {
     this.pendingTransactions = []
     console.log('Block successfully mined!')
     return block
-  }
-
-  getBalanceOfAddress(address) {
-    let balance = 0
-    for (const block of this.chain) {
-      for (const transaction of block.transactions) {
-        if (transaction.fromAddress === address) {
-          balance -= transaction.amount
-        }
-
-        if (transaction.toAddress === address) {
-          balance += transaction.amount
-        }
-      }
-    }
-    return balance
   }
 
   getAllTransactionsForWallet(address) {
@@ -89,8 +89,8 @@ export default class Blockchain {
   }
 
   hasValidGenesisBlock() {
-    const realGenesis = JSON.stringify(this.createGenesisBlock());
-    return realGenesis === JSON.stringify(this.chain[0])
+    const expectedGenesis = JSON.stringify(this.createGenesisBlock());
+    return JSON.stringify(this.chain[0]) === expectedGenesis
   }
 
   isChainValid() {

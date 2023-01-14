@@ -12,28 +12,32 @@ const privateKey = key.getPrivate('hex');
 const key2 = ec.genKeyPair();
 const publicKey2 = key.getPublic('hex');
 const privateKey2 = key.getPrivate('hex');
+
 let newBlock
 let testTransactions
+
+let testCoin
+
+beforeEach(() => {
+  testCoin = new Blockchain()
+});
 
 describe('Blockchain class', () => {
 
   describe('Creation', () => {
-    test('Create blockchainj successfully with all 4 properties', () => {
-      const testCoin = new Blockchain()
+    test('Create blockchain successfully with all 4 properties', () => {
       expect(testCoin).toHaveProperty('chain');
       expect(testCoin).toHaveProperty('difficulty');
       expect(testCoin).toHaveProperty('pendingTransactions');
       expect(testCoin).toHaveProperty('miningReward');
     });
     test('Blockchain includes genesis block', () => {
-      const testCoin = new Blockchain()
       expect(testCoin.chain.length).toBe(1)
     });
   });
 
   describe('createGenesisBlock', () => {
     test('Creates correct block', () => {
-      const testCoin = new Blockchain()
       const expectedGenesisBlock = new Block("0000-01-01T00:00:00", "Genesis Block", 4, null, 0)
       expectedGenesisBlock.hash = expectedGenesisBlock.getProofOfWorkHash()
       const actualGenesisBlock = testCoin.createGenesisBlock()
@@ -42,7 +46,6 @@ describe('Blockchain class', () => {
   });
   describe('getLatestBlock', () => {
     test('Successfully returns the latest block', () => {
-      const testCoin = new Blockchain()
       testCoin.chain.push('test_block_1')
       testCoin.chain.push('test_block_2')
       expect(testCoin.getLatestBlock()).toBe('test_block_2')
@@ -51,7 +54,6 @@ describe('Blockchain class', () => {
 
   describe('addTransaction', () => {
     test('Throws error if toAddress or fromAddress are missing', () => {
-      const testCoin = new Blockchain()
       const newTransactionNoFromAddress = new Transaction(null, "to_address", 45)
       expect(() => testCoin.addTransaction(newTransactionNoFromAddress)).toThrow(Error)
       const newTransactionNoToAddress = new Transaction("from_address", null, 45)
@@ -59,7 +61,6 @@ describe('Blockchain class', () => {
     })
 
     test('Throws error if transaction is not valid', () => {
-      const testCoin = new Blockchain()
       const newTransaction = new Transaction(publicKey, "to_address", 45)
       expect(() => testCoin.addTransaction(newTransaction)).toThrow(Error)
     })
@@ -80,7 +81,6 @@ describe('Blockchain class', () => {
 
   describe('minePendingTransactions', () => {
     test('Block is mined successfully; pending transactions are added in a block', () => {
-      const testCoin = new Blockchain()
       const newTransaction = new Transaction(publicKey, "to_address", 45)
       testCoin.pendingTransactions.push(newTransaction)
       testCoin.minePendingTransactions("mining_address")
@@ -108,7 +108,6 @@ describe('Blockchain class', () => {
   describe('getBalanceOfAddress', () => {
     test.todo('Returns null or error if address is not found')
     test('Returns correct balance', () => {
-      const testCoin = new Blockchain()
       const newTransaction1 = new Transaction(publicKey, publicKey2, 20)
       newTransaction1.signTransaction(key)
       const newTransaction2 = new Transaction(publicKey, publicKey2, 20)
@@ -119,6 +118,9 @@ describe('Blockchain class', () => {
     test.todo('Returns false if there are any invalid transactions')
     test.todo('Returns false if any hash is not a valid hash')
     test.todo('Returns false if any previous hash does not match the current blocks previous hash')
+    test.todo('should fail when a previous block hash has been changed')
+    test.todo('should fail when a block has been changed e.g. timestamp')
+    test.todo('should fail when genesis block has been tampered with')
     test.todo('Otherwise returns true if all valid transactions, each block with valid hash and each block hash pointing to the next chronologically with no breaks in the chain')
   });
 });

@@ -19,7 +19,6 @@ export default class Block {
   }
 
   getProofOfWorkHash() {
-    // this.hash = this.calculateHash()
     let hash = ""
     while (hash.substring(0, this.difficulty) !== "0".repeat(this.difficulty)) {
         this.nonce ++
@@ -32,16 +31,16 @@ export default class Block {
     return this.transactions.every(transaction => transaction.isValid())
   }
 
+  hasValidHash() {
+    return this.hash === this.calculateHash()
+  }
+
   firstDCharsAreZero() {
     return this.hash.substring(0, this.difficulty) === "0".repeat(this.difficulty)
   }
 
   hasProofOfWork() {
     return this.hasValidHash() && this.firstDCharsAreZero()
-  }
-
-  hasValidHash() {
-    return this.hash === this.calculateHash()
   }
   
   isValidBlock() {
