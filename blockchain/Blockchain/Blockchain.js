@@ -2,7 +2,6 @@ import Block from '../Block/Block.js'
 import Transaction from '../Transaction/Transaction.js'
 import EC from "elliptic"
 const ec = new EC.ec('secp256k1')
-import axios from "axios"
 
 export default class Blockchain {
   constructor() {
@@ -14,7 +13,7 @@ export default class Blockchain {
   }
 
   createGenesisBlock() {
-    const genesisBlock = new Block("0000-01-01T00:00:00", "Genesis Block", 4, null, 0)
+    const genesisBlock = new Block("Genesis Block", 4, null, 0)
     genesisBlock.hash = genesisBlock.getProofOfWorkHash()
     return genesisBlock
   }

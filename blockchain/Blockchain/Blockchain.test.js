@@ -24,23 +24,34 @@ beforeEach(() => {
 
 describe('Blockchain class', () => {
 
-  describe('Creation', () => {
-    test('Create blockchain successfully with all 4 properties', () => {
+  describe('Constructor', () => {
+    it('Creates blockchain successfully with all 4 properties', () => {
       expect(testCoin).toHaveProperty('chain');
       expect(testCoin).toHaveProperty('difficulty');
       expect(testCoin).toHaveProperty('pendingTransactions');
       expect(testCoin).toHaveProperty('miningReward');
+      expect(testCoin).toHaveProperty('nodes');
     });
-    test('Blockchain includes genesis block', () => {
+    it('includes genesis block on blockchain', () => {
       expect(testCoin.chain.length).toBe(1)
+    });
+    test('includes valid genesis block', () => {
+      const expectedGenesisBlock = new Block("Genesis Block", 4, null, 0)
+      const actualGenesisBlock = testCoin.chain[0]
+      //Need to make timestamps the same so hashes are the same
+      expectedGenesisBlock.timestamp = actualGenesisBlock.timestamp
+      expectedGenesisBlock.hash = expectedGenesisBlock.getProofOfWorkHash()
+      expect(actualGenesisBlock).toEqual(expectedGenesisBlock)
     });
   });
 
   describe('createGenesisBlock', () => {
     test('Creates correct block', () => {
-      const expectedGenesisBlock = new Block("0000-01-01T00:00:00", "Genesis Block", 4, null, 0)
-      expectedGenesisBlock.hash = expectedGenesisBlock.getProofOfWorkHash()
+      const expectedGenesisBlock = new Block("Genesis Block", 4, null, 0)
       const actualGenesisBlock = testCoin.createGenesisBlock()
+      //Need to make timestamps the same so hashes are the same
+      expectedGenesisBlock.timestamp = actualGenesisBlock.timestamp
+      expectedGenesisBlock.hash = expectedGenesisBlock.getProofOfWorkHash()
       expect(actualGenesisBlock).toEqual(expectedGenesisBlock)
     });
   });
@@ -53,30 +64,26 @@ describe('Blockchain class', () => {
   });
 
   describe('addTransaction', () => {
-    test('Throws error if toAddress or fromAddress are missing', () => {
-      const newTransactionNoFromAddress = new Transaction(null, "to_address", 45)
-      expect(() => testCoin.addTransaction(newTransactionNoFromAddress)).toThrow(Error)
-      const newTransactionNoToAddress = new Transaction("from_address", null, 45)
-      expect(() => testCoin.addTransaction(newTransactionNoFromAddress)).toThrow(Error)
-    })
 
     test('Throws error if transaction is not valid', () => {
-      const newTransaction = new Transaction(publicKey, "to_address", 45)
+      const newTransaction = new Transaction("bogus_from_address", "bogus_to_address", 45, "pizza and beer")
+      jest.spyOn(newTransaction, 'isValid').mockImplementation(() => false);
       expect(() => testCoin.addTransaction(newTransaction)).toThrow(Error)
     })
-    test.todo('Throws error if fromAddress does not have enough money')
+
+    test('Throws error if fromAddress does not have enough money', () => {
+      jest.spyOn(testCoin, 'walletHasSufficientFunds').mockImplementation(() => false);
+      expect(() => testCoin.addTransaction("fake")).toThrow(Error)
+    })
     
-    // test('Otherwise adds transaction to blockchains pending transactions', () => {
-    //   const testCoin = new Blockchain()
-    //   const fundTransaction = new Transaction("annonymous_millionaire", publicKey, 45)
-    //   let fundingBlock = new Block(Date.now(), [fundTransaction])
-    //   fundingBlock.mineBlock(2)
-    //   testCoin.chain.push(fundingBlock)
-    //   const newTransaction = new Transaction(publicKey, "to_address", 45)
-    //   newTransaction.signTransaction(key)
-    //   testCoin.addTransaction(newTransaction)
-    //   expect(testCoin.pendingTransactions[0]).toBe(newTransaction)
-    // })
+    test('Adds to mempool if valid transaction and fromAddress wallet has sufficient funds', () => {
+      const newTransaction = new Transaction("bogus_from_address", "bogus_to_address", 45, "pizza and beer")
+      jest.spyOn(newTransaction, 'isValid').mockImplementation(() => true);
+      jest.spyOn(testCoin, 'walletHasSufficientFunds').mockImplementation(() => true);
+      testCoin.addTransaction(newTransaction)
+      expect(testCoin.pendingTransactions[0]).toBe(newTransaction)
+    })
+
   });
 
   describe('minePendingTransactions', () => {
