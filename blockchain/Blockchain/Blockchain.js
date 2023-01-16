@@ -22,7 +22,22 @@ export default class Blockchain {
     return this.chain[this.chain.length - 1]
   }
 
+  addressHasTransaction(address) {
+    let hasTransaction = false
+    for (const block of this.chain) {
+      for (const transaction of block.transactions) {
+        if (transaction.fromAddress === address || transaction.toAddress == address) {
+          hasTransaction = true
+        }
+      }
+    }
+    return hasTransaction
+  }
+
   getBalanceOfAddress(address) {
+    if (!this.addressHasTransaction(address)) {
+      return null
+    }
     let balance = 0
     for (const block of this.chain) {
       for (const transaction of block.transactions) {
