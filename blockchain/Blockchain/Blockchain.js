@@ -62,17 +62,39 @@ export default class Blockchain {
     this.pendingTransactions.push(transaction)
   }
 
-  minePendingTransactions(miningRewardAddress) {
-    //Mining reward:
-    this.pendingTransactions.push(new Transaction("Coinbase Tx", miningRewardAddress, this.miningReward, "Mining reward transaction"))
-    let block = new Block(this.pendingTransactions, this.difficulty, this.getLatestBlock().calculateHash(), this.chain.length)
-    
-    block.mineBlock(block.difficulty)
-    this.chain.push(block)
-    //need to reset pending transactions
-    this.pendingTransactions = []
-    console.log('Block successfully mined!')
+  addCoinbaseTxToMempool(miningRewardAddress) {
+     //Mining reward:
+     const coinbaseTx = new Transaction("Coinbase Tx", miningRewardAddress, this.miningReward, "Mining reward transaction")
+     this.pendingTransactions.push(coinbaseTx)
+     return coinbaseTx
+  }
+
+  addPendingTransactionsToBlock() {
+    const block = new Block(this.pendingTransactions, this.difficulty, this.getLatestBlock().calculateHash(), this.chain.length)
     return block
+  }
+
+  minePendingTransactions(miningRewardAddress) {
+    this.addCoinbaseTxToMempool(miningRewardAddress)
+    const block = this.addPendingTransactionsToBlock()
+    block.mineBlock(block.difficulty)
+    return block
+  }
+
+  addBlockToChain(block) {
+    this.chain.push(block)
+    return this.chain
+  }
+
+  resetMempool() {
+    this.pendingTransactions = []
+  }
+
+  addPendingTransactionsToBlockchain(miningRewardAddress) {
+    const block = this.minePendingTransactions(miningRewardAddress)
+    this.addBlockToChain(block)
+    this.resetMempool()
+    return this.chain
   }
 
   getAllTransactionsForWallet(address) {
@@ -101,7 +123,7 @@ export default class Blockchain {
     for (let i = 1; i < this.chain.length; i++) {
       const currentBlock = this.chain[i]
       const previousBlock = this.chain[i - 1]
-      if (!currentBlock.isValidBlock() && i !== 1) {
+      if (!currentBlock.isValidBlock() && i > 1) {
         return false
       }
     
