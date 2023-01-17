@@ -84,6 +84,189 @@ describe('addTransaction', () => {
 
 });
 
+describe('addPendingTransactionsToBlockchain', () => {
+
+  it('Calls minePendingTransactions with miningRewardAddress', () => {
+    const miningRewardAddress = "123"
+    testCoin.minePendingTransactions = jest.fn()
+    testCoin.addPendingTransactionsToBlockchain(miningRewardAddress)
+    expect(testCoin.minePendingTransactions).toHaveBeenCalledWith(miningRewardAddress)
+  })
+
+  it('Calls addBlockToChain with block', () => {
+    const miningRewardAddress = "123"
+    jest.spyOn(testCoin, 'minePendingTransactions').mockImplementation(() => "blockExample");
+    testCoin.addBlockToChain = jest.fn()
+    testCoin.addPendingTransactionsToBlockchain(miningRewardAddress)
+    expect(testCoin.addBlockToChain).toHaveBeenCalledWith("blockExample")
+  })
+
+  it('Calls resetMempool', () => {
+    testCoin.resetMempool = jest.fn()
+    testCoin.addPendingTransactionsToBlockchain("123")
+    expect(testCoin.resetMempool).toHaveBeenCalled()
+  })
+
+  it('Returns the blockchain', () => {
+    const miningRewardAddress = "123"
+    const returnValue = testCoin.addPendingTransactionsToBlockchain(miningRewardAddress)
+    expect(returnValue).toBe(testCoin.chain)
+  })
+});
+
+describe('hasValidGenesisBlock', () => {
+  let expectedBlock
+  beforeEach(() => {
+    expectedBlock = new Block("Genesis Block", 4, null, 0)
+    expectedBlock.hash = expectedBlock.getProofOfWorkHash()
+    testCoin.chain = [expectedBlock]
+  })
+
+  it('Returns false is GenesisBlock is invalid block', () => {
+    expectedBlock.hash = "bogusHash"
+    expect(testCoin.hasValidGenesisBlock()).toBe(false)
+  })
+
+  it('Returns false if GenesisBlock has different transactions', () => {
+    expectedBlock.transactions = "differentTransactions"
+    expect(testCoin.hasValidGenesisBlock()).toBe(false)
+  })
+
+  it('Returns false if Genesis block has non zero height', () => {
+    expectedBlock.height = 1
+    expect(testCoin.hasValidGenesisBlock()).toBe(false)
+  })
+
+  it('Returns false if Genesis block has previous hash thats not null', () => {
+    expectedBlock.previousHash = "someOtherHash"
+    expect(testCoin.hasValidGenesisBlock()).toBe(false)
+  })
+
+  it('Returns true if Genesis block is the same', () => {
+    jest.spyOn(testCoin, 'createGenesisBlock').mockImplementation(() => expectedBlock);
+    expect(testCoin.hasValidGenesisBlock()).toBe(true)
+  })
+
+});
+
+describe('isChainValid', () => {
+
+  let block1
+  let block2
+  let block3
+
+  beforeEach(() => {
+    block1 = new Block(["tx1", "tx2"], 2, testCoin.chain[0].hash, 1)
+    block1.hash = "block1Hash"
+    block2 = new Block(["tx1", "tx2"], 2, block1.hash, 1)
+    block2.hash = "block2Hash"
+    block3 = new Block(["tx1", "tx2"], 2, block2.hash, 1)
+    jest.spyOn(block1, 'isValidBlock').mockImplementation(() => true);
+    jest.spyOn(block2, 'isValidBlock').mockImplementation(() => true);
+    jest.spyOn(block3, 'isValidBlock').mockImplementation(() => true);
+    jest.spyOn(testCoin, 'hasValidGenesisBlock').mockImplementation(() => true);
+    testCoin.chain.push(block1, block2, block3)
+  })
+
+  it('Returns false if any previous hash does not match the current blocks previous hash', () => {
+    expect(testCoin.isChainValid()).toBe(true)
+    block2.hash = "bogus"
+    expect(testCoin.isChainValid()).toBe(false)
+  })
+
+  it('Returns false if any (nonGenesis) block is invalid', () => {
+    expect(testCoin.isChainValid()).toBe(true)
+    jest.spyOn(block2, 'isValidBlock').mockImplementation(() => false);
+    expect(testCoin.isChainValid()).toBe(false)
+  })
+  it('Returns false if genesis block is invalid', () => {
+    expect(testCoin.isChainValid()).toBe(true)
+    jest.spyOn(testCoin, 'hasValidGenesisBlock').mockImplementation(() => false);
+    expect(testCoin.isChainValid()).toBe(false)
+  })
+  it('Returns true if all blocks are valid (or genesis) and each block connects', () => {
+    expect(testCoin.isChainValid()).toBe(true)
+  })
+});
+
+describe('getBalanceOfAddress', () => {
+
+  test('Returns null if address is not found', () => {
+    expect(testCoin.getBalanceOfAddress("nonExistentAddress")).toBe(null)
+  })
+
+  test('Returns correct balance if positive', () => {
+    let tx1 = new Transaction("randomAddress", "targetAddress", 100);
+    let tx2 = new Transaction("targetAddress", "randomAddress", 10);
+    let tx3 = new Transaction("targetAddress", "randomAddress", 20);
+    let tx4 = new Transaction("randomAddress", "targetAddress", 5);
+    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
+    testCoin.addPendingTransactionsToBlockchain("miningAddress")
+    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(75)
+  })
+
+  test('Returns correct balance if negative', () => {
+    let tx1 = new Transaction("randomAddress", "targetAddress", 100);
+    let tx2 = new Transaction("targetAddress", "randomAddress", 1000);
+    let tx3 = new Transaction("targetAddress", "randomAddress", 20);
+    let tx4 = new Transaction("randomAddress", "targetAddress", 5);
+    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
+    testCoin.addPendingTransactionsToBlockchain("miningAddress")
+    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(-915)
+  })
+
+  test('Returns correct balance if zero', () => {
+    let tx1 = new Transaction("randomAddress", "targetAddress", 100);
+    let tx2 = new Transaction("targetAddress", "randomAddress", 200);
+    let tx3 = new Transaction("targetAddress", "randomAddress", 300);
+    let tx4 = new Transaction("randomAddress", "targetAddress", 400);
+    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
+    testCoin.addPendingTransactionsToBlockchain("miningAddress")
+    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(0)
+  })
+
+  test('Returns correct balance if no transactions', () => {
+    testCoin.addPendingTransactionsToBlockchain("miningAddress")
+    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(null)
+  })
+});
+
+describe('getTotalPendingOwedByWallet', () => {
+  it('returns total wallet owes for all pending transactions', () => {
+    let tx1 = new Transaction("randomAddress", "targetAddress", 100);
+    let tx2 = new Transaction("targetAddress", "randomAddress", 10);
+    let tx3 = new Transaction("targetAddress", "randomAddress", 20);
+    testCoin.pendingTransactions.push(tx1, tx2, tx3)
+    expect(testCoin.getTotalPendingOwedByWallet("targetAddress")).toBe(30)
+  })
+});
+
+describe('walletHasSufficientFunds', () => {
+  it('returns false if transaction amount is more than wallet balance', () => {
+    const transaction = new Transaction("fromAddress", "toAddress", 10);
+    jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 9);
+    expect(testCoin.walletHasSufficientFunds(transaction)).toBe(false)
+  })
+  it('returns false if total pending owed is more than wallet balance', () => {
+    const transaction = new Transaction("fromAddress", "toAddress", 0);
+    jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 10);
+    jest.spyOn(testCoin, 'getTotalPendingOwedByWallet').mockImplementation(() => 11);
+    expect(testCoin.walletHasSufficientFunds(transaction)).toBe(false)
+  })
+  it('returns false if total pending owed plus transaction is more than wallet balance', () => {
+    const transaction = new Transaction("fromAddress", "toAddress", 10);
+    jest.spyOn(testCoin, 'getTotalPendingOwedByWallet').mockImplementation(() => 11);
+    jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 20);
+    expect(testCoin.walletHasSufficientFunds(transaction)).toBe(false)
+  })
+  it('returns true if wallet balance is more than total pending plus transaction amount', () => {
+    const transaction = new Transaction("fromAddress", "toAddress", 10);
+    jest.spyOn(testCoin, 'getTotalPendingOwedByWallet').mockImplementation(() => 10);
+    jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 20);
+    expect(testCoin.walletHasSufficientFunds(transaction)).toBe(true)
+  })
+});
+
 describe('addCoinbaseTxToMempool', () => {
 
   test('adds Coinbase Tx to pending transactions', () => {
@@ -151,140 +334,10 @@ describe('resetMempool', () => {
   })
 });
 
-describe('addPendingTransactionsToBlockchain', () => {
 
-  it('Calls minePendingTransactions with miningRewardAddress', () => {
-    const miningRewardAddress = "123"
-    testCoin.minePendingTransactions = jest.fn()
-    testCoin.addPendingTransactionsToBlockchain(miningRewardAddress)
-    expect(testCoin.minePendingTransactions).toHaveBeenCalledWith(miningRewardAddress)
-  })
 
-  it('Calls addBlockToChain with block', () => {
-    const miningRewardAddress = "123"
-    jest.spyOn(testCoin, 'minePendingTransactions').mockImplementation(() => "blockExample");
-    testCoin.addBlockToChain = jest.fn()
-    testCoin.addPendingTransactionsToBlockchain(miningRewardAddress)
-    expect(testCoin.addBlockToChain).toHaveBeenCalledWith("blockExample")
-  })
 
-  it('Calls resetMempool', () => {
-    testCoin.resetMempool = jest.fn()
-    testCoin.addPendingTransactionsToBlockchain("123")
-    expect(testCoin.resetMempool).toHaveBeenCalled()
-  })
-});
 
-describe('getBalanceOfAddress', () => {
 
-  test('Returns null if address is not found', () => {
-    expect(testCoin.getBalanceOfAddress("nonExistentAddress")).toBe(null)
-  })
 
-  test('Returns correct balance if positive', () => {
-    let tx1 = new Transaction("randomAddress", "targetAddress", 100);
-    let tx2 = new Transaction("targetAddress", "randomAddress", 10);
-    let tx3 = new Transaction("targetAddress", "randomAddress", 20);
-    let tx4 = new Transaction("randomAddress", "targetAddress", 5);
-    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
-    testCoin.addPendingTransactionsToBlockchain("miningAddress")
-    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(75)
-  })
 
-  test('Returns correct balance if negative', () => {
-    let tx1 = new Transaction("randomAddress", "targetAddress", 100);
-    let tx2 = new Transaction("targetAddress", "randomAddress", 1000);
-    let tx3 = new Transaction("targetAddress", "randomAddress", 20);
-    let tx4 = new Transaction("randomAddress", "targetAddress", 5);
-    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
-    testCoin.addPendingTransactionsToBlockchain("miningAddress")
-    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(-915)
-  })
-
-  test('Returns correct balance if zero', () => {
-    let tx1 = new Transaction("randomAddress", "targetAddress", 100);
-    let tx2 = new Transaction("targetAddress", "randomAddress", 200);
-    let tx3 = new Transaction("targetAddress", "randomAddress", 300);
-    let tx4 = new Transaction("randomAddress", "targetAddress", 400);
-    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
-    testCoin.addPendingTransactionsToBlockchain("miningAddress")
-    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(0)
-  })
-
-  test('Returns correct balance if no transactions', () => {
-    testCoin.addPendingTransactionsToBlockchain("miningAddress")
-    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(null)
-  })
-});
-
-describe('hasValidGenesisBlock', () => {
-  let expectedBlock
-  beforeEach(() => {
-    expectedBlock = new Block("Genesis Block", 4, null, 0)
-    expectedBlock.hash = expectedBlock.getProofOfWorkHash()
-    testCoin.chain = [expectedBlock]
-  })
-
-  it('Returns false is GenesisBlock is invalid block', () => {
-    expectedBlock.hash = "bogusHash"
-    expect(testCoin.hasValidGenesisBlock()).toBe(false)
-  })
-
-  it('Returns false if GenesisBlock has different transactions', () => {
-    expectedBlock.transactions = "differentTransactions"
-    expect(testCoin.hasValidGenesisBlock()).toBe(false)
-  })
-
-  it('Returns false if Genesis block has non zero height', () => {
-    expectedBlock.height = 1
-    expect(testCoin.hasValidGenesisBlock()).toBe(false)
-  })
-
-  it('Returns false if Genesis block has previous hash thats not null', () => {
-    expectedBlock.previousHash = "someOtherHash"
-    expect(testCoin.hasValidGenesisBlock()).toBe(false)
-  })
-
-  it('Returns true if Genesis block is the same', () => {
-    jest.spyOn(testCoin, 'createGenesisBlock').mockImplementation(() => expectedBlock);
-    expect(testCoin.hasValidGenesisBlock()).toBe(true)
-  })
-
-});
-
-describe('isChainValid', () => {
-
-  let block1
-  let block2
-  let block3
-
-  beforeEach(() => {
-    block1 = new Block(["tx1", "tx2"], 2, testCoin.chain[0].hash, 1)
-    block1.hash = "block1Hash"
-    block2 = new Block(["tx1", "tx2"], 2, block1.hash, 1)
-    block2.hash = "block2Hash"
-    block3 = new Block(["tx1", "tx2"], 2, block2.hash, 1)
-    jest.spyOn(block1, 'isValidBlock').mockImplementation(() => true);
-    jest.spyOn(block2, 'isValidBlock').mockImplementation(() => true);
-    jest.spyOn(block3, 'isValidBlock').mockImplementation(() => true);
-    jest.spyOn(testCoin, 'hasValidGenesisBlock').mockImplementation(() => true);
-    testCoin.chain.push(block1, block2, block3)
-  })
-
-  it('Returns false if any previous hash does not match the current blocks previous hash', () => {
-    block2.hash = "bogus"
-    expect(testCoin.isChainValid()).toBe(false)
-  })
-
-  it('Returns false if any (nonGenesis) block is invalid', () => {
-    jest.spyOn(block2, 'isValidBlock').mockImplementation(() => false);
-    expect(testCoin.isChainValid()).toBe(false)
-  })
-  it('Returns false if genesis block is invalid', () => {
-    jest.spyOn(testCoin, 'hasValidGenesisBlock').mockImplementation(() => false);
-    expect(testCoin.isChainValid()).toBe(false)
-  })
-  it('Returns true if all blocks are valid (or genesis) and each block connects', () => {
-    expect(testCoin.isChainValid()).toBe(true)
-  })
-});

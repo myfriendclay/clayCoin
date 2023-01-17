@@ -22,20 +22,56 @@ export default class Blockchain {
     return this.chain[this.chain.length - 1]
   }
 
-  addressHasTransaction(address) {
-    let hasTransaction = false
-    for (const block of this.chain) {
-      for (const transaction of block.transactions) {
-        if (transaction.fromAddress === address || transaction.toAddress == address) {
-          hasTransaction = true
-        }
-      }
+  addTransaction(transaction) {
+    if (!transaction.isValid()) {
+      throw new Error("Cannot add invalid transaction to chain")
     }
-    return hasTransaction
+
+    if (!this.walletHasSufficientFunds(transaction)) {
+      throw new Error("not enough funds for transactions in mempool or this transaction itself")
+    }
+    
+    this.pendingTransactions.push(transaction)
   }
 
+  addPendingTransactionsToBlockchain(miningRewardAddress) {
+    const block = this.minePendingTransactions(miningRewardAddress)
+    this.addBlockToChain(block)
+    this.resetMempool()
+    return this.chain
+  }
+
+  //Validity methods:
+
+  hasValidGenesisBlock() {
+    const expectedGenesis = JSON.stringify(this.createGenesisBlock());
+    return JSON.stringify(this.chain[0]) === expectedGenesis
+  }
+
+  isChainValid() {
+    // Check if the Genesis block hasn't been tampered with:
+    if (!this.hasValidGenesisBlock()) {
+      return false
+    }
+
+    for (let i = 1; i < this.chain.length; i++) {
+      const currentBlock = this.chain[i]
+      const previousBlock = this.chain[i - 1]
+      if (!currentBlock.isValidBlock() && i > 1) {
+        return false
+      }
+    
+      if (currentBlock.previousHash !== previousBlock.hash) {
+        return false
+      }
+    }
+    return true
+  }
+
+  //Wallet helpers
+
   getBalanceOfAddress(address) {
-    if (!this.addressHasTransaction(address)) {
+    if (this.getAllTransactionsForWallet(address).length === 0) {
       return null
     }
     let balance = 0
@@ -53,30 +89,32 @@ export default class Blockchain {
     return balance
   }
 
-  getTotalPendingOwedByWallet(transaction) {
-    const pendingTransactionsForWallet = this.pendingTransactions.filter(tx => tx.fromAddress === transaction.fromAddress)
+  getTotalPendingOwedByWallet(address) {
+    const pendingTransactionsForWallet = this.pendingTransactions.filter(tx => tx.fromAddress === address)
     const totalPendingAmount = pendingTransactionsForWallet.map(tx => tx.amount).reduce((prev, curr) => prev + curr, 0)
     return totalPendingAmount
   }
 
   walletHasSufficientFunds(transaction) {
     const walletBalance = this.getBalanceOfAddress(transaction.fromAddress)
-    const totalPendingOwed = this.getTotalPendingOwedByWallet(transaction)
+    const totalPendingOwed = this.getTotalPendingOwedByWallet(transaction.fromAddress)
     return walletBalance >= totalPendingOwed + transaction.amount
   }
-
-  addTransaction(transaction) {
-    if (!transaction.isValid()) {
-      throw new Error("Cannot add invalid transaction to chain")
+  
+  //For possible API use:
+  getAllTransactionsForWallet(address) {
+    const transactions = []
+    for (const block of this.chain) {
+      for (const transaction of block.transactions) {
+        if (transaction.fromAddress === address || transaction.toAddress === address) {
+          transactions.push(transaction)
+        }
+      }
     }
-
-    if (!this.walletHasSufficientFunds(transaction)) {
-      throw new Error("not enough funds for transactions in mempool or this transaction itself")
-    }
-    
-    this.pendingTransactions.push(transaction)
+    return transactions
   }
 
+   //Transaction helpers:
   addCoinbaseTxToMempool(miningRewardAddress) {
      //Mining reward:
      const coinbaseTx = new Transaction("Coinbase Tx", miningRewardAddress, this.miningReward, "Mining reward transaction")
@@ -105,50 +143,7 @@ export default class Blockchain {
     this.pendingTransactions = []
   }
 
-  addPendingTransactionsToBlockchain(miningRewardAddress) {
-    const block = this.minePendingTransactions(miningRewardAddress)
-    this.addBlockToChain(block)
-    this.resetMempool()
-    return this.chain
-  }
-
-  getAllTransactionsForWallet(address) {
-    const transactions = []
-    for (const block of this.chain) {
-      for (const transaction of block.transactions) {
-        if (transaction.fromAddress === address || transaction.toAddress === address) {
-          transactions.push(transaction)
-        }
-      }
-    }
-    return transactions
-  }
-
-  hasValidGenesisBlock() {
-    const expectedGenesis = JSON.stringify(this.createGenesisBlock());
-    return JSON.stringify(this.chain[0]) === expectedGenesis
-  }
-
-  isChainValid() {
-    // Check if the Genesis block hasn't been tampered with:
-    if (!this.hasValidGenesisBlock()) {
-      return false
-    }
-
-    for (let i = 1; i < this.chain.length; i++) {
-      const currentBlock = this.chain[i]
-      const previousBlock = this.chain[i - 1]
-      if (!currentBlock.isValidBlock() && i > 1) {
-        return false
-      }
-    
-      if (currentBlock.previousHash !== previousBlock.hash) {
-        return false
-      }
-    }
-    return true
-  }
-
+  //Node stuff:
   registerNode(address) {
     //add a new to the list of nodes e.g. 'http://192.168.0.5:5000'
     const url = new URL(address);
