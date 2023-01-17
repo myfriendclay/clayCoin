@@ -1,7 +1,7 @@
 // const express = require('express')
 import express from 'express'
-import Blockchain from '../Blockchain.js'
-import Transaction from '../Transaction.js'
+import Blockchain from '../blockchain/Blockchain/Blockchain.js'
+import Transaction from '../blockchain/Transaction/Transaction.js'
 
 const app = express()
 const port = 3000
@@ -18,9 +18,9 @@ app.post('/mine', (req, res) => {
   res.json(newBlock)
 })
 
-app.get('/chain', (req, res) => {
+app.get('/blockchain', (req, res) => {
   const response = {
-    'chain': blockchain.chain,
+    'blockchain': blockchain,
     'length': blockchain.chain.length,
     'isChainValid': blockchain.isChainValid()
   }
@@ -36,9 +36,12 @@ app.post('/transactions', (req, res) => {
 })
 
 app.post('/nodes', (req, res) => {
-  const url = req.body
+  const {url} = req.body
   blockchain.registerNode(url)
-  res.json(blockchain.nodes)
+  const response = {
+    'nodes': Array.from(blockchain.nodes)
+  }
+  res.json(response)
 })
 
 app.get('/nodes/resolve', (req, res) => {
@@ -56,5 +59,5 @@ app.get('/nodes/resolve', (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Blockchain node running on port ${port}`)
 })

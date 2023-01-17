@@ -1,6 +1,7 @@
 import Block from '../Block/Block.js'
 import Transaction from '../Transaction/Transaction.js'
 import EC from "elliptic"
+import axios from 'axios'
 const ec = new EC.ec('secp256k1')
 
 export default class Blockchain {
@@ -145,38 +146,35 @@ export default class Blockchain {
 
   //Node stuff:
   registerNode(address) {
-    //add a new to the list of nodes e.g. 'http://192.168.0.5:5000'
-    const url = new URL(address);
-    if (url) {
-      //Should add some validation later to make sure it's a legit URL but not sure what format we want to allow
-      this.nodes.add(href)
-    }
+    this.nodes.add(address)
   }
   resolveConflicts() {
     //Resolves conflicts by replacing our chain with the longest one on the network. returns true if replaced false if not
     const nodes = Array.from(this.nodes)
-    let latestBlock = this.blockchain
-    // for (const node of nodes) {
-    //   axios.get(`${node}/chain`)
-    //     .then(response => {
-    //       console.log(response.data)
-    //       const blockchain = response.data
-    //       if (blockchain.isChainValid && blockchain.length > this.chain.length) {
-    //         this.chain = blockchain.chain
-    //         this.nodes = blockchain.nodes
-    //         this.difficulty = blockchain.difficulty
-    //       }
-    //     })
-    // }
-    if (latestBlock === this.blockchain) {
+    let latestBlockchain = this.blockchain
+    for (const node of nodes) {
+      axios.get(`${node}/blockchain`)
+        .then(response => {
+          const blockchain = response.data
+          if (blockchain.isChainValid && blockchain.length > this.chain.length) {
+            this.chain = blockchain.chain
+            this.nodes = blockchain.nodes
+            this.difficulty = blockchain.difficulty
+          }
+        })
+    }
+    if (latestBlockchain === this.blockchain) {
       return "You have the latest block, no update made!"
     } else {
       return `Here is the latest block: + ${latestBlock}`
     }
   }
 }
-//testing out stuff with axios consolelog:
-// axios.get("http://localhost:3000/chain")
-//   .then(response => {
-//     console.log(typeof response.data.isChainValid)
-//   })
+// testing out stuff with axios consolelog:
+axios.get("http://localhost:3000/blockchain")
+  .then(response => {
+    console.log(response.data.blockchain)
+  })
+  .catch(err => {
+    console.error(err)
+  })
