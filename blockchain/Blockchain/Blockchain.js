@@ -140,6 +140,14 @@ export default class Blockchain {
     return this.chain
   }
 
+  replaceChain(newBlockchain) {
+    if (newBlockchain.chain.length > this.chain.length  && newBlockchain.isChainValid()) {
+      this.chain = newBlockchain.chain
+    } else {
+      return false
+    }
+  }
+
   resetMempool() {
     this.pendingTransactions = []
   }
@@ -150,31 +158,31 @@ export default class Blockchain {
   }
   resolveConflicts() {
     //Resolves conflicts by replacing our chain with the longest one on the network. returns true if replaced false if not
-    const nodes = Array.from(this.nodes)
-    let latestBlockchain = this.blockchain
-    for (const node of nodes) {
-      axios.get(`${node}/blockchain`)
-        .then(response => {
-          const blockchain = response.data
-          if (blockchain.isChainValid && blockchain.length > this.chain.length) {
-            this.chain = blockchain.chain
-            this.nodes = blockchain.nodes
-            this.difficulty = blockchain.difficulty
-          }
-        })
-    }
-    if (latestBlockchain === this.blockchain) {
-      return "You have the latest block, no update made!"
-    } else {
-      return `Here is the latest block: + ${latestBlock}`
-    }
+    // const nodes = Array.from(this.nodes)
+    // let latestBlockchain = this.blockchain
+    // for (const node of nodes) {
+    //   axios.get(`${node}/blockchain`)
+    //     .then(response => {
+    //       const blockchain = response.data
+    //       if (blockchain.isChainValid && blockchain.length > this.chain.length) {
+    //         this.chain = blockchain.chain
+    //         this.nodes = blockchain.nodes
+    //         this.difficulty = blockchain.difficulty
+    //       }
+    //     })
+    // }
+    // if (latestBlockchain === this.blockchain) {
+    //   return "You have the latest block, no update made!"
+    // } else {
+    //   return `Here is the latest block: + ${latestBlock}`
+    // }
   }
 }
 // testing out stuff with axios consolelog:
-axios.get("http://localhost:3000/blockchain")
-  .then(response => {
-    console.log(response.data.blockchain)
-  })
-  .catch(err => {
-    console.error(err)
-  })
+// axios.get("http://localhost:3000/blockchain")
+//   .then(response => {
+//     console.log(response.data.blockchain)
+//   })
+//   .catch(err => {
+//     console.error(err)
+//   })

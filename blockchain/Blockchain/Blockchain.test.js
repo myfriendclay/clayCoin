@@ -1,6 +1,6 @@
-import Blockchain from "./Blockchain";
-import Transaction from "../Transaction/Transaction";
-import Block from "../Block/Block";
+import Blockchain from "../Blockchain/Blockchain.js";
+import Transaction from "../Transaction/Transaction.js";
+import Block from "../Block/Block.js";
 import EC from "elliptic"
 const ec = new EC.ec('secp256k1')
 
@@ -333,6 +333,72 @@ describe('resetMempool', () => {
     expect(testCoin.pendingTransactions).toHaveLength(0)
   })
 });
+
+
+describe('resetMempool', () => {
+  it('resets the array to empty', () => {
+    testCoin.pendingTransactions.push("tx1")
+    testCoin.pendingTransactions.push("tx2")
+    expect(testCoin.pendingTransactions).toHaveLength(2)
+    testCoin.resetMempool()
+    expect(testCoin.pendingTransactions).toHaveLength(0)
+  })
+});
+
+describe('replaceChain', () => {
+  let newBlockchain
+
+  beforeEach(() => {
+    newBlockchain = new Blockchain()
+  });
+
+  describe('when the new chain is not longer', () => {
+    it('does not replace the chain', () => {
+      expect(testCoin.replaceChain(newBlockchain)).toBe(false)
+    })
+
+    it('returns false', () => {
+      const originalChain = testCoin.chain
+      testCoin.replaceChain(newBlockchain)
+      expect(testCoin.chain).toBe(originalChain)
+    })
+  })
+
+  describe('when the chain is longer', () => {
+    describe('and the chain is invalid', () => {
+      it('returns false', () => {
+        newBlockchain.chain.push("invalidBlock")
+        jest.spyOn(testCoin, 'isChainValid').mockImplementation(() => false);
+        testCoin.replaceChain(newBlockchain)
+        expect(testCoin.replaceChain(newBlockchain)).toBe(false)
+      })
+
+      it('does not replace chain', () => {
+        const originalChain = testCoin.chain
+        newBlockchain.chain.push("invalidBlock")
+        jest.spyOn(testCoin, 'isChainValid').mockImplementation(() => false);
+        testCoin.replaceChain(newBlockchain)
+        expect(testCoin.chain).toBe(originalChain)
+      })
+    })
+
+    describe('and the chain is valid', () => {
+      it('replaces the chain', () => {
+        newBlockchain.chain.push("block")
+        jest.spyOn(newBlockchain, 'isChainValid').mockImplementation(() => true);
+        testCoin.replaceChain(newBlockchain)
+        expect(testCoin.chain).toBe(newBlockchain.chain)
+      })
+    })
+  })
+})
+
+describe('adjustDifficulty', () => { 
+  test.todo('it raises the difficulty for a quickly mined block')
+  test.todo('it lowers the difficulty for a quickly mined block')
+  test.todo('it never lowers before 1')
+})
+
 
 
 
