@@ -1,15 +1,15 @@
 import Block from '../Block/Block.js'
 import Transaction from '../Transaction/Transaction.js'
 import EC from "elliptic"
-import axios from 'axios'
+import { MINE_RATE_MS, INITIAL_DIFFICULTY, MINING_REWARD } from "../../config.js"
 const ec = new EC.ec('secp256k1')
 
 export default class Blockchain {
   constructor() {
     this.chain = [this.createGenesisBlock()]
-    this.difficulty = 4
+    this.difficulty = INITIAL_DIFFICULTY
     this.pendingTransactions = []
-    this.miningReward = 100
+    this.miningReward = MINING_REWARD
     this.nodes = new Set()
   }
 
@@ -124,8 +124,20 @@ export default class Blockchain {
   }
 
   addPendingTransactionsToBlock() {
+    this.difficulty = this.getNewMiningDifficulty()
     const block = new Block(this.pendingTransactions, this.difficulty, this.getLatestBlock().calculateHash(), this.chain.length)
     return block
+  }
+
+  getNewMiningDifficulty() {
+    const lastMiningTime = this.getLatestBlock().timeSpentMiningInMilliSecs || MINE_RATE_MS
+    
+    if (lastMiningTime < MINE_RATE_MS) {
+      this.difficulty++
+    } else if (this.difficulty > 1){
+      this.difficulty--
+    }
+    return this.difficulty
   }
 
   minePendingTransactions(miningRewardAddress) {
@@ -156,33 +168,5 @@ export default class Blockchain {
   registerNode(address) {
     this.nodes.add(address)
   }
-  resolveConflicts() {
-    //Resolves conflicts by replacing our chain with the longest one on the network. returns true if replaced false if not
-    // const nodes = Array.from(this.nodes)
-    // let latestBlockchain = this.blockchain
-    // for (const node of nodes) {
-    //   axios.get(`${node}/blockchain`)
-    //     .then(response => {
-    //       const blockchain = response.data
-    //       if (blockchain.isChainValid && blockchain.length > this.chain.length) {
-    //         this.chain = blockchain.chain
-    //         this.nodes = blockchain.nodes
-    //         this.difficulty = blockchain.difficulty
-    //       }
-    //     })
-    // }
-    // if (latestBlockchain === this.blockchain) {
-    //   return "You have the latest block, no update made!"
-    // } else {
-    //   return `Here is the latest block: + ${latestBlock}`
-    // }
-  }
+  
 }
-// testing out stuff with axios consolelog:
-// axios.get("http://localhost:3000/blockchain")
-//   .then(response => {
-//     console.log(response.data.blockchain)
-//   })
-//   .catch(err => {
-//     console.error(err)
-//   })

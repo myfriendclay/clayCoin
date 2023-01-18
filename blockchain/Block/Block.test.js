@@ -1,5 +1,6 @@
 import Block from './Block.js'
-import Transaction from '../Transaction/Transaction'
+import Transaction from '../Transaction/Transaction.js'
+import hexToBinary from "hex-to-binary"
 
 let newBlock
 let testTransactions
@@ -86,24 +87,24 @@ describe('calculateHash', () => {
 
 describe('mineBlock', () => {
 
-  it('updates first d number of characters of hash to 0 (where d = difficulty)', () => {
+  it('updates first d number of characters of BINARY hash to 0 (where d = difficulty)', () => {
     const { difficulty } = newBlock
     const targetHash = "0".repeat(difficulty)
     newBlock.mineBlock(difficulty)
-    const hashHeader = newBlock.hash.substring(0, difficulty)
+    const hashHeader = hexToBinary(newBlock.hash).substring(0, difficulty)
     expect(hashHeader).toBe(targetHash)
   });
 
   it('produces valid hash', () => {
     newBlock.mineBlock(4)
-    expect(newBlock.hash).toBe("00008c2a05e26de0b59a85f6958424fa6df0e0683e5dc7b993483498a39b948f")
+    expect(newBlock.hash).toBe("0fc16cfdfcd0fb3e7379f0082737fa4682c1e34f0a014914d925fc6087a17d60")
   });
   
-  it('updates first d number of characters when d changes', () => {
+  it('updates first d number of characters of BINARY hash when d changes', () => {
     newBlock.difficulty = 3
     const targetHash = "0".repeat(newBlock.difficulty)
     newBlock.mineBlock(newBlock.difficulty)
-    const hashHeader = newBlock.hash.substring(0, newBlock.difficulty)
+    const hashHeader = hexToBinary(newBlock.hash).substring(0, newBlock.difficulty)
     expect(hashHeader).toBe(targetHash)
   });
 
@@ -123,10 +124,10 @@ describe('getProofOfWorkHash', () => {
   it('returns valid hash first d number of characters of 0 (where d = difficulty)', () => {
     const { difficulty } = newBlock
     const proofOfWork = newBlock.getProofOfWorkHash()
-    const proofOfWorkHeader = proofOfWork.substring(0, difficulty)
+    const proofOfWorkHeader = hexToBinary(proofOfWork).substring(0, difficulty)
     const targetHashHeader = "0".repeat(difficulty)
     expect(proofOfWorkHeader).toBe(targetHashHeader)
-    expect(proofOfWork).toBe("00008c2a05e26de0b59a85f6958424fa6df0e0683e5dc7b993483498a39b948f")
+    expect(proofOfWork).toBe("0fc16cfdfcd0fb3e7379f0082737fa4682c1e34f0a014914d925fc6087a17d60")
   });
 })
 
@@ -215,7 +216,8 @@ describe('firstDCharsAreZero', () => {
   })
   
   it('returns false first d (difficulty) chars are not 0', () => {
-    newBlock.hash = "0".repeat(newBlock.difficulty - 1) + "blahblah"
+    //This test is a bit imprecise (hence the difficulty - 2 vs. -1) since we are only testing hex but the function tests the binary
+    newBlock.hash = "0".repeat(newBlock.difficulty - 3) + "blahblah"
     expect(newBlock.firstDCharsAreZero()).toBe(false)
   })
 

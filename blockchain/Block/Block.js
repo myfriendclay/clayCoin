@@ -1,4 +1,5 @@
 import SHA256 from "crypto-js/sha256.js"
+import hexToBinary from "hex-to-binary"
 
 export default class Block {
   constructor(transactions, difficulty, previousHash = '', height = null) {
@@ -15,12 +16,17 @@ export default class Block {
   }
 
   mineBlock() {
+    const startOfMining = Date.now()
     this.hash = this.getProofOfWorkHash()
+    const endOfMining = Date.now()
+    this.timeSpentMiningInMilliSecs = endOfMining - startOfMining
+    return this.timeSpentMiningInMilliSecs
   }
 
   getProofOfWorkHash() {
     let hash = ""
-    while (hash.substring(0, this.difficulty) !== "0".repeat(this.difficulty)) {
+
+    while (hexToBinary(hash).substring(0, this.difficulty) !== "0".repeat(this.difficulty)) {
         this.nonce ++
         hash = this.calculateHash()
     }
@@ -36,7 +42,7 @@ export default class Block {
   }
 
   firstDCharsAreZero() {
-    return this.hash.substring(0, this.difficulty) === "0".repeat(this.difficulty)
+    return hexToBinary(this.hash).substring(0, this.difficulty) === "0".repeat(this.difficulty)
   }
 
   hasProofOfWork() {

@@ -366,17 +366,19 @@ describe('replaceChain', () => {
 
   describe('when the chain is longer', () => {
     describe('and the chain is invalid', () => {
-      it('returns false', () => {
+      beforeEach(() => {
         newBlockchain.chain.push("invalidBlock")
-        jest.spyOn(testCoin, 'isChainValid').mockImplementation(() => false);
+      });
+
+      it('returns false', () => {
+        jest.spyOn(newBlockchain, 'isChainValid').mockImplementation(() => false);
         testCoin.replaceChain(newBlockchain)
         expect(testCoin.replaceChain(newBlockchain)).toBe(false)
       })
 
       it('does not replace chain', () => {
         const originalChain = testCoin.chain
-        newBlockchain.chain.push("invalidBlock")
-        jest.spyOn(testCoin, 'isChainValid').mockImplementation(() => false);
+        jest.spyOn(newBlockchain, 'isChainValid').mockImplementation(() => false);
         testCoin.replaceChain(newBlockchain)
         expect(testCoin.chain).toBe(originalChain)
       })
@@ -398,12 +400,3 @@ describe('adjustDifficulty', () => {
   test.todo('it lowers the difficulty for a quickly mined block')
   test.todo('it never lowers before 1')
 })
-
-
-
-
-
-
-
-
-
