@@ -2,6 +2,7 @@
 import express from 'express'
 import Blockchain from '../blockchain/Blockchain/Blockchain.js'
 import Transaction from '../blockchain/Transaction/Transaction.js'
+import PubSub from '../pubsub.js'
 
 const app = express()
 const port = 3000
@@ -11,6 +12,9 @@ import bodyParser from 'body-parser'
 app.use(bodyParser.json())
 
 const blockchain = new Blockchain()
+
+const pubsub = new PubSub( blockchain )
+setTimeout(() => pubsub.broadcastChain(), 1000);
 
 app.post('/mine', (req, res) => {
   const { miningAddress } = req.body

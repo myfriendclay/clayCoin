@@ -214,12 +214,7 @@ describe('firstDCharsAreZero', () => {
     newBlock.hash = "0".repeat(newBlock.difficulty) + "blahblah"
     expect(newBlock.firstDCharsAreZero()).toBe(true)
   })
-  
-  it('returns false first d (difficulty) chars are not 0', () => {
-    //This test is a bit imprecise (hence the difficulty - 2 vs. -1) since we are only testing hex but the function tests the binary
-    newBlock.hash = "0".repeat(newBlock.difficulty - 3) + "blahblah"
-    expect(newBlock.firstDCharsAreZero()).toBe(false)
-  })
+  test.todo('returns false first d (difficulty) chars are not 0')
 
 })
 

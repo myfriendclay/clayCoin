@@ -2,20 +2,10 @@ import Blockchain from "../Blockchain/Blockchain.js";
 import Transaction from "../Transaction/Transaction.js";
 import Block from "../Block/Block.js";
 import EC from "elliptic"
+import { INITIAL_DIFFICULTY } from "../../config.js"
 const ec = new EC.ec('secp256k1')
 
-// Generate a new key pair and convert them to hex-strings
 const key = ec.genKeyPair();
-const publicKey = key.getPublic('hex');
-const privateKey = key.getPrivate('hex');
-
-const key2 = ec.genKeyPair();
-const publicKey2 = key.getPublic('hex');
-const privateKey2 = key.getPrivate('hex');
-
-let newBlock
-let testTransactions
-
 let testCoin
 
 beforeEach(() => {
@@ -23,7 +13,7 @@ beforeEach(() => {
 });
 
 describe('Constructor', () => {
-  it('Creates blockchain successfully with all 4 properties', () => {
+  it('Creates blockchain successfully with all 5 properties', () => {
     expect(testCoin).toHaveProperty('chain');
     expect(testCoin).toHaveProperty('difficulty');
     expect(testCoin).toHaveProperty('pendingTransactions');
@@ -34,7 +24,7 @@ describe('Constructor', () => {
     expect(testCoin.chain.length).toBe(1)
   });
   test('includes valid genesis block', () => {
-    const expectedGenesisBlock = new Block("Genesis Block", 4, null, 0)
+    const expectedGenesisBlock = new Block("Genesis Block", INITIAL_DIFFICULTY, null, 0)
     const actualGenesisBlock = testCoin.chain[0]
     //Need to make timestamps the same so hashes are the same
     expectedGenesisBlock.timestamp = actualGenesisBlock.timestamp
@@ -45,7 +35,7 @@ describe('Constructor', () => {
 
 describe('createGenesisBlock', () => {
   test('Creates correct block', () => {
-    const expectedGenesisBlock = new Block("Genesis Block", 4, null, 0)
+    const expectedGenesisBlock = new Block("Genesis Block", INITIAL_DIFFICULTY, null, 0)
     const actualGenesisBlock = testCoin.createGenesisBlock()
     //Need to make timestamps the same so hashes are the same
     expectedGenesisBlock.timestamp = actualGenesisBlock.timestamp
@@ -184,6 +174,12 @@ describe('isChainValid', () => {
     jest.spyOn(testCoin, 'hasValidGenesisBlock').mockImplementation(() => false);
     expect(testCoin.isChainValid()).toBe(false)
   })
+  it('Returns false if there is a negative jump in difficulty between blocks more than 1', () => {
+    expect(testCoin.isChainValid()).toBe(true)
+    block2.difficulty = 10
+    block3.difficulty = 8
+    expect(testCoin.isChainValid()).toBe(false)
+  })
   it('Returns true if all blocks are valid (or genesis) and each block connects', () => {
     expect(testCoin.isChainValid()).toBe(true)
   })
@@ -268,7 +264,6 @@ describe('walletHasSufficientFunds', () => {
 });
 
 describe('addCoinbaseTxToMempool', () => {
-
   test('adds Coinbase Tx to pending transactions', () => {
     testCoin.addCoinbaseTxToMempool("minerAddress")
     const coinbaseTx = new Transaction("Coinbase Tx", "minerAddress", testCoin.miningReward, "Mining reward transaction")

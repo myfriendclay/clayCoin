@@ -14,7 +14,7 @@ export default class Blockchain {
   }
 
   createGenesisBlock() {
-    const genesisBlock = new Block("Genesis Block", 4, null, 0)
+    const genesisBlock = new Block("Genesis Block", INITIAL_DIFFICULTY, null, 0)
     genesisBlock.hash = genesisBlock.getProofOfWorkHash()
     return genesisBlock
   }
@@ -58,11 +58,17 @@ export default class Blockchain {
     for (let i = 1; i < this.chain.length; i++) {
       const currentBlock = this.chain[i]
       const previousBlock = this.chain[i - 1]
+      const difficultyJump = currentBlock.difficulty - previousBlock.difficulty
       if (!currentBlock.isValidBlock() && i > 1) {
         return false
       }
     
       if (currentBlock.previousHash !== previousBlock.hash) {
+        return false
+      }
+
+      //Detect negative difficulty jump greater than 1
+      if (difficultyJump < -1) {
         return false
       }
     }
