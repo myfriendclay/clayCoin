@@ -6,7 +6,7 @@ const CHANNELS = {
 }
 
 export default class PubSub {
-  constructor( blockchain ) {
+  constructor( { blockchain } ) {
     this.blockchain = blockchain
 
     this.publisher = redis.createClient()
@@ -19,13 +19,12 @@ export default class PubSub {
     )
   }
 
-
   handleMessage(channel, message) {
     console.log(`Message received: Channel: ${channel} Message: ${message}`)
+
     const parsedMessage = JSON.parse(message)
 
     if (channel === CHANNELS.BLOCKCHAIN) {
-      // console.log("this is", this.blockchain)
       this.blockchain.replaceChain(parsedMessage)
     }
   }
@@ -43,9 +42,7 @@ export default class PubSub {
   broadcastChain() {
     this.publish({
       channel: CHANNELS.BLOCKCHAIN,
-      message: JSON.stringify(this.blockchain.chain)
+      message: JSON.stringify(this.blockchain)
     })
   }
  }
-const testPubSub = new PubSub()
-setTimeout(() => testPubSub.publisher.publish(CHANNELS.TEST, 'foo'), 1000);
