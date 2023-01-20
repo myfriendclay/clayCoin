@@ -74,36 +74,6 @@ describe('addTransaction', () => {
 
 });
 
-describe('addPendingTransactionsToBlockchain', () => {
-
-  it('Calls minePendingTransactions with miningRewardAddress', () => {
-    const miningRewardAddress = "123"
-    testCoin.minePendingTransactions = jest.fn()
-    testCoin.addPendingTransactionsToBlockchain(miningRewardAddress)
-    expect(testCoin.minePendingTransactions).toHaveBeenCalledWith(miningRewardAddress)
-  })
-
-  it('Calls addBlockToChain with block', () => {
-    const miningRewardAddress = "123"
-    jest.spyOn(testCoin, 'minePendingTransactions').mockImplementation(() => "blockExample");
-    testCoin.addBlockToChain = jest.fn()
-    testCoin.addPendingTransactionsToBlockchain(miningRewardAddress)
-    expect(testCoin.addBlockToChain).toHaveBeenCalledWith("blockExample")
-  })
-
-  it('Calls resetMempool', () => {
-    testCoin.resetMempool = jest.fn()
-    testCoin.addPendingTransactionsToBlockchain("123")
-    expect(testCoin.resetMempool).toHaveBeenCalled()
-  })
-
-  it('Returns the blockchain', () => {
-    const miningRewardAddress = "123"
-    const returnValue = testCoin.addPendingTransactionsToBlockchain(miningRewardAddress)
-    expect(returnValue).toBe(testCoin.chain)
-  })
-});
-
 describe('hasValidGenesisBlock', () => {
   let expectedBlock
   beforeEach(() => {
@@ -197,7 +167,7 @@ describe('getBalanceOfAddress', () => {
     let tx3 = new Transaction("targetAddress", "randomAddress", 20);
     let tx4 = new Transaction("randomAddress", "targetAddress", 5);
     testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
-    testCoin.addPendingTransactionsToBlockchain("miningAddress")
+    testCoin.minePendingTransactions("miningAddress")
     expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(75)
   })
 
@@ -207,7 +177,7 @@ describe('getBalanceOfAddress', () => {
     let tx3 = new Transaction("targetAddress", "randomAddress", 20);
     let tx4 = new Transaction("randomAddress", "targetAddress", 5);
     testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
-    testCoin.addPendingTransactionsToBlockchain("miningAddress")
+    testCoin.minePendingTransactions("miningAddress")
     expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(-915)
   })
 
@@ -217,12 +187,12 @@ describe('getBalanceOfAddress', () => {
     let tx3 = new Transaction("targetAddress", "randomAddress", 300);
     let tx4 = new Transaction("randomAddress", "targetAddress", 400);
     testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
-    testCoin.addPendingTransactionsToBlockchain("miningAddress")
+    testCoin.minePendingTransactions("miningAddress")
     expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(0)
   })
 
   test('Returns correct balance if no transactions', () => {
-    testCoin.addPendingTransactionsToBlockchain("miningAddress")
+    testCoin.minePendingTransactions("miningAddress")
     expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(null)
   })
 });
@@ -301,11 +271,32 @@ describe('minePendingTransactions', () => {
     expect(mockAddPendingTransactionsToBlock).toHaveBeenCalled()
   })
 
+  it('Calls addBlockToChain with block', () => {
+    const miningRewardAddress = "123"
+    const block = new Block([], INITIAL_DIFFICULTY, "hash", 2)
+    jest.spyOn(testCoin, 'addPendingTransactionsToBlock').mockImplementation(() => block);
+    testCoin.addBlockToChain = jest.fn()
+    testCoin.minePendingTransactions(miningRewardAddress)
+    expect(testCoin.addBlockToChain).toHaveBeenCalledWith(block)
+  })
+
+  it('Calls resetMempool', () => {
+    testCoin.resetMempool = jest.fn()
+    testCoin.minePendingTransactions("123")
+    expect(testCoin.resetMempool).toHaveBeenCalled()
+  })
+
+  it('Returns the blockchain', () => {
+    const miningRewardAddress = "123"
+    const returnValue = testCoin.minePendingTransactions(miningRewardAddress)
+    expect(returnValue).toBe(testCoin.chain)
+  })
+
   test.todo('Calls mineBlock')
 
   test('Block has proof of work', () => {
-    const minedBlock = testCoin.minePendingTransactions("mining_address")
-    expect(minedBlock.hasProofOfWork()).toBe(true)
+    const chain = testCoin.minePendingTransactions("mining_address")
+    expect(chain[chain.length - 1].hasProofOfWork()).toBe(true)
   })
 
 });

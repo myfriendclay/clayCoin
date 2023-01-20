@@ -34,15 +34,6 @@ export default class Blockchain {
     
     this.pendingTransactions.push(transaction)
   }
-
-  addPendingTransactionsToBlockchain(miningRewardAddress) {
-    const block = this.minePendingTransactions(miningRewardAddress)
-    this.addBlockToChain(block)
-    this.resetMempool()
-
-    return this.chain
-  }
-
   //Validity methods:
 
   hasValidGenesisBlock() {
@@ -151,7 +142,9 @@ export default class Blockchain {
     this.addCoinbaseTxToMempool(miningRewardAddress)
     const block = this.addPendingTransactionsToBlock()
     block.mineBlock(block.difficulty)
-    return block
+    this.addBlockToChain(block)
+    this.resetMempool()
+    return this.chain
   }
 
   addBlockToChain(block) {
