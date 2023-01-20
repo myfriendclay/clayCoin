@@ -39,6 +39,7 @@ export default class Blockchain {
     const block = this.minePendingTransactions(miningRewardAddress)
     this.addBlockToChain(block)
     this.resetMempool()
+
     return this.chain
   }
 

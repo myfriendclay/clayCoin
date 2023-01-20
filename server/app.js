@@ -5,7 +5,13 @@ import Transaction from '../blockchain/Transaction/Transaction.js'
 import PubSub from '../pubsub.js'
 
 const app = express()
-const port = 3000
+const DEFAULT_PORT = 3000
+let PEER_PORT
+
+if (process.env.GENERATE_PEER_PORT === "true") {
+  PEER_PORT = DEFAULT_PORT + Math.ceil(Math.random() * 1000)
+}
+const PORT = PEER_PORT || DEFAULT_PORT
 
 // parse application/json
 import bodyParser from 'body-parser'
@@ -62,6 +68,6 @@ app.get('/nodes/resolve', (req, res) => {
   //         }
 })
 
-app.listen(port, () => {
-  console.log(`Blockchain node running on port ${port}`)
+app.listen(PORT, () => {
+  console.log(`Blockchain node running on port ${PORT}`)
 })
