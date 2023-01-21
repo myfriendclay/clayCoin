@@ -1,5 +1,5 @@
 import Block from '../Block/Block'
-import Transaction from '../Transaction/Transaction.js'
+import Transaction from '../Transaction/Transaction'
 import EC from "elliptic"
 import { MINE_RATE_MS, INITIAL_DIFFICULTY, MINING_REWARD } from "../../config.js"
 const ec = new EC.ec('secp256k1')
@@ -21,7 +21,7 @@ export default class Blockchain {
     return this.chain[this.chain.length - 1]
   }
 
-  addTransaction(transaction) {
+  addTransaction(transaction: Transaction) {
     if (!transaction.isValid()) {
       throw new Error("Cannot add invalid transaction to chain")
     }
@@ -36,7 +36,7 @@ export default class Blockchain {
 
   //Wallet helpers
 
-  getBalanceOfAddress(address) {
+  getBalanceOfAddress(address: string): number | null {
     if (this.getAllTransactionsForWallet(address).length === 0) {
       return null
     }
@@ -55,20 +55,20 @@ export default class Blockchain {
     return balance
   }
 
-  getTotalPendingOwedByWallet(address) {
+  getTotalPendingOwedByWallet(address: string): number {
     const pendingTransactionsForWallet = this.pendingTransactions.filter(tx => tx.fromAddress === address)
     const totalPendingAmount = pendingTransactionsForWallet.map(tx => tx.amount).reduce((prev, curr) => prev + curr, 0)
     return totalPendingAmount
   }
 
-  walletHasSufficientFunds(transaction) {
+  walletHasSufficientFunds(transaction: Transaction): boolean {
     const walletBalance = this.getBalanceOfAddress(transaction.fromAddress)
     const totalPendingOwed = this.getTotalPendingOwedByWallet(transaction.fromAddress)
     return walletBalance >= totalPendingOwed + transaction.amount
   }
   
   //For possible API use:
-  getAllTransactionsForWallet(address) {
+  getAllTransactionsForWallet(address: string): Transaction[] {
     const transactions = []
     for (const block of this.chain) {
       for (const transaction of block.transactions) {
@@ -81,20 +81,20 @@ export default class Blockchain {
   }
 
    //Transaction helpers:
-  addCoinbaseTxToMempool(miningRewardAddress) {
+  addCoinbaseTxToMempool(miningRewardAddress: string): Transaction {
      //Mining reward:
      const coinbaseTx = new Transaction("Coinbase Tx", miningRewardAddress, this.miningReward, "Mining reward transaction")
      this.pendingTransactions.push(coinbaseTx)
      return coinbaseTx
   }
 
-  addPendingTransactionsToBlock() {
+  addPendingTransactionsToBlock(): Block {
     this.difficulty = this.getNewMiningDifficulty()
     const block = new Block(this.pendingTransactions, this.difficulty, this.getLatestBlock().calculateHash(), this.chain.length)
     return block
   }
 
-  getNewMiningDifficulty() {
+  getNewMiningDifficulty(): number {
     const lastMiningTime = this.getLatestBlock().timeSpentMiningInMilliSecs || MINE_RATE_MS
     
     if (lastMiningTime < MINE_RATE_MS) {
@@ -105,21 +105,21 @@ export default class Blockchain {
     return this.difficulty
   }
 
-  minePendingTransactions(miningRewardAddress) {
+  minePendingTransactions(miningRewardAddress: string): Block {
     this.addCoinbaseTxToMempool(miningRewardAddress)
     const block = this.addPendingTransactionsToBlock()
-    block.mineBlock(block.difficulty)
+    block.mineBlock()
     this.addBlockToChain(block)
     this.resetMempool()
     return block
   }
 
-  addBlockToChain(block) {
+  addBlockToChain(block: Block) {
     this.chain.push(block)
     return this.chain
   }
 
-  replaceChain(newBlockchain) {
+  replaceChain(newBlockchain: Blockchain): undefined | boolean {
     //The issue is newBlockchain is just a json object not a blockchain instance so it can't access .isChainValid
     if (newBlockchain.chain.length > this.chain.length && Blockchain.isChainValid(newBlockchain)) {
       this.chain = newBlockchain.chain
@@ -132,7 +132,7 @@ export default class Blockchain {
     this.pendingTransactions = []
   }
 
-  static isChainValid(chain) {
+  static isChainValid(chain: Block[]) {
     // Check if the Genesis block hasn't been tampered with:
     if (!chain[0].isValidGenesisBlock()) {
       return false

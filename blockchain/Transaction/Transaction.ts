@@ -4,7 +4,15 @@ const ec = new EC.ec('secp256k1')
 import { v4 as uuidv4 } from 'uuid';
 
 export default class Transaction {
-  constructor(fromAddress, toAddress, amount, memo = "") {
+  fromAddress: string
+  toAddress: string
+  amount: number
+  memo: string
+  uuid: string
+  timestamp: number
+  signature: string
+
+  constructor(fromAddress: string, toAddress: string, amount: number, memo: string) {
     this.fromAddress = fromAddress
     this.toAddress = toAddress
     this.amount = amount
@@ -13,11 +21,11 @@ export default class Transaction {
     this.timestamp = Date.now()
   }
 
-  calculateHash() {
+  calculateHash():string {
     return SHA256(this.fromAddress + this.toAddress + this.amount + this.timestamp + this.memo + this.uuid).toString()
   }
 
-  signTransaction(secretKey) {
+  signTransaction(secretKey: string) {
     const signingKey = ec.keyFromPrivate(secretKey, 'hex')
     if (signingKey.getPublic('hex') !== this.fromAddress) {
       throw new Error("you can't sign transactions for other wallets")
@@ -28,7 +36,7 @@ export default class Transaction {
     this.signature = signature.toDER('hex')
   }
 
-  hasValidSignature() {
+  hasValidSignature(): boolean {
     if (this.signature) {
       const publicKey = ec.keyFromPublic(this.fromAddress, 'hex')
       return publicKey.verify(this.calculateHash(), this.signature)
@@ -37,7 +45,7 @@ export default class Transaction {
     }
   }
 
-  isCoinbaseTransaction() {
+  isCoinbaseTransaction():boolean {
     //For mining reward:
     return this.fromAddress === "Coinbase Tx"
   }
@@ -46,7 +54,7 @@ export default class Transaction {
     return !!(this.fromAddress && this.toAddress && this.amount > 0)
   }
 
-  isValid() {
+  isValid(): boolean {
     if (this.isCoinbaseTransaction()) {
       return true
     }

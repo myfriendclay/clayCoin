@@ -22,11 +22,11 @@ export default class Block {
     this.timestamp = Date.now()
   }
 
-  calculateHash() {
+  calculateHash(): string {
     return SHA256(this.timestamp + JSON.stringify(this.transactions) + this.previousHash + this.height + this.difficulty + this.nonce).toString()
   }
 
-  mineBlock() {
+  mineBlock(): number {
     const startOfMining = Date.now()
     this.hash = this.getProofOfWorkHash()
     const endOfMining = Date.now()
@@ -34,7 +34,7 @@ export default class Block {
     return this.timeSpentMiningInMilliSecs
   }
 
-  getProofOfWorkHash() {
+  getProofOfWorkHash(): string {
     let hash = ""
 
     while (hexToBinary(hash).substring(0, this.difficulty) !== "0".repeat(this.difficulty)) {
@@ -44,33 +44,33 @@ export default class Block {
     return hash
   }
 
-  hasValidTransactions() {
+  hasValidTransactions(): boolean {
     return this.transactions.every(transaction => transaction.isValid())
   }
 
-  hasValidHash() {
+  hasValidHash(): boolean {
     return this.hash === this.calculateHash()
   }
 
-  firstDCharsAreZero() {
+  firstDCharsAreZero(): boolean {
     return hexToBinary(this.hash).substring(0, this.difficulty) === "0".repeat(this.difficulty)
   }
 
-  hasProofOfWork() {
+  hasProofOfWork(): boolean {
     return this.hasValidHash() && this.firstDCharsAreZero()
   }
   
-  isValidBlock() {
+  isValidBlock(): boolean {
     return this.hasValidTransactions() && this.hasProofOfWork()
   }
 
-  isValidGenesisBlock() {
+  isValidGenesisBlock(): boolean {
     const { difficulty, transactions, previousHash, height } = GENESIS_BLOCK_DATA
 
     return this.isValidBlock() && this.difficulty === difficulty && this.transactions === transactions && this.previousHash === previousHash && this.height === height
   }
 
-  static createGenesisBlock() {
+  static createGenesisBlock(): Block {
     const genesisBlock = new Block(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
     genesisBlock.mineBlock()
     return genesisBlock

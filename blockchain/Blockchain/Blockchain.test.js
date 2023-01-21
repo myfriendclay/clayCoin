@@ -1,5 +1,5 @@
 import Blockchain from "../Blockchain/Blockchain";
-import Transaction from "../Transaction/Transaction.js";
+import Transaction from "../Transaction/Transaction";
 import Block from "../Block/Block";
 import EC from "elliptic"
 import { INITIAL_DIFFICULTY } from "../../config.js"
