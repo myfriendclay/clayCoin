@@ -1,6 +1,6 @@
 import SHA256 from "crypto-js/sha256.js"
 import hexToBinary from "hex-to-binary"
-import { GENESIS_BLOCK_DATA } from "../../config.js"
+import { GENESIS_BLOCK_DATA } from "../../config"
 import Transaction from "../Transaction/Transaction.js";
 
 export default class Block {

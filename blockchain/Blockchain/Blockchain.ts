@@ -1,7 +1,7 @@
 import Block from '../Block/Block'
 import Transaction from '../Transaction/Transaction'
 import EC from "elliptic"
-import { MINE_RATE_MS, INITIAL_DIFFICULTY, MINING_REWARD } from "../../config.js"
+import { MINE_RATE_MS, INITIAL_DIFFICULTY, MINING_REWARD } from "../../config"
 const ec = new EC.ec('secp256k1')
 
 export default class Blockchain {
@@ -121,7 +121,7 @@ export default class Blockchain {
 
   replaceChain(newBlockchain: Blockchain): undefined | boolean {
     //The issue is newBlockchain is just a json object not a blockchain instance so it can't access .isChainValid
-    if (newBlockchain.chain.length > this.chain.length && Blockchain.isChainValid(newBlockchain)) {
+    if (newBlockchain.chain.length > this.chain.length && Blockchain.isChainValid(newBlockchain.chain)) {
       this.chain = newBlockchain.chain
     } else {
       return false

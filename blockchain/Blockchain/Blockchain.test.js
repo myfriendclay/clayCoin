@@ -2,7 +2,7 @@ import Blockchain from "../Blockchain/Blockchain";
 import Transaction from "../Transaction/Transaction";
 import Block from "../Block/Block";
 import EC from "elliptic"
-import { INITIAL_DIFFICULTY } from "../../config.js"
+import { INITIAL_DIFFICULTY } from "../../config"
 const ec = new EC.ec('secp256k1')
 
 const key = ec.genKeyPair();

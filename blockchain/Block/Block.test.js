@@ -1,7 +1,7 @@
 import Block from './Block.ts'
 import Transaction from '../Transaction/Transaction'
 import hexToBinary from "hex-to-binary"
-import { GENESIS_BLOCK_DATA } from "../../config.js"
+import { GENESIS_BLOCK_DATA } from "../../config"
 
 let newBlock
 let testTransactions

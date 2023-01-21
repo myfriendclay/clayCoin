@@ -8,8 +8,3 @@ export class Blockchain {
   @Type(() => Block)
   chain: Block[];
 }
-
-// export class Block {
-//   id: number;
-//   filename: string;
-// }
