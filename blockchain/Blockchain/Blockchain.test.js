@@ -1,6 +1,6 @@
-import Blockchain from "../Blockchain/Blockchain.ts";
+import Blockchain from "../Blockchain/Blockchain";
 import Transaction from "../Transaction/Transaction.js";
-import Block from "../Block/Block.js";
+import Block from "../Block/Block";
 import EC from "elliptic"
 import { INITIAL_DIFFICULTY } from "../../config.js"
 const ec = new EC.ec('secp256k1')

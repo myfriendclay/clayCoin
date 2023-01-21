@@ -1,4 +1,4 @@
-import Block from './Block.js'
+import Block from './Block.ts'
 import Transaction from '../Transaction/Transaction.js'
 import hexToBinary from "hex-to-binary"
 import { INITIAL_DIFFICULTY, GENESIS_BLOCK_DATA } from "../../config.js"

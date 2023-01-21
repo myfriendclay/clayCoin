@@ -1,9 +1,19 @@
 import SHA256 from "crypto-js/sha256.js"
 import hexToBinary from "hex-to-binary"
-import { INITIAL_DIFFICULTY, GENESIS_BLOCK_DATA } from "../../config.js"
+import { GENESIS_BLOCK_DATA } from "../../config.js"
+import Transaction from "../Transaction/Transaction.js";
 
 export default class Block {
-  constructor(transactions, difficulty, previousHash = '', height = null) {
+  transactions: Transaction[];
+  previousHash: string | null;
+  height: number;
+  difficulty: number;
+  nonce: number;
+  timestamp: number;
+  timeSpentMiningInMilliSecs: number;
+  hash: string
+
+  constructor(transactions, difficulty, previousHash = '', height) {
     this.transactions = transactions
     this.previousHash = previousHash
     this.height = height

@@ -1,4 +1,4 @@
-import Block from '../Block/Block.js'
+import Block from '../Block/Block'
 import Transaction from '../Transaction/Transaction.js'
 import EC from "elliptic"
 import { MINE_RATE_MS, INITIAL_DIFFICULTY, MINING_REWARD } from "../../config.js"
