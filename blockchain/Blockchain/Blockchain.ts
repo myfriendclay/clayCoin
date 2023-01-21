@@ -1,12 +1,16 @@
 import Block from '../Block/Block'
 import Transaction from '../Transaction/Transaction'
 import EC from "elliptic"
-import { MINE_RATE_MS, INITIAL_DIFFICULTY, MINING_REWARD } from "../../config"
 const ec = new EC.ec('secp256k1')
+import { MINE_RATE_MS, INITIAL_DIFFICULTY, MINING_REWARD } from "../../config"
+import { Type } from 'class-transformer';
+import 'reflect-metadata';
+
 
 export default class Blockchain {
-  chain: Block[];
-  difficulty: number;
+  @Type(() => Block)
+  chain: Block[]
+  difficulty: number
   pendingTransactions: Transaction[]
   miningReward: number
 
@@ -121,6 +125,7 @@ export default class Blockchain {
 
   replaceChain(newBlockchain: Blockchain): undefined | boolean {
     //The issue is newBlockchain is just a json object not a blockchain instance so it can't access .isChainValid
+    console.log("inside replace chain:", newBlockchain.chain[0].isValidGenesisBlock())
     if (newBlockchain.chain.length > this.chain.length && Blockchain.isChainValid(newBlockchain.chain)) {
       this.chain = newBlockchain.chain
     } else {

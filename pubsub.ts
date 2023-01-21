@@ -1,6 +1,6 @@
 import redis from 'redis'
 import Blockchain from './blockchain/Blockchain/Blockchain'
-import { Type, plainToClass } from 'class-transformer';
+import { plainToClass } from 'class-transformer';
 // const redis = require('redis')
 // const Blockchain = require('./blockchain/Blockchain/Blockchain.ts')
 // const plainToClass = require("class-transformer")
@@ -9,6 +9,7 @@ const CHANNELS = {
   TEST: "TEST",
   BLOCKCHAIN: "BLOCKCHAIN"
 }
+
 
 export default class PubSub {
   blockchain: Blockchain
@@ -35,8 +36,8 @@ export default class PubSub {
 
     if (channel === CHANNELS.BLOCKCHAIN) {
       Object.setPrototypeOf(parsedMessage, Blockchain.prototype);
-      let newparsed = plainToClass(Blockchain, parsedMessage);
-      this.blockchain.replaceChain(newparsed)
+      let blockchainInstance = plainToClass(Blockchain, parsedMessage);
+      this.blockchain.replaceChain(blockchainInstance)
     }
   }
 
