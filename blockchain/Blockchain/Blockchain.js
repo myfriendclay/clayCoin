@@ -6,17 +6,11 @@ const ec = new EC.ec('secp256k1')
 
 export default class Blockchain {
   constructor() {
-    this.chain = [this.createGenesisBlock()]
+    this.chain = [Block.createGenesisBlock()]
     this.difficulty = INITIAL_DIFFICULTY
     this.pendingTransactions = []
     this.miningReward = MINING_REWARD
     this.nodes = new Set()
-  }
-
-  createGenesisBlock() {
-    const genesisBlock = new Block("Genesis Block", INITIAL_DIFFICULTY, null, 0)
-    genesisBlock.hash = genesisBlock.getProofOfWorkHash()
-    return genesisBlock
   }
 
   getLatestBlock() {
@@ -35,37 +29,6 @@ export default class Blockchain {
     this.pendingTransactions.push(transaction)
   }
   //Validity methods:
-
-  hasValidGenesisBlock() {
-    const expectedGenesis = JSON.stringify(this.createGenesisBlock());
-    return JSON.stringify(this.chain[0]) === expectedGenesis
-  }
-
-  isChainValid() {
-    // Check if the Genesis block hasn't been tampered with:
-    if (!this.hasValidGenesisBlock()) {
-      return false
-    }
-
-    for (let i = 1; i < this.chain.length; i++) {
-      const currentBlock = this.chain[i]
-      const previousBlock = this.chain[i - 1]
-      const difficultyJump = currentBlock.difficulty - previousBlock.difficulty
-      if (!currentBlock.isValidBlock() && i > 1) {
-        return false
-      }
-    
-      if (currentBlock.previousHash !== previousBlock.hash) {
-        return false
-      }
-
-      //Detect negative difficulty jump greater than 1
-      if (difficultyJump < -1) {
-        return false
-      }
-    }
-    return true
-  }
 
   //Wallet helpers
 
@@ -153,7 +116,8 @@ export default class Blockchain {
   }
 
   replaceChain(newBlockchain) {
-    if (newBlockchain.chain.length > this.chain.length  && newBlockchain.isChainValid()) {
+    //The issue is newBlockchain is just a json object not a blockchain instance so it can't access .isChainValid
+    if (newBlockchain.chain.length > this.chain.length && Blockchain.isChainValid(newBlockchain)) {
       this.chain = newBlockchain.chain
     } else {
       return false
@@ -167,6 +131,32 @@ export default class Blockchain {
   //Node stuff:
   registerNode(address) {
     this.nodes.add(address)
+  }
+
+  static isChainValid(chain) {
+    // Check if the Genesis block hasn't been tampered with:
+    if (!chain[0].isValidGenesisBlock()) {
+      return false
+    }
+
+    for (let i = 1; i < chain.length; i++) {
+      const currentBlock = chain[i]
+      const previousBlock = chain[i - 1]
+      const difficultyJump = currentBlock.difficulty - previousBlock.difficulty
+      if (!currentBlock.isValidBlock() && i > 1) {
+        return false
+      }
+    
+      if (currentBlock.previousHash !== previousBlock.hash) {
+        return false
+      }
+
+      //Detect negative difficulty jump greater than 1
+      if (difficultyJump < -1) {
+        return false
+      }
+    }
+    return true
   }
   
 }

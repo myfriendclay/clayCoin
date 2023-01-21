@@ -1,6 +1,7 @@
 import Block from './Block.js'
 import Transaction from '../Transaction/Transaction.js'
 import hexToBinary from "hex-to-binary"
+import { INITIAL_DIFFICULTY, GENESIS_BLOCK_DATA } from "../../config.js"
 
 let newBlock
 let testTransactions
@@ -84,6 +85,42 @@ describe('calculateHash', () => {
   });
 
 })
+
+describe('createGenesisBlock', () => {
+  test('Creates correct block', () => {
+    const expectedGenesisBlock = new Block(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
+    const actualGenesisBlock = Block.createGenesisBlock()
+    //Need to make timestamps the same so hashes are the same
+    expectedGenesisBlock.timestamp = actualGenesisBlock.timestamp
+    expectedGenesisBlock.mineBlock()
+    expectedGenesisBlock.timeSpentMiningInMilliSecs = actualGenesisBlock.timeSpentMiningInMilliSecs
+    expect(actualGenesisBlock).toEqual(expectedGenesisBlock)
+  });
+});
+
+describe('isValidGenesisBlock', () => {
+  let actualBlock
+  beforeEach(() => {
+    actualBlock = new Block(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
+    actualBlock.mineBlock()
+  })
+
+  it('Returns false if Genesis block has non zero height', () => {
+    actualBlock.height = 1
+    expect(actualBlock.isValidGenesisBlock()).toBe(false)
+  })
+
+  it('Returns false if Genesis block has previous hash thats not null', () => {
+    actualBlock.previousHash = "someOtherHash"
+    expect(actualBlock.isValidGenesisBlock()).toBe(false)
+  })
+
+  it('Returns true if Genesis block is the same', () => {
+    expect(actualBlock.isValidGenesisBlock()).toBe(true)
+  })
+
+});
+
 
 describe('mineBlock', () => {
 

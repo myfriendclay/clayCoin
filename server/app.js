@@ -1,10 +1,12 @@
-// const express = require('express')
 import express from 'express'
 import Blockchain from '../blockchain/Blockchain/Blockchain.js'
 import Transaction from '../blockchain/Transaction/Transaction.js'
 import PubSub from '../pubsub.js'
+import bodyParser from 'body-parser'
 
 const app = express()
+
+//Multiple peer setup- setup
 const DEFAULT_PORT = 3000
 let PEER_PORT
 
@@ -14,17 +16,17 @@ if (process.env.GENERATE_PEER_PORT === "true") {
 const PORT = PEER_PORT || DEFAULT_PORT
 
 // parse application/json
-import bodyParser from 'body-parser'
 app.use(bodyParser.json())
 
 const blockchain = new Blockchain()
-
 const pubsub = new PubSub( { blockchain } )
 setTimeout(() => pubsub.broadcastChain(), 1000);
 
+//API calls
 app.post('/mine', (req, res) => {
   const { miningAddress } = req.body
   const newBlock = blockchain.minePendingTransactions(miningAddress)
+  pubsub.broadcastChain()
   res.json(newBlock)
 })
 

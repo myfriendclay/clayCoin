@@ -1,5 +1,6 @@
 import SHA256 from "crypto-js/sha256.js"
 import hexToBinary from "hex-to-binary"
+import { INITIAL_DIFFICULTY, GENESIS_BLOCK_DATA } from "../../config.js"
 
 export default class Block {
   constructor(transactions, difficulty, previousHash = '', height = null) {
@@ -51,5 +52,17 @@ export default class Block {
   
   isValidBlock() {
     return this.hasValidTransactions() && this.hasProofOfWork()
+  }
+
+  isValidGenesisBlock() {
+    const { difficulty, transactions, previousHash, height } = GENESIS_BLOCK_DATA
+
+    return this.isValidBlock() && this.difficulty === difficulty && this.transactions === transactions && this.previousHash === previousHash && this.height === height
+  }
+
+  static createGenesisBlock() {
+    const genesisBlock = new Block(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
+    genesisBlock.mineBlock()
+    return genesisBlock
   }
 }

@@ -23,26 +23,11 @@ describe('Constructor', () => {
   it('includes genesis block on blockchain', () => {
     expect(testCoin.chain.length).toBe(1)
   });
-  test('includes valid genesis block', () => {
-    const expectedGenesisBlock = new Block("Genesis Block", INITIAL_DIFFICULTY, null, 0)
-    const actualGenesisBlock = testCoin.chain[0]
-    //Need to make timestamps the same so hashes are the same
-    expectedGenesisBlock.timestamp = actualGenesisBlock.timestamp
-    expectedGenesisBlock.hash = expectedGenesisBlock.getProofOfWorkHash()
-    expect(actualGenesisBlock).toEqual(expectedGenesisBlock)
+  test('First block on chain is valid genesis block', () => {
+    expect(testCoin.chain[0].isValidGenesisBlock()).toBe(true)
   });
 });
 
-describe('createGenesisBlock', () => {
-  test('Creates correct block', () => {
-    const expectedGenesisBlock = new Block("Genesis Block", INITIAL_DIFFICULTY, null, 0)
-    const actualGenesisBlock = testCoin.createGenesisBlock()
-    //Need to make timestamps the same so hashes are the same
-    expectedGenesisBlock.timestamp = actualGenesisBlock.timestamp
-    expectedGenesisBlock.hash = expectedGenesisBlock.getProofOfWorkHash()
-    expect(actualGenesisBlock).toEqual(expectedGenesisBlock)
-  });
-});
 describe('getLatestBlock', () => {
   test('Successfully returns the latest block', () => {
     testCoin.chain.push('test_block_1')
@@ -74,41 +59,6 @@ describe('addTransaction', () => {
 
 });
 
-describe('hasValidGenesisBlock', () => {
-  let expectedBlock
-  beforeEach(() => {
-    expectedBlock = new Block("Genesis Block", 4, null, 0)
-    expectedBlock.hash = expectedBlock.getProofOfWorkHash()
-    testCoin.chain = [expectedBlock]
-  })
-
-  it('Returns false is GenesisBlock is invalid block', () => {
-    expectedBlock.hash = "bogusHash"
-    expect(testCoin.hasValidGenesisBlock()).toBe(false)
-  })
-
-  it('Returns false if GenesisBlock has different transactions', () => {
-    expectedBlock.transactions = "differentTransactions"
-    expect(testCoin.hasValidGenesisBlock()).toBe(false)
-  })
-
-  it('Returns false if Genesis block has non zero height', () => {
-    expectedBlock.height = 1
-    expect(testCoin.hasValidGenesisBlock()).toBe(false)
-  })
-
-  it('Returns false if Genesis block has previous hash thats not null', () => {
-    expectedBlock.previousHash = "someOtherHash"
-    expect(testCoin.hasValidGenesisBlock()).toBe(false)
-  })
-
-  it('Returns true if Genesis block is the same', () => {
-    jest.spyOn(testCoin, 'createGenesisBlock').mockImplementation(() => expectedBlock);
-    expect(testCoin.hasValidGenesisBlock()).toBe(true)
-  })
-
-});
-
 describe('isChainValid', () => {
 
   let block1
@@ -124,34 +74,34 @@ describe('isChainValid', () => {
     jest.spyOn(block1, 'isValidBlock').mockImplementation(() => true);
     jest.spyOn(block2, 'isValidBlock').mockImplementation(() => true);
     jest.spyOn(block3, 'isValidBlock').mockImplementation(() => true);
-    jest.spyOn(testCoin, 'hasValidGenesisBlock').mockImplementation(() => true);
+    jest.spyOn(testCoin.chain[0], 'isValidGenesisBlock').mockImplementation(() => true);
     testCoin.chain.push(block1, block2, block3)
   })
 
   it('Returns false if any previous hash does not match the current blocks previous hash', () => {
-    expect(testCoin.isChainValid()).toBe(true)
+    expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
     block2.hash = "bogus"
-    expect(testCoin.isChainValid()).toBe(false)
+    expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
 
   it('Returns false if any (nonGenesis) block is invalid', () => {
-    expect(testCoin.isChainValid()).toBe(true)
+    expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
     jest.spyOn(block2, 'isValidBlock').mockImplementation(() => false);
-    expect(testCoin.isChainValid()).toBe(false)
+    expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
   it('Returns false if genesis block is invalid', () => {
-    expect(testCoin.isChainValid()).toBe(true)
-    jest.spyOn(testCoin, 'hasValidGenesisBlock').mockImplementation(() => false);
-    expect(testCoin.isChainValid()).toBe(false)
+    expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
+    jest.spyOn(testCoin.chain[0], 'isValidGenesisBlock').mockImplementation(() => false);
+    expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
   it('Returns false if there is a negative jump in difficulty between blocks more than 1', () => {
-    expect(testCoin.isChainValid()).toBe(true)
+    expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
     block2.difficulty = 10
     block3.difficulty = 8
-    expect(testCoin.isChainValid()).toBe(false)
+    expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
   it('Returns true if all blocks are valid (or genesis) and each block connects', () => {
-    expect(testCoin.isChainValid()).toBe(true)
+    expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
   })
 });
 
@@ -253,7 +203,6 @@ describe('addPendingTransactionsToBlock', () => {
     const minedBlock = testCoin.addPendingTransactionsToBlock("mining_address")
     expect(minedBlock.transactions[minedBlock.transactions.length - 2]).toBe("tx1")
   })
-
 });
 
 describe('minePendingTransactions', () => {
@@ -293,7 +242,6 @@ describe('minePendingTransactions', () => {
   })
 
   test.todo('Calls mineBlock')
-
   test('Block has proof of work', () => {
     const chain = testCoin.minePendingTransactions("mining_address")
     expect(chain[chain.length - 1].hasProofOfWork()).toBe(true)
@@ -357,14 +305,14 @@ describe('replaceChain', () => {
       });
 
       it('returns false', () => {
-        jest.spyOn(newBlockchain, 'isChainValid').mockImplementation(() => false);
+        jest.spyOn(Blockchain, 'isChainValid').mockImplementation(() => false);
         testCoin.replaceChain(newBlockchain)
         expect(testCoin.replaceChain(newBlockchain)).toBe(false)
       })
 
       it('does not replace chain', () => {
         const originalChain = testCoin.chain
-        jest.spyOn(newBlockchain, 'isChainValid').mockImplementation(() => false);
+        jest.spyOn(Blockchain, 'isChainValid').mockImplementation(() => false);
         testCoin.replaceChain(newBlockchain)
         expect(testCoin.chain).toBe(originalChain)
       })
@@ -373,7 +321,7 @@ describe('replaceChain', () => {
     describe('and the chain is valid', () => {
       it('replaces the chain', () => {
         newBlockchain.chain.push("block")
-        jest.spyOn(newBlockchain, 'isChainValid').mockImplementation(() => true);
+        jest.spyOn(Blockchain, 'isChainValid').mockImplementation(() => true);
         testCoin.replaceChain(newBlockchain)
         expect(testCoin.chain).toBe(newBlockchain.chain)
       })
