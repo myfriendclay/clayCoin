@@ -47,29 +47,6 @@ app.post('/transactions', (req, res) => {
   res.json(blockchain.pendingTransactions)
 })
 
-app.post('/nodes', (req, res) => {
-  const {url} = req.body
-  blockchain.registerNode(url)
-  const response = {
-    'nodes': Array.from(blockchain.nodes)
-  }
-  res.json(response)
-})
-
-app.get('/nodes/resolve', (req, res) => {
-  //let the function do it's thing and if replaced respond with "out"
-  // if replaced:
-  //         response = {
-  //             'message': 'Our chain was replaced',
-  //             'new_chain': blockchain.chain
-  //         }
-  //     else:
-  //         response = {
-  //             'message': 'Our chain is authoritative',
-  //             'chain': blockchain.chain
-  //         }
-})
-
 app.listen(PORT, () => {
   console.log(`Blockchain node running on port ${PORT}`)
 })

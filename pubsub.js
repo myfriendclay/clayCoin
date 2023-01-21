@@ -1,4 +1,5 @@
 import redis from 'redis'
+import Blockchain from './blockchain/Blockchain/Blockchain.js'
 
 const CHANNELS = {
   TEST: "TEST",
@@ -25,6 +26,7 @@ export default class PubSub {
     const parsedMessage = JSON.parse(message)
 
     if (channel === CHANNELS.BLOCKCHAIN) {
+      Object.setPrototypeOf(parsedMessage, Blockchain.prototype);
       this.blockchain.replaceChain(parsedMessage)
     }
   }

@@ -18,7 +18,6 @@ describe('Constructor', () => {
     expect(testCoin).toHaveProperty('difficulty');
     expect(testCoin).toHaveProperty('pendingTransactions');
     expect(testCoin).toHaveProperty('miningReward');
-    expect(testCoin).toHaveProperty('nodes');
   });
   it('includes genesis block on blockchain', () => {
     expect(testCoin.chain.length).toBe(1)
@@ -235,16 +234,16 @@ describe('minePendingTransactions', () => {
     expect(testCoin.resetMempool).toHaveBeenCalled()
   })
 
-  it('Returns the blockchain', () => {
+  it('Returns the block', () => {
     const miningRewardAddress = "123"
     const returnValue = testCoin.minePendingTransactions(miningRewardAddress)
-    expect(returnValue).toBe(testCoin.chain)
+    expect(returnValue).toBe(testCoin.chain[testCoin.chain.length - 1])
   })
 
   test.todo('Calls mineBlock')
   test('Block has proof of work', () => {
-    const chain = testCoin.minePendingTransactions("mining_address")
-    expect(chain[chain.length - 1].hasProofOfWork()).toBe(true)
+    testCoin.minePendingTransactions("mining_address")
+    expect(testCoin.chain[testCoin.chain.length - 1].hasProofOfWork()).toBe(true)
   })
 
 });

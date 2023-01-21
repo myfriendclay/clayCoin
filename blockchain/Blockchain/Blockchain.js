@@ -10,7 +10,6 @@ export default class Blockchain {
     this.difficulty = INITIAL_DIFFICULTY
     this.pendingTransactions = []
     this.miningReward = MINING_REWARD
-    this.nodes = new Set()
   }
 
   getLatestBlock() {
@@ -107,7 +106,7 @@ export default class Blockchain {
     block.mineBlock(block.difficulty)
     this.addBlockToChain(block)
     this.resetMempool()
-    return this.chain
+    return block
   }
 
   addBlockToChain(block) {
@@ -126,11 +125,6 @@ export default class Blockchain {
 
   resetMempool() {
     this.pendingTransactions = []
-  }
-
-  //Node stuff:
-  registerNode(address) {
-    this.nodes.add(address)
   }
 
   static isChainValid(chain) {
