@@ -35,7 +35,6 @@ export default class PubSub {
     const parsedMessage = JSON.parse(message)
 
     if (channel === CHANNELS.BLOCKCHAIN) {
-      Object.setPrototypeOf(parsedMessage, Blockchain.prototype);
       let blockchainInstance = plainToClass(Blockchain, parsedMessage);
       this.blockchain.replaceChain(blockchainInstance)
     }

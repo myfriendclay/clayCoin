@@ -124,8 +124,6 @@ export default class Blockchain {
   }
 
   replaceChain(newBlockchain: Blockchain): undefined | boolean {
-    //The issue is newBlockchain is just a json object not a blockchain instance so it can't access .isChainValid
-    console.log("inside replace chain:", newBlockchain.chain[0].isValidGenesisBlock())
     if (newBlockchain.chain.length > this.chain.length && Blockchain.isChainValid(newBlockchain.chain)) {
       this.chain = newBlockchain.chain
     } else {
