@@ -3,6 +3,8 @@ import Blockchain from '../blockchain/Blockchain/Blockchain.js'
 import Transaction from '../blockchain/Transaction/Transaction.js'
 import PubSub from '../pubsub.js'
 import bodyParser from 'body-parser'
+import 'reflect-metadata';
+import 'es6-shim';
 
 const app = express()
 

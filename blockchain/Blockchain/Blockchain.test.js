@@ -1,4 +1,4 @@
-import Blockchain from "../Blockchain/Blockchain.js";
+import Blockchain from "../Blockchain/Blockchain.ts";
 import Transaction from "../Transaction/Transaction.js";
 import Block from "../Block/Block.js";
 import EC from "elliptic"

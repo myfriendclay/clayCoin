@@ -5,6 +5,11 @@ import { MINE_RATE_MS, INITIAL_DIFFICULTY, MINING_REWARD } from "../../config.js
 const ec = new EC.ec('secp256k1')
 
 export default class Blockchain {
+  chain: Block[];
+  difficulty: number;
+  pendingTransactions: Transaction[]
+  miningReward: number
+
   constructor() {
     this.chain = [Block.createGenesisBlock()]
     this.difficulty = INITIAL_DIFFICULTY
