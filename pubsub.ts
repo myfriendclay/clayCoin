@@ -47,7 +47,13 @@ export default class PubSub {
   }
 
   publish({ channel, message }) {
-    this.publisher.publish(channel, message)
+    //Want to first unsubscribe, then publish, then resubscribe. This prevents each node from receiving its own message
+    this.subscriber.unsubscribe(channel, () => {
+      this.publisher.publish(channel, message, () => {
+        this.subscriber.subscribe(channel)
+      })
+
+    })
   }
 
   broadcastChain() {

@@ -37,8 +37,6 @@ const syncChains = () => {
   })
 }
 
-setTimeout(() => pubsub.broadcastChain(), 1000);
-
 //API calls
 app.post('/mine', (req, res) => {
   const { miningAddress } = req.body
@@ -66,5 +64,7 @@ app.post('/transactions', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Blockchain node running on port ${PORT}`)
-  syncChains()
+  if (PORT !== DEFAULT_PORT) {
+    syncChains()
+  }
 })
