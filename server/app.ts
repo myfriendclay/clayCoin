@@ -59,6 +59,7 @@ app.post('/transactions', (req, res) => {
   const newTransaction = new Transaction(fromAddress, toAddress, amount, memo)
   newTransaction.signTransaction(secretKey)
   blockchain.addTransaction(newTransaction)
+  pubsub.broadcastTransaction(newTransaction)
   res.json(blockchain.pendingTransactions)
 })
 

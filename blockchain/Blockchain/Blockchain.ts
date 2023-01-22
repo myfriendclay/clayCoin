@@ -135,6 +135,10 @@ export default class Blockchain {
     this.pendingTransactions = []
   }
 
+  replaceMempool() {
+
+  }
+
   static isChainValid(chain: Block[]) {
     // Check if the Genesis block hasn't been tampered with:
     if (!chain[0].isValidGenesisBlock()) {

@@ -1,4 +1,3 @@
-import Block from "./blockchain/Block/Block.js";
 import Blockchain from "./blockchain/Blockchain/Blockchain.js";
 
 import EC from "elliptic"

@@ -191,6 +191,8 @@ describe('hasValidTransactions', () => {
     newBlock.transactions = [tx1, tx2, tx3]
     expect(newBlock.hasValidTransactions()).toBe(true)
   })
+
+  test.todo('Block should only contain one mining reward Tx')
 })
 
 describe('hasValidHash', () => {
