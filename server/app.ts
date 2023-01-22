@@ -5,19 +5,15 @@ import PubSub from '../pubsub'
 import bodyParser from 'body-parser'
 import 'reflect-metadata';
 import 'es6-shim';
-// const express = require('express')
-// const Blockchain = require('../blockchain/Blockchain/Blockchain')
-// const Transaction = require('../blockchain/Transaction/Transaction')
-// const PubSub = require('../pubsub.ts')
-// const bodyParser = require('body-parser')
-// require('reflect-metadata')
-// require('es6-shim')
+import request from 'request'
+import { plainToClass } from 'class-transformer';
 
 const app = express()
 
 //Multiple peer setup- setup
 const DEFAULT_PORT = 3000
 let PEER_PORT
+const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`
 
 if (process.env.GENERATE_PEER_PORT === "true") {
   PEER_PORT = DEFAULT_PORT + Math.ceil(Math.random() * 1000)
@@ -29,6 +25,18 @@ app.use(bodyParser.json())
 
 const blockchain = new Blockchain()
 const pubsub = new PubSub( { blockchain } )
+
+const syncChains = () => {
+  request({ url: `${ROOT_NODE_ADDRESS}/blockchain`}, (error, response, body) => {
+    if (!error && response.statusCode === 200) {
+      const rootChain = JSON.parse(body)
+      let blockchainInstance = plainToClass(Blockchain, rootChain.blockchain);
+      console.log('replace chain on a sync with', blockchainInstance)
+      blockchain.replaceChain(blockchainInstance)
+    }
+  })
+}
+
 setTimeout(() => pubsub.broadcastChain(), 1000);
 
 //API calls
@@ -58,4 +66,5 @@ app.post('/transactions', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Blockchain node running on port ${PORT}`)
+  syncChains()
 })

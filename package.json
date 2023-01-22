@@ -11,6 +11,7 @@
     "nodemon": "^2.0.20",
     "redis": "^2.8.0",
     "reflect-metadata": "^0.1.13",
+    "request": "^2.88.0",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
     "uuid": "^9.0.0"

@@ -1,9 +1,12 @@
 import SHA256 from "crypto-js/sha256.js"
 import hexToBinary from "hex-to-binary"
 import { GENESIS_BLOCK_DATA } from "../../config"
-import Transaction from "../Transaction/Transaction.js";
+import Transaction from "../Transaction/Transaction";
+import { Type } from 'class-transformer';
+import 'reflect-metadata';
 
 export default class Block {
+  @Type(() => Transaction)
   transactions: Transaction[];
   previousHash: string | null;
   height: number;
@@ -66,8 +69,7 @@ export default class Block {
 
   isValidGenesisBlock(): boolean {
     const { difficulty, transactions, previousHash, height } = GENESIS_BLOCK_DATA
-
-    return this.isValidBlock() && this.difficulty === difficulty && this.transactions === transactions && this.previousHash === previousHash && this.height === height
+    return this.isValidBlock() && this.difficulty === difficulty && this.transactions.length === transactions.length && this.previousHash === previousHash && this.height === height
   }
 
   static createGenesisBlock(): Block {
