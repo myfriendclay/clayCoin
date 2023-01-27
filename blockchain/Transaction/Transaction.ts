@@ -1,28 +1,30 @@
-import SHA256 from "crypto-js/sha256.js"
 import EC from "elliptic"
 const ec = new EC.ec('secp256k1')
 import { v4 as uuidv4 } from 'uuid';
+import getSHA256Hash from '../../utils/crypto-hash'
 
 export default class Transaction {
   fromAddress: string
   toAddress: string
   amount: number
   memo: string
+  fee: number
   uuid: string
   timestamp: number
-  signature: string
+  signature: string | undefined
 
-  constructor(fromAddress: string, toAddress: string, amount: number, memo: string) {
+  constructor(fromAddress: string, toAddress: string, amount: number, memo: string, fee: number = 0) {
     this.fromAddress = fromAddress
     this.toAddress = toAddress
     this.amount = amount
     this.memo = memo
+    this.fee = fee
     this.uuid = uuidv4()
     this.timestamp = Date.now()
   }
 
   calculateHash():string {
-    return SHA256(this.fromAddress + this.toAddress + this.amount + this.timestamp + this.memo + this.uuid).toString()
+    return getSHA256Hash(this.fromAddress, this.toAddress, this.amount, this.memo, this.fee, this.uuid, this.timestamp)
   }
 
   signTransaction(secretKey: string) {

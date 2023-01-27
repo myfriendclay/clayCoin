@@ -1,6 +1,7 @@
 import Transaction from "./Transaction";
 import EC from "elliptic"
 const ec = new EC.ec('secp256k1')
+import * as getSHA256HashModule from "../../utils/crypto-hash";
 
 // Generate a new key pair and convert them to hex-strings
 const key = ec.genKeyPair();
@@ -44,9 +45,6 @@ describe('calculateHash', () => {
     newTransaction.timestamp = 1
   });
 
-  it('Returns a valid hash of transaction', () => {
-    expect(newTransaction.calculateHash()).toBe('044024567767265279987fed44d49ecd542059b6c8b45a0aad693ce5616f13bf')
-  })
 
   it('Changes hash if fromAddress changes', () => {
     const initialHash = newTransaction.calculateHash()
@@ -82,6 +80,12 @@ describe('calculateHash', () => {
     const initialHash = newTransaction.calculateHash()
     newTransaction.uuid = "tamperedUUID"
     expect(newTransaction.calculateHash()).not.toBe(initialHash)
+  })
+
+  it('Returns results of getSHA256Hash function', () => {
+    jest.spyOn(getSHA256HashModule, 'default').mockImplementation(() => 'expected-hash-value')
+    expect(newTransaction.calculateHash()).toBe('expected-hash-value')
+    expect(getSHA256HashModule.default).toHaveBeenCalled()
   })
   });
 
