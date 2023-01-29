@@ -50,7 +50,7 @@ export default class Transaction {
 
   isCoinbaseTransaction():boolean {
     //For mining reward:
-    return this.fromAddress === "Coinbase Tx"
+    return this.fromAddress === COINBASE_TX.fromAddress
   }
 
   hasRequiredFields() {

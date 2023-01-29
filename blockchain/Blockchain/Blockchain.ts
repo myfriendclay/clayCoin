@@ -99,11 +99,11 @@ export default class Blockchain {
 
   getTotalTransactionFees(): number {
     return this.pendingTransactions.map(tx => tx.fee).reduce((prev, curr) => prev + curr, 0)
- }
+  }
 
- getMiningReward(): number {
-  return this.getTotalTransactionFees() + this.blockSubsidy
- }
+  getMiningReward(): number {
+    return this.getTotalTransactionFees() + this.blockSubsidy
+  }
 
   addPendingTransactionsToBlock(): Block {
     this.difficulty = this.getNewMiningDifficulty()

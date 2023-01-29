@@ -51,6 +51,11 @@ export default class Block {
     return this.transactions.every(transaction => transaction.isValid())
   }
 
+  hasOnlyOneCoinbaseTx(): boolean {
+    const count = this.transactions.filter(transaction => transaction.isCoinbaseTransaction()).length;
+    return count === 1
+  }
+
   hasValidHash(): boolean {
     return this.hash === this.calculateHash()
   }

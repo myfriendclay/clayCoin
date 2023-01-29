@@ -128,7 +128,7 @@ describe('isChainValid', () => {
 });
 
 describe('getBalanceOfAddress', () => {
-
+  
   test('Returns null if address is not found', () => {
     expect(testCoin.getBalanceOfAddress("nonExistentAddress")).toBe(null)
   })
