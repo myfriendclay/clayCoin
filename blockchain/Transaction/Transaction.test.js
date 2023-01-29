@@ -3,13 +3,16 @@ import EC from "elliptic"
 const ec = new EC.ec('secp256k1')
 import * as getSHA256HashModule from "../../utils/crypto-hash";
 
-// Generate a new key pair and convert them to hex-strings
-const key = ec.genKeyPair();
-const publicKey = key.getPublic('hex');
-const privateKey = key.getPrivate('hex');
 let newTransaction
+let key
+let publicKey
+let privateKey
 
 beforeEach(() => {
+
+  key = ec.genKeyPair();
+  publicKey = key.getPublic('hex');
+  privateKey = key.getPrivate('hex');
   newTransaction = new Transaction("bogus_from_address", "bogus_to_address", 45, "pizza and beer")
   newTransaction.uuid = "123456789"
 });
@@ -44,7 +47,6 @@ describe('calculateHash', () => {
   beforeEach(() => {
     newTransaction.timestamp = 1
   });
-
 
   it('Changes hash if fromAddress changes', () => {
     const initialHash = newTransaction.calculateHash()
@@ -85,11 +87,20 @@ describe('calculateHash', () => {
   it('Returns results of getSHA256Hash function', () => {
     jest.spyOn(getSHA256HashModule, 'default').mockImplementation(() => 'expected-hash-value')
     expect(newTransaction.calculateHash()).toBe('expected-hash-value')
-    expect(getSHA256HashModule.default).toHaveBeenCalled()
   })
+
+  it('Calls getSHA256Hash with all parameter properties', () => {
+    jest.spyOn(getSHA256HashModule, 'default').mockImplementation(() => 'expected-hash-value')
+    expect(getSHA256HashModule.default).toHaveBeenCalledWith(newTransaction.fromAddress, newTransaction.toAddress, newTransaction.amount, newTransaction.memo, newTransaction.fee, newTransaction.uuid, newTransaction.timestamp)
+  })
+
   });
 
 describe('signTransaction', () => {
+  beforeEach(() => {
+    newTransaction.timestamp = 1
+  });
+
   it('Throws error if not fromAddress signing', () => {
     expect(() => newTransaction.signTransaction(key)).toThrow(Error)
   });

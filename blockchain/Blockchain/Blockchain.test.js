@@ -37,7 +37,6 @@ describe('getLatestBlock', () => {
 });
 
 describe('addTransaction', () => {
-
   test('Throws error if transaction is not valid', () => {
     const newTransaction = new Transaction("bogus_from_address", "bogus_to_address", 45, "pizza and beer")
     jest.fn(newTransaction, 'isValid').mockImplementation(() => false);
@@ -111,32 +110,43 @@ describe('getBalanceOfAddress', () => {
     expect(testCoin.getBalanceOfAddress("nonExistentAddress")).toBe(null)
   })
 
+  test('Subtracts fees from fromAddress', () => {
+    let tx1 = new Transaction("targetAddress", "randomAddress", 5, 'pizza', 20);
+    let tx2 = new Transaction("targetAddress", "randomAddress", 10, 'pizza', 25);
+    testCoin.pendingTransactions.push(tx1, tx2)
+    testCoin.minePendingTransactions("miningAddress")
+    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(-60)
+  })
+
   test('Returns correct balance if positive', () => {
     let tx1 = new Transaction("randomAddress", "targetAddress", 100);
     let tx2 = new Transaction("targetAddress", "randomAddress", 10);
     let tx3 = new Transaction("targetAddress", "randomAddress", 20);
     let tx4 = new Transaction("randomAddress", "targetAddress", 5);
-    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
+    let tx5 = new Transaction("targetAddress", "randomAddress", 10, 'test', 30);
+    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4, tx5)
     testCoin.minePendingTransactions("miningAddress")
-    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(75)
+    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(35)
   })
 
   test('Returns correct balance if negative', () => {
     let tx1 = new Transaction("randomAddress", "targetAddress", 100);
-    let tx2 = new Transaction("targetAddress", "randomAddress", 1000);
+    let tx2 = new Transaction("targetAddress", "randomAddress", 100);
     let tx3 = new Transaction("targetAddress", "randomAddress", 20);
     let tx4 = new Transaction("randomAddress", "targetAddress", 5);
-    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
+    let tx5 = new Transaction("targetAddress", "randomAddress", 10, 'test', 10);
+    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4, tx5)
     testCoin.minePendingTransactions("miningAddress")
-    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(-915)
+    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(-35)
   })
 
   test('Returns correct balance if zero', () => {
     let tx1 = new Transaction("randomAddress", "targetAddress", 100);
     let tx2 = new Transaction("targetAddress", "randomAddress", 200);
-    let tx3 = new Transaction("targetAddress", "randomAddress", 300);
+    let tx3 = new Transaction("targetAddress", "randomAddress", 100);
     let tx4 = new Transaction("randomAddress", "targetAddress", 400);
-    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
+    let tx5 = new Transaction("targetAddress", "randomAddress", 150, 'pizza', 50);
+    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4, tx5)
     testCoin.minePendingTransactions("miningAddress")
     expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(0)
   })

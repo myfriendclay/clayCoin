@@ -49,6 +49,7 @@ export default class Blockchain {
       for (const transaction of block.transactions) {
         if (transaction.fromAddress === address) {
           balance -= transaction.amount
+          balance -= transaction.fee
         }
 
         if (transaction.toAddress === address) {
