@@ -16,9 +16,9 @@ export default class MemPool {
   }
 
    //Transaction helpers:
-  addCoinbaseTxToMempool(miningRewardAddress: string, miningRewardAmount: number): Transaction {
+  addCoinbaseTxToMempool(miningRewardAddress: string, blockSubsidyAmount: number): Transaction {
      //Mining reward:
-     const coinbaseTx = new Transaction("Coinbase Tx", miningRewardAddress, miningRewardAmount, "Mining reward transaction")
+     const coinbaseTx = new Transaction("Coinbase Tx", miningRewardAddress, blockSubsidyAmount, "Mining reward transaction")
      this.addTransaction(coinbaseTx)
      return coinbaseTx
   }

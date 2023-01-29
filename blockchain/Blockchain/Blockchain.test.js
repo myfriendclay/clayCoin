@@ -8,9 +8,34 @@ const ec = new EC.ec('secp256k1')
 
 const key = ec.genKeyPair();
 let testCoin
+let transaction
 
 beforeEach(() => {
   testCoin = new Blockchain()
+  transaction = jest.spyOn(Transaction,'constructor').mockReturnValue((
+    {
+      fromAddress: 'fromAddress',
+      toAddress: 'toAddress',
+      amount: 9,
+      memo: 'pizza',
+      fee: 1,
+      uuid: 12345,
+      timestamp: 1
+    }
+  ));
+
+  jest.mock('../Block/Block', () => {
+    return jest.fn().mockImplementation((transactions, previousHash, height, difficulty) => {
+      return {
+        transactions: transactions,
+        previousHash: previousHash,
+        height: height,
+        difficulty: difficulty,
+      }
+    });
+  });
+
+  transaction.isValid = jest.fn();
 });
 
 describe('Constructor', () => {
@@ -18,7 +43,7 @@ describe('Constructor', () => {
     expect(testCoin).toHaveProperty('chain');
     expect(testCoin).toHaveProperty('difficulty');
     expect(testCoin).toHaveProperty('pendingTransactions');
-    expect(testCoin).toHaveProperty('miningReward');
+    expect(testCoin).toHaveProperty('blockSubsidy');
   });
   it('includes genesis block on blockchain', () => {
     expect(testCoin.chain.length).toBe(1)
@@ -38,22 +63,20 @@ describe('getLatestBlock', () => {
 
 describe('addTransaction', () => {
   test('Throws error if transaction is not valid', () => {
-    const newTransaction = new Transaction("bogus_from_address", "bogus_to_address", 45, "pizza and beer")
-    jest.fn(newTransaction, 'isValid').mockImplementation(() => false);
-    expect(() => testCoin.addTransaction(newTransaction)).toThrow(Error)
+    transaction.isValid.mockReturnValue(false)
+    expect(() => testCoin.addTransaction(transaction)).toThrow(Error)
   })
 
   test('Throws error if fromAddress does not have enough money', () => {
     jest.spyOn(testCoin, 'walletHasSufficientFunds').mockImplementation(() => false);
-    expect(() => testCoin.addTransaction("fake")).toThrow(Error)
+    expect(() => testCoin.addTransaction(transaction)).toThrow(Error)
   })
 
   test('Adds to mempool if valid transaction and fromAddress wallet has sufficient funds', () => {
-    const newTransaction = new Transaction("bogus_from_address", "bogus_to_address", 45, "pizza and beer")
-    jest.spyOn(newTransaction, 'isValid').mockImplementation(() => true);
+    transaction.isValid.mockReturnValue(true)
     jest.spyOn(testCoin, 'walletHasSufficientFunds').mockImplementation(() => true);
-    testCoin.addTransaction(newTransaction)
-    expect(testCoin.pendingTransactions[0]).toBe(newTransaction)
+    testCoin.addTransaction(transaction)
+    expect(testCoin.pendingTransactions[0]).toBe(transaction)
   })
 
 });
@@ -163,7 +186,7 @@ describe('getTotalPendingOwedByWallet', () => {
     let tx2 = new Transaction("targetAddress", "randomAddress", 10);
     let tx3 = new Transaction("targetAddress", "randomAddress", 20);
     let tx4 = new Transaction("targetAddress", "randomAddress", 30, 'pizza', 5);
-    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
+    testCoin.pendingTransactions= [tx1, tx2, tx3, tx4]
     expect(testCoin.getTotalPendingOwedByWallet("targetAddress")).toBe(65)
   })
 });
@@ -175,7 +198,7 @@ describe('walletHasSufficientFunds', () => {
     expect(testCoin.walletHasSufficientFunds(transaction)).toBe(false)
   })
   it('returns false if total pending owed is more than wallet balance', () => {
-    const transaction = new Transaction("fromAddress", "toAddress", 0);
+    const transaction = new Transaction("fromAddress", "toAddress", 0, 'pizza', 0);
     jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 10);
     jest.spyOn(testCoin, 'getTotalPendingOwedByWallet').mockImplementation(() => 11);
     expect(testCoin.walletHasSufficientFunds(transaction)).toBe(false)
@@ -186,7 +209,7 @@ describe('walletHasSufficientFunds', () => {
     jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 20);
     expect(testCoin.walletHasSufficientFunds(transaction)).toBe(false)
   })
-  it('returns true if wallet balance is more than total pending plus transaction amount', () => {
+  it('returns true if wallet balance is more than or equal to total pending plus transaction amount', () => {
     const transaction = new Transaction("fromAddress", "toAddress", 9, 'pizza', 1);
     jest.spyOn(testCoin, 'getTotalPendingOwedByWallet').mockImplementation(() => 10);
     jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 20);
@@ -195,15 +218,64 @@ describe('walletHasSufficientFunds', () => {
 });
 
 describe('addCoinbaseTxToMempool', () => {
-  test('adds Coinbase Tx to pending transactions', () => {
-    testCoin.addCoinbaseTxToMempool("minerAddress")
-    const coinbaseTx = new Transaction("Coinbase Tx", "minerAddress", testCoin.miningReward, "Mining reward transaction")
-    //Need to set UUID
-    testCoin.pendingTransactions[0].uuid = coinbaseTx.uuid
-    expect(testCoin.pendingTransactions[0]).toEqual(coinbaseTx)
+  const minerAddress = "minerAddress"
+
+  test('returns pending transactions of the blockchain', () => {
+    const pendingTransactions = testCoin.addCoinbaseTxToMempool(minerAddress)
+    expect(pendingTransactions).toBe(testCoin.pendingTransactions)
   })
 
+  test("Adds return value of getCoinbaseTx to to Blockchain's pending transactions", () => {
+    jest.spyOn(testCoin, 'getCoinbaseTx').mockImplementation(() => "returnValue");
+    testCoin.addCoinbaseTxToMempool(minerAddress)
+    expect(testCoin.pendingTransactions[0]).toBe("returnValue")
+  })
 });
+
+describe('getMiningReward', () => {
+  it('Returns block subsidy + all transaction fees returned by getTotalTransactionFees', () => {
+    const totalTxFees = 20
+    jest.spyOn(testCoin, 'getTotalTransactionFees').mockImplementation(() => totalTxFees);
+    const totalMiningReward = totalTxFees + testCoin.blockSubsidy
+    expect(testCoin.getMiningReward()).toBe(totalMiningReward)
+  })
+})
+
+describe('getCoinbaseTx', () => {
+  it('Has right values', () => {
+    const totalTxFees = 20
+    jest.spyOn(testCoin, 'getTotalTransactionFees').mockImplementation(() => totalTxFees);
+    const totalMiningReward = totalTxFees + testCoin.blockSubsidy
+    const coinbaseTx = testCoin.getCoinbaseTx("minerAddress")
+    expect(coinbaseTx).toMatchObject({
+      amount: totalMiningReward,
+    });
+  })
+  it('CoinbaseTx returned has amount that getMiningReward function includes', () => {
+    const miningReward = 30
+    jest.spyOn(testCoin, 'getMiningReward').mockImplementation(() => miningReward);
+    const coinbaseTx = testCoin.getCoinbaseTx("minerAddress")
+    expect(coinbaseTx).toMatchObject({
+      amount: miningReward,
+    });
+  })
+
+  it('Returns coinbaseTx the same as Transaction class return value', () => {
+    const returnCoinbaseTx = "coinbaseTxReturnValue"
+    jest.spyOn(Transaction, 'getCoinbaseTx').mockImplementation(() => returnCoinbaseTx);
+    const coinbaseTx = testCoin.getCoinbaseTx("minerAddress")
+    expect(coinbaseTx).toBe(returnCoinbaseTx)
+    });
+
+  it('Calls on the Transaction class getCoinbaseTx with minerAddress and miningReward', () => {
+    const miningReward = 20
+    const minerAddress = "minerAddress"
+    jest.spyOn(testCoin, 'getMiningReward').mockImplementation(() => miningReward);
+    jest.spyOn(Transaction, 'getCoinbaseTx')
+    testCoin.getCoinbaseTx(minerAddress)
+    expect(Transaction.getCoinbaseTx).toBeCalledWith(minerAddress, miningReward)
+  })
+})
 
 describe('addPendingTransactionsToBlock', () => {
 
@@ -214,6 +286,26 @@ describe('addPendingTransactionsToBlock', () => {
     const minedBlock = testCoin.addPendingTransactionsToBlock("mining_address")
     expect(minedBlock.transactions[minedBlock.transactions.length - 2]).toBe("tx1")
   })
+});
+
+describe('getTotalTransactionFees', () => {
+  test('returns total amount of transaction fees in pending transactions', () => {
+    let tx1 = new Transaction("randomAddress", "targetAddress", 100, "pizza", 1);
+    let tx2 = new Transaction("targetAddress", "randomAddress", 10, 'pizza', 2);
+    let tx3 = new Transaction("targetAddress", "randomAddress", 20, 'pizza', 3);
+    let tx4 = new Transaction("targetAddress", "randomAddress", 30, 'pizza', 4);
+    testCoin.pendingTransactions = [tx1, tx2, tx3, tx4]
+    expect(testCoin.getTotalTransactionFees()).toBe(10)
+  })
+
+  test('returns 0 if no fees', () => {
+    let tx1 = new Transaction("randomAddress", "targetAddress", 100);
+    let tx2 = new Transaction("targetAddress", "randomAddress", 10, 'pizza', 0);
+
+    testCoin.pendingTransactions = [tx1, tx2 ]
+    expect(testCoin.getTotalTransactionFees()).toBe(0)
+  })
+
 });
 
 describe('minePendingTransactions', () => {
@@ -268,17 +360,6 @@ describe('addBlockToChain', () => {
     expect(testCoin.chain).toHaveLength(3)
   })
 });
-
-describe('resetMempool', () => {
-  it('resets the array to empty', () => {
-    testCoin.pendingTransactions.push("tx1")
-    testCoin.pendingTransactions.push("tx2")
-    expect(testCoin.pendingTransactions).toHaveLength(2)
-    testCoin.resetMempool()
-    expect(testCoin.pendingTransactions).toHaveLength(0)
-  })
-});
-
 
 describe('resetMempool', () => {
   it('resets the array to empty', () => {

@@ -2,23 +2,22 @@ import Block from '../Block/Block'
 import Transaction from '../Transaction/Transaction'
 import EC from "elliptic"
 const ec = new EC.ec('secp256k1')
-import { MINE_RATE_MS, INITIAL_DIFFICULTY, MINING_REWARD } from "../../config"
+import { MINE_RATE_MS, INITIAL_DIFFICULTY, BLOCK_SUBSIDY } from "../../config"
 import { Type } from 'class-transformer';
 import 'reflect-metadata';
-
 
 export default class Blockchain {
   @Type(() => Block)
   chain: Block[]
   difficulty: number
   pendingTransactions: Transaction[]
-  miningReward: number
+  blockSubsidy: number
 
   constructor() {
     this.chain = [Block.createGenesisBlock()]
     this.difficulty = INITIAL_DIFFICULTY
     this.pendingTransactions = []
-    this.miningReward = MINING_REWARD
+    this.blockSubsidy = BLOCK_SUBSIDY
   }
 
   getLatestBlock() {
@@ -87,12 +86,24 @@ export default class Blockchain {
   }
 
    //Transaction helpers:
-  addCoinbaseTxToMempool(miningRewardAddress: string): Transaction {
-     //Mining reward:
-     const coinbaseTx = new Transaction("Coinbase Tx", miningRewardAddress, this.miningReward, "Mining reward transaction")
+  addCoinbaseTxToMempool(miningRewardAddress: string): Transaction[] {
+    const coinbaseTx = this.getCoinbaseTx(miningRewardAddress)
      this.pendingTransactions.push(coinbaseTx)
-     return coinbaseTx
+     return this.pendingTransactions
   }
+
+  getCoinbaseTx(miningRewardAddress: string): Transaction {
+    const miningReward = this.getMiningReward()
+    return Transaction.getCoinbaseTx(miningRewardAddress, miningReward)
+  }
+
+  getTotalTransactionFees(): number {
+    return this.pendingTransactions.map(tx => tx.fee).reduce((prev, curr) => prev + curr, 0)
+ }
+
+ getMiningReward(): number {
+  return this.getTotalTransactionFees() + this.blockSubsidy
+ }
 
   addPendingTransactionsToBlock(): Block {
     this.difficulty = this.getNewMiningDifficulty()

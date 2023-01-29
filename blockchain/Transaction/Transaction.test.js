@@ -2,6 +2,7 @@ import Transaction from "./Transaction";
 import EC from "elliptic"
 const ec = new EC.ec('secp256k1')
 import * as getSHA256HashModule from "../../utils/crypto-hash";
+import { COINBASE_TX } from "../../config";
 
 let newTransaction
 let key
@@ -159,4 +160,39 @@ describe('isValid', () => {
 
 });
   
+describe('getCoinbaseTx', () => {
+  let coinbaseTx
+  let miningRewardAddress = "miningRewardAddress"
+  let miningReward = 10
+
+  beforeAll(() => {
+    coinbaseTx = Transaction.getCoinbaseTx(miningRewardAddress, miningReward)
+  })
+
+  it('Returns a Transaction', () => {
+    expect(coinbaseTx).toBeInstanceOf(Transaction)
+    expect(Object.getPrototypeOf(coinbaseTx)).toBe(Transaction.prototype);
+  });
+
+  it('Return value includes the correct Coinbase Tx fields from config value', () => {
+    expect(coinbaseTx).toMatchObject({
+      fromAddress: COINBASE_TX.fromAddress,
+      memo: COINBASE_TX.memo,
+    });
+  }); 
+
+  it('Sets toAddress and amount from method arguments', () => {
+    expect(coinbaseTx).toMatchObject({
+      toAddress: miningRewardAddress,
+      amount: miningReward,
+    });
+  }); 
+
+  it('Has no fee', () => {
+    expect(coinbaseTx).toMatchObject({
+      fee: 0
+    });
+  }); 
+
+});
 
