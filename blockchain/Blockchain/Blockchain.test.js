@@ -158,12 +158,13 @@ describe('getBalanceOfAddress', () => {
 });
 
 describe('getTotalPendingOwedByWallet', () => {
-  it('returns total wallet owes for all pending transactions', () => {
+  it('returns total wallet owes for all pending transactions including fees', () => {
     let tx1 = new Transaction("randomAddress", "targetAddress", 100);
     let tx2 = new Transaction("targetAddress", "randomAddress", 10);
     let tx3 = new Transaction("targetAddress", "randomAddress", 20);
-    testCoin.pendingTransactions.push(tx1, tx2, tx3)
-    expect(testCoin.getTotalPendingOwedByWallet("targetAddress")).toBe(30)
+    let tx4 = new Transaction("targetAddress", "randomAddress", 30, 'pizza', 5);
+    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4)
+    expect(testCoin.getTotalPendingOwedByWallet("targetAddress")).toBe(65)
   })
 });
 
