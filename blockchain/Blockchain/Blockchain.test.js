@@ -169,8 +169,8 @@ describe('getTotalPendingOwedByWallet', () => {
 });
 
 describe('walletHasSufficientFunds', () => {
-  it('returns false if transaction amount is more than wallet balance', () => {
-    const transaction = new Transaction("fromAddress", "toAddress", 10);
+  it('returns false if transaction amount + fees is more than wallet balance', () => {
+    const transaction = new Transaction("fromAddress", "toAddress", 8, 'pizza', 2);
     jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 9);
     expect(testCoin.walletHasSufficientFunds(transaction)).toBe(false)
   })
@@ -181,13 +181,13 @@ describe('walletHasSufficientFunds', () => {
     expect(testCoin.walletHasSufficientFunds(transaction)).toBe(false)
   })
   it('returns false if total pending owed plus transaction is more than wallet balance', () => {
-    const transaction = new Transaction("fromAddress", "toAddress", 10);
+    const transaction = new Transaction("fromAddress", "toAddress", 9, 'pizza', 1);
     jest.spyOn(testCoin, 'getTotalPendingOwedByWallet').mockImplementation(() => 11);
     jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 20);
     expect(testCoin.walletHasSufficientFunds(transaction)).toBe(false)
   })
   it('returns true if wallet balance is more than total pending plus transaction amount', () => {
-    const transaction = new Transaction("fromAddress", "toAddress", 10);
+    const transaction = new Transaction("fromAddress", "toAddress", 9, 'pizza', 1);
     jest.spyOn(testCoin, 'getTotalPendingOwedByWallet').mockImplementation(() => 10);
     jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 20);
     expect(testCoin.walletHasSufficientFunds(transaction)).toBe(true)
