@@ -1,7 +1,7 @@
 import redis from 'redis'
 import Blockchain from './blockchain/Blockchain/Blockchain'
 import Transaction from './blockchain/Transaction/Transaction';
-import { plainToClass, plainToInstance } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 
 const CHANNELS = {
   TEST: "TEST",

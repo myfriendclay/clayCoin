@@ -7,11 +7,19 @@ import 'reflect-metadata';
 import 'es6-shim';
 import request from 'request'
 import { plainToClass } from 'class-transformer';
+import cors from 'cors'
 
 const app = express()
 
+
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 //Multiple peer setup- setup
-const DEFAULT_PORT = 3000
+const DEFAULT_PORT = 3001
 let PEER_PORT
 const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`
 
