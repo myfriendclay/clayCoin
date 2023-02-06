@@ -3,6 +3,7 @@ import axios from 'axios'
 import './App.css';
 import Block from './components/Block';
 import Mempool from './components/Mempool';
+import AddTransactionForm from './components/AddTransactionForm';
  
 export interface BlockType {
   timestamp: string;
@@ -34,8 +35,6 @@ function App() {
       .then(response => {
         const { chain } = response.data.blockchain
         const {pendingTransactions} = response.data.blockchain
-        console.log(chain)
-        console.log(memPool)
         setBlockchain(chain)
         setmemPool(pendingTransactions)
       })
@@ -47,6 +46,7 @@ function App() {
 
   return (
     <div>
+      <AddTransactionForm/>
       <h1>Mempool</h1>
       <Mempool memPool={memPool}/>
       <h1>Blockchain</h1>
