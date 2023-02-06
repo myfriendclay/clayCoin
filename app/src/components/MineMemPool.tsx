@@ -2,23 +2,13 @@ import axios from "axios";
 import React, { useState } from "react";
 
 interface FormData {
-  fromAddress: string;
-  toAddress: string;
-  amount: number;
-  memo: string;
-  fee: number;
-  secretKey: string;
+  miningAddress: string;
 }
 
 function MineMemPool() {
 
   const blankFormValues = {
-    fromAddress: '',
-    toAddress: '',
-    amount: 0,
-    memo: '',
-    fee: 0,
-    secretKey: ''
+    miningAddress: '',
   }
 
   const [formData, setFormData] = useState<FormData>(blankFormValues)
@@ -26,16 +16,14 @@ function MineMemPool() {
   //@ts-ignore
   const handleChange = event => {
     let { name, value } = event.target;
-    if (!isNaN(Number(value))) {
-      value = Number(value)
-    }
     setFormData({ ...formData, [name]: value})
   }
 
   //@ts-ignore
   const handleSubmit = event => {
+    console.log(formData)
     event.preventDefault();
-    axios.post('http://localhost:3001/transactions', formData)
+    axios.post('http://localhost:3001/mine', formData)
       .then(response => {
         console.log(response)
       })
@@ -49,10 +37,10 @@ function MineMemPool() {
     <div>
     <form onSubmit={handleSubmit}>
       <label>
-        
-        <input type="text" name="fromAddress" value={formData.fromAddress} onChange={handleChange} />
+        Mining address:
+        <input type="text" name="miningAddress" value={formData.miningAddress} onChange={handleChange} />
       </label>
-      <button type="submit">Sign Transaction</button>
+      <button type="submit">Mine Block</button>
     </form>
     </div>
     )

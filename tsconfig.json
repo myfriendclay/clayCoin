@@ -19,6 +19,7 @@
     }
   },
   "compilerOptions": {
+    "jsx": "react"
     // typescript options here
   }
 }

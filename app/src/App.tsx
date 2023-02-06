@@ -4,6 +4,8 @@ import './App.css';
 import Block from './components/Block';
 import Mempool from './components/Mempool';
 import AddTransactionForm from './components/AddTransactionForm';
+import MineMemPool from './components/MineMemPool';
+import React from 'react';
  
 export interface BlockType {
   timestamp: string;
@@ -48,6 +50,7 @@ function App() {
     <div>
       <AddTransactionForm/>
       <h1>Mempool</h1>
+      <MineMemPool/>
       <Mempool memPool={memPool}/>
       <h1>Blockchain</h1>
       {blockchain.map(block => <Block key={block.hash} block={block}/>)}
