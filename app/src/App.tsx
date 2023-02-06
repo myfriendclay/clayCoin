@@ -24,6 +24,8 @@ export interface TransactionType {
   amount: number;
   memo: string;
   fee: number;
+  uuid: string;
+  timestamp: number;
 }
 
 function App() {

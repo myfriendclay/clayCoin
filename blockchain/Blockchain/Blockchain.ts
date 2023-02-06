@@ -68,6 +68,9 @@ export default class Blockchain {
 
   walletHasSufficientFunds(transaction: Transaction): boolean {
     const walletBalance = this.getBalanceOfAddress(transaction.fromAddress)
+    if (walletBalance === null) {
+      return false
+    }
     const totalPendingOwed = this.getTotalPendingOwedByWallet(transaction.fromAddress)
     return walletBalance >= totalPendingOwed + transaction.amount + transaction.fee
   }

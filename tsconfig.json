@@ -19,6 +19,7 @@
     }
   },
   "compilerOptions": {
+    "experimentalDecorators": true,
     "jsx": "react"
     // typescript options here
   }

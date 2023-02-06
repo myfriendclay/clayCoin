@@ -42,6 +42,7 @@ function AddTransactionForm() {
       .catch(err => {
         console.error(err)
       })
+    setFormData(blankFormValues)
   }
 
 

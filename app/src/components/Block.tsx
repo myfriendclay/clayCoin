@@ -2,6 +2,7 @@ import { Card } from "@mui/material";
 import Box from '@mui/material/Box';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import React from "react";
 import { BlockType } from "../App";
 
 function Block({block}: {block: BlockType}) {

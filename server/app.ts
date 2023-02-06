@@ -35,7 +35,7 @@ const blockchain = new Blockchain()
 const pubsub = new PubSub( { blockchain } )
 
 const syncChains = () => {
-  request({ url: `${ROOT_NODE_ADDRESS}/blockchain`}, (error, response, body) => {
+  request({ url: `${ROOT_NODE_ADDRESS}/blockchain`}, (error: any, response: { statusCode: number }, body: string) => {
     if (!error && response.statusCode === 200) {
       const rootChain = JSON.parse(body)
       let blockchainInstance = plainToClass(Blockchain, rootChain.blockchain);
