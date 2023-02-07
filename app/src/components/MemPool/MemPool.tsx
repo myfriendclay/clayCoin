@@ -2,11 +2,13 @@ import Payments from "./Transactions";
 import FilterPayments from './FilterTransactions'
 import { useState } from "react";
 import { Container } from "@mui/system";
+
 //@ts-ignore
 export default function MemPool(props) {
   const { memPool } = props
   const [query, setQuery] = useState('')
-//@ts-ignore
+  
+// @ts-ignore
   const queryMatches = transaction => {
     if (query === "") return true
     const { uuid, timestamp, fromAddress, toAddress, amount, memo } = transaction

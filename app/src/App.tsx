@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import axios from 'axios'
 import './App.css';
 import Block from './components/Block';
-import AddTransactionForm from './components/AddTransactionForm';
 import MineMemPool from './components/MineMemPool';
 import React from 'react';
 import MemPool from './components/MemPool/MemPool';
+import CreatePayment from './components/createPayment/CreatePayment';
  
 export interface BlockType {
   timestamp: string;
@@ -50,7 +50,7 @@ function App() {
 
   return (
     <div>
-      <AddTransactionForm/>
+      <CreatePayment/>
       <MineMemPool/>
       <MemPool memPool={memPool}/>
       <h1>Blockchain</h1>
