@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import axios from 'axios'
 import './App.css';
 import Block from './components/Block';
-import Mempool from './components/Mempool';
 import AddTransactionForm from './components/AddTransactionForm';
 import MineMemPool from './components/MineMemPool';
 import React from 'react';
+import MemPool from './components/MemPool/MemPool';
  
 export interface BlockType {
   timestamp: string;
@@ -51,9 +51,8 @@ function App() {
   return (
     <div>
       <AddTransactionForm/>
-      <h1>Mempool</h1>
       <MineMemPool/>
-      <Mempool memPool={memPool}/>
+      <MemPool memPool={memPool}/>
       <h1>Blockchain</h1>
       {blockchain.map(block => <Block key={block.hash} block={block}/>)}
     </div>
