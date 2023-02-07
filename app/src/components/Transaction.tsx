@@ -1,3 +1,4 @@
+import React from "react";
 import { TransactionType } from "../App";
 
 function Transaction({transaction}: {transaction: TransactionType}) {

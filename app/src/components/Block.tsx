@@ -4,6 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import React from "react";
 import { BlockType } from "../App";
+import Transaction from "./Transaction";
 
 function Block({block}: {block: BlockType}) {
   const {hash, timestamp, height, nonce, timeSpentMiningInMilliSecs, previousHash, transactions, difficulty} = block
@@ -37,6 +38,7 @@ function Block({block}: {block: BlockType}) {
           <Typography>
           Transactions: {transactions.length}
           </Typography>
+          {transactions.map(transaction => <Transaction transaction={transaction}/>)}
         </CardContent>
         </Box>
       </Card>
