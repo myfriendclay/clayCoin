@@ -14,8 +14,8 @@ interface FormData {
   fee: number;
   secretKey: string;
 }
-//@ts-ignore
-export default function CreatePayment(props) {
+
+export default function CreatePayment() {
 
   const blankFormValues = {
     fromAddress: '',
@@ -28,17 +28,16 @@ export default function CreatePayment(props) {
 
   const [formData, setFormData] = useState<FormData>(blankFormValues)
 
-    //@ts-ignore
-    const handleChange = event => {
-      let { name, value, id } = event.target;
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value, id } = event.target;
+      let numValue
       if (!isNaN(Number(value))) {
-        value = Number(value)
+        numValue = Number(value)
       }
-      setFormData({ ...formData, [id || name]: value})
+      setFormData({ ...formData, [id || name]: numValue || value})
     }
-  
-    //@ts-ignore
-    const handleSubmit = event => {
+
+    const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
       event.preventDefault();
       axios.post('http://localhost:3001/transactions', formData)
         .then(response => {

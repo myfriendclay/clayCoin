@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios'
 import './App.css';
-import Block from './components/Block';
-import MineMemPool from './components/MineMemPool';
-import React from 'react';
 import MemPool from './components/MemPool/MemPool';
 import CreatePayment from './components/createPayment/CreatePayment';
+import { Blockchain } from './components/Blockchain';
  
 export interface BlockType {
   timestamp: string;
@@ -27,6 +25,8 @@ export interface TransactionType {
   uuid: string;
   timestamp: number;
 }
+
+
 
 function App() {
   const [notifications, setNotifications] = useState<{id: string, message: string}[]>([]);
@@ -51,10 +51,8 @@ function App() {
   return (
     <div>
       <CreatePayment/>
-      <MineMemPool/>
       <MemPool memPool={memPool}/>
-      <h1>Blockchain</h1>
-      {blockchain.map(block => <Block key={block.hash} block={block}/>)}
+      <Blockchain blockchain={blockchain}/>
     </div>
   );
 }

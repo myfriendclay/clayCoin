@@ -2,15 +2,19 @@
 import { TableRow, TableCell } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
+export const getTruncatedString = (string: String, limit: number) => {
+  if (!string) {
+    return "N/A"
+  }
+  if (string.length <= limit * 2) {
+    return string;
+  }
+  return `${string.slice(0, limit)}...${string.slice(string.length - limit, string.length)}`;
+};
+
 //@ts-ignore
 export default function Transaction({transaction}) {
 
-  const getTruncatedString = (string: String, limit: number) => {
-    if (string.length <= limit * 2) {
-      return string;
-    }
-    return `${string.slice(0, limit)}...${string.slice(string.length - limit, string.length)}`;
-  };
 
   return (
     <TableRow >

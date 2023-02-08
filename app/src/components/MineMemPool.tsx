@@ -14,14 +14,13 @@ function MineMemPool() {
 
   const [formData, setFormData] = useState<FormData>(blankFormValues)
 
-  //@ts-ignore
-  const handleChange = event => {
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     let { name, value, id } = event.target;
     setFormData({ ...formData, [id || name]: value})
   }
 
-  //@ts-ignore
-  const handleSubmit = event => {
+  const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
     console.log(formData)
     event.preventDefault();
     axios.post('http://localhost:3001/mine', formData)
@@ -44,7 +43,6 @@ function MineMemPool() {
         paddingBottom: '40px',
         borderBottom: '1px grey dotted'
       }}>
-      <h1>Mining</h1>
       <Box>
         <TextField
           size="small"
