@@ -1,3 +1,4 @@
+import { Box, Button, Container, TextField } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
 
@@ -15,8 +16,8 @@ function MineMemPool() {
 
   //@ts-ignore
   const handleChange = event => {
-    let { name, value } = event.target;
-    setFormData({ ...formData, [name]: value})
+    let { name, value, id } = event.target;
+    setFormData({ ...formData, [id || name]: value})
   }
 
   //@ts-ignore
@@ -35,15 +36,40 @@ function MineMemPool() {
 
 
   return (
-    <div>
-    <form onSubmit={handleSubmit}>
-      <label>
-        Mining address:
-        <input type="text" name="miningAddress" value={formData.miningAddress} onChange={handleChange} />
-      </label>
-      <button type="submit">Mine Block</button>
-    </form>
-    </div>
+      <Container sx={{ 
+        margin: "0px auto 30px auto",  
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingBottom: '40px',
+        borderBottom: '1px grey dotted'
+      }}>
+      <h1>Mining</h1>
+      <Box>
+        <TextField
+          size="small"
+          sx={{minWidth: "100%"}}
+          id="miningAddress"
+          label="Mining address"
+          type="text"
+          value={formData.miningAddress}
+          onChange={handleChange}
+        />
+        <Button variant="contained" sx={{ 
+            margin: 1, 
+            backgroundColor: '#8656ef',
+            '&:hover': {
+              backgroundColor: '#8656ef',
+            } 
+          }} 
+          size="large"
+          onClick={handleSubmit}
+          >
+          Mine Block
+        </Button>
+      </Box>
+    </Container>
+
     )
 }
 
