@@ -26,8 +26,6 @@ export interface TransactionType {
   timestamp: number;
 }
 
-
-
 function App() {
   const [notifications, setNotifications] = useState<{id: string, message: string}[]>([]);
 

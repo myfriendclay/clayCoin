@@ -7,7 +7,7 @@ function Block({block}: {block: BlockType}) {
   return (
     <TableRow>
       <TableCell>{height}</TableCell>
-      <TableCell>{timestamp}</TableCell>
+      <TableCell>{new Date (timestamp).toLocaleString()}</TableCell>
       <TableCell>{getTruncatedString(hash, 4)}</TableCell>
       <TableCell sx={{ color: 'success.main' }}>{getTruncatedString(previousHash, 4)}</TableCell>
       <TableCell>{transactions.length}</TableCell>
