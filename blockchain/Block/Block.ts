@@ -14,7 +14,7 @@ export default class Block {
   nonce: number;
   timestamp: number;
   timeSpentMiningInMilliSecs: number;
-  hash: string
+  hash: string;
 
   constructor(transactions, difficulty, previousHash = '', height) {
     this.transactions = transactions
@@ -72,14 +72,29 @@ export default class Block {
     return this.hasValidTransactions() && this.hasProofOfWork()
   }
 
-  isValidGenesisBlock(): boolean {
-    const { difficulty, transactions, previousHash, height } = GENESIS_BLOCK_DATA
-    return this.isValidBlock() && this.difficulty === difficulty && this.transactions.length === transactions.length && this.previousHash === previousHash && this.height === height
+  // isValidGenesisBlock(): boolean {
+  //   const { difficulty, transactions, previousHash, height } = GENESIS_BLOCK_DATA
+  //   return this.isValidBlock() && this.difficulty === difficulty && this.transactions.length === transactions.length && this.previousHash === previousHash && this.height === height
+  // }
+
+  // static createGenesisBlock(): Block {
+  //   const genesisBlock = new Block(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
+  //   genesisBlock.mineBlock()
+  //   return genesisBlock
+  // }
+}
+
+export class GenesisBlock extends Block {
+  constructor() {
+    super(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
+    this.mineBlock()
   }
 
-  static createGenesisBlock(): Block {
-    const genesisBlock = new Block(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
-    genesisBlock.mineBlock()
-    return genesisBlock
+  isValidBlock(): boolean {
+    const { difficulty, transactions, previousHash, height } = GENESIS_BLOCK_DATA
+    return this.hasProofOfWork() && this.difficulty === difficulty && this.transactions.length === transactions.length && this.previousHash === previousHash && this.height === height
   }
 }
+
+const clay = new GenesisBlock()
+console.log(clay.isValidBlock())

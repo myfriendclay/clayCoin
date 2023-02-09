@@ -8,9 +8,8 @@ import 'es6-shim';
 import request from 'request'
 import { plainToClass } from 'class-transformer';
 import cors from 'cors'
-
+import { DEFAULT_PORT } from '../config'
 const app = express()
-
 
 app.use(cors({
   origin: '*',
@@ -19,7 +18,6 @@ app.use(cors({
 }));
 
 //Multiple peer setup- setup
-const DEFAULT_PORT = 3001
 let PEER_PORT
 const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`
 

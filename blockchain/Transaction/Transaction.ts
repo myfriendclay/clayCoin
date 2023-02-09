@@ -48,23 +48,34 @@ export default class Transaction {
     }
   }
 
-  isCoinbaseTransaction():boolean {
-    //For mining reward:
-    return this.fromAddress === COINBASE_TX.fromAddress
-  }
+  // isCoinbaseTransaction():boolean {
+  //   //For mining reward:
+  //   return this.fromAddress === COINBASE_TX.fromAddress
+  // }
 
   hasRequiredFields() {
     return !!(this.fromAddress && this.toAddress && this.amount > 0)
   }
 
   isValid(): boolean {
-    if (this.isCoinbaseTransaction()) {
-      return true
-    }
-    return this.hasRequiredFields() && this.hasValidSignature()
+    // if (this.isCoinbaseTransaction()) {
+    //   return true
+    // }
+    return this.hasRequiredFields() && this.hasValidSignature() && this.amount > 0
   }
 
-  static getCoinbaseTx(miningRewardAddress: string, totalReward: number): Transaction {
-    return new Transaction(COINBASE_TX.fromAddress, miningRewardAddress, totalReward, COINBASE_TX.memo)
+  // static getCoinbaseTx(miningRewardAddress: string, totalReward: number): Transaction {
+  //   return new Transaction(COINBASE_TX.fromAddress, miningRewardAddress, totalReward, COINBASE_TX.memo)
+  // }
+}
+
+export class CoinbaseTransaction extends Transaction {
+  constructor(miningRewardAddress: string, reward: number) {
+    super(COINBASE_TX.fromAddress, miningRewardAddress, reward, COINBASE_TX.memo)
+  }
+
+  isValid(): boolean {
+    const { fromAddress, memo } = COINBASE_TX
+    return this.fromAddress === fromAddress && this.memo === memo && this.amount > 0
   }
 }

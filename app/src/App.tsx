@@ -4,7 +4,7 @@ import './App.css';
 import MemPool from './components/MemPool/MemPool';
 import CreatePayment from './components/createPayment/CreatePayment';
 import { Blockchain } from './components/Blockchain';
- 
+
 export interface BlockType {
   timestamp: string;
   hash: string;

@@ -1,8 +1,10 @@
 import Block from '../Block/Block'
+import { GenesisBlock } from '../Block/Block'
 import Transaction from '../Transaction/Transaction'
+import { CoinbaseTransaction } from '../Transaction/Transaction'
 import EC from "elliptic"
 const ec = new EC.ec('secp256k1')
-import { MINE_RATE_MS, INITIAL_DIFFICULTY, BLOCK_SUBSIDY } from "../../config"
+import { MINE_RATE_MS, INITIAL_DIFFICULTY, BLOCK_SUBSIDY, COINBASE_TX } from "../../config"
 import { Type } from 'class-transformer';
 import 'reflect-metadata';
 
@@ -14,7 +16,7 @@ export default class Blockchain {
   blockSubsidy: number
 
   constructor() {
-    this.chain = [Block.createGenesisBlock()]
+    this.chain = [new GenesisBlock()]
     this.difficulty = INITIAL_DIFFICULTY
     this.pendingTransactions = []
     this.blockSubsidy = BLOCK_SUBSIDY
@@ -97,7 +99,8 @@ export default class Blockchain {
 
   getCoinbaseTx(miningRewardAddress: string): Transaction {
     const miningReward = this.getMiningReward()
-    return Transaction.getCoinbaseTx(miningRewardAddress, miningReward)
+    // return Transaction.getCoinbaseTx(miningRewardAddress, miningReward)
+    return new CoinbaseTransaction(miningRewardAddress, miningReward)
   }
 
   getTotalTransactionFees(): number {
@@ -157,7 +160,7 @@ export default class Blockchain {
 
   static isChainValid(chain: Block[]) {
     // Check if the Genesis block hasn't been tampered with:
-    if (!chain[0].isValidGenesisBlock()) {
+    if (!chain[0].isValidBlock()) {
       return false
     }
 
@@ -165,7 +168,7 @@ export default class Blockchain {
       const currentBlock = chain[i]
       const previousBlock = chain[i - 1]
       const difficultyJump = currentBlock.difficulty - previousBlock.difficulty
-      if (!currentBlock.isValidBlock() && i > 1) {
+      if (!currentBlock.isValidBlock()) {
         return false
       }
     

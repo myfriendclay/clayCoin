@@ -6,7 +6,6 @@ const headers = ["Height", "Timestamp ⏰", "Hash", "Previous Hash", "Transactio
 
 export function Blockchain({blockchain}: {blockchain: BlockType[]}) {
   return (
-
     <Container sx={{ 
       margin: "0px auto 30px auto",  
       display: 'flex', 
@@ -37,9 +36,6 @@ export function Blockchain({blockchain}: {blockchain: BlockType[]}) {
       </Table>
     </TableContainer>
   </Container>
-   
-
-
   )
 } 
 
