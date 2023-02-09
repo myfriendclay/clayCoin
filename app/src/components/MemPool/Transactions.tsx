@@ -1,11 +1,10 @@
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper } from "@mui/material"
 import { TransactionType } from "../../App"
 import Transaction from "./Transaction"
-//@ts-ignore
-export default function Transactions(props) {
-  const { memPool, queryMatches, query } = props
+
+export default function Transactions({memPool}: {memPool: TransactionType[]}) {
+
   const headers = ["Sender 💸", "", "Receiver 🤑", "Amount 💰"]
-  const numOfPaymentsToDisplay = 10
 
   return (
     <TableContainer component={Paper} sx={{ width: 700 }}>
