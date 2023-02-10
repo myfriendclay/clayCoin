@@ -224,7 +224,5 @@ describe('CoinbaseTransaction subclass', () => {
 
   })
 
-
-
 });
 

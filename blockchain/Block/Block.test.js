@@ -1,6 +1,5 @@
 import Block from './Block.ts'
-import {GenesisBlock} from './Block'
-import Transaction from '../Transaction/Transaction'
+import { GenesisBlock } from './Block'
 import hexToBinary from "hex-to-binary"
 import { GENESIS_BLOCK_DATA } from "../../config"
 
@@ -9,10 +8,7 @@ let testTransactions
 let originalHash
 
 beforeEach(() => {
-  testTransactions = [
-    { amount: 10, fromAddress: "test_from_1", toAddress: "test_to_1" },
-    { amount: 25, fromAddress: "test_from_2", toAddress: "test_to_2" },
-  ]
+  testTransactions = ["tx1", "tx2", "tx3"]
   newBlock = new Block(testTransactions, 4, 'test_prev_hash', 23)
   newBlock.timestamp = 1
 });
@@ -52,7 +48,7 @@ describe('calculateHash', () => {
   });
 
   it('returns correct SHA256 hash', () => {
-    expect(newBlock.calculateHash()).toBe("ba8b1c70c3f454e745fb06cc7d6dc374506df2e6ff3c334ecf4d359129c6549f")
+    expect(newBlock.calculateHash()).toBe("6b30524c359e1259e8d3c3b066f8832bca6543607f71f45260b802a31a23b46d")
   });
 
   it('updates hash when timestamp is updated', () => {
@@ -98,7 +94,7 @@ describe('mineBlock', () => {
 
   it('produces valid hash', () => {
     newBlock.mineBlock(4)
-    expect(newBlock.hash).toBe("0fc16cfdfcd0fb3e7379f0082737fa4682c1e34f0a014914d925fc6087a17d60")
+    expect(newBlock.hash).toBe("0d66103da789a884f9105911d0f927b52dd6c220e757492baa498c0e7509275f")
   });
   
   it('updates first d number of characters of BINARY hash when d changes', () => {
@@ -128,31 +124,28 @@ describe('getProofOfWorkHash', () => {
     const proofOfWorkHeader = hexToBinary(proofOfWork).substring(0, difficulty)
     const targetHashHeader = "0".repeat(difficulty)
     expect(proofOfWorkHeader).toBe(targetHashHeader)
-    expect(proofOfWork).toBe("0fc16cfdfcd0fb3e7379f0082737fa4682c1e34f0a014914d925fc6087a17d60")
+    expect(proofOfWork).toBe("0d66103da789a884f9105911d0f927b52dd6c220e757492baa498c0e7509275f")
   });
 })
 
 describe('hasValidTransactions', () => {
+
+  let transactions
+  beforeEach(() => {
+    transactions = [
+      { isValid: jest.fn().mockReturnValue(true) },
+      { isValid: jest.fn().mockReturnValue(true) },
+      { isValid: jest.fn().mockReturnValue(true) },
+    ];
+    newBlock.transactions = transactions
+  });
+
   it('hasValidTransactions verifies returns false if one transaction is invalid', () => {
-    let tx1 = new Transaction("fromAddress", "toAddress", 45);
-    let tx2 = new Transaction("fromAddress", "toAddress", 35);
-    let tx3 = new Transaction("fromAddress", "toAddress", 35);
-    jest.spyOn(tx1, 'isValid').mockImplementation(() => true);
-    jest.spyOn(tx2, 'isValid').mockImplementation(() => false);
-    jest.spyOn(tx3, 'isValid').mockImplementation(() => true);
-    newBlock.transactions = [tx1, tx2, tx3]
+    transactions[1].isValid.mockImplementation(() => false);
     expect(newBlock.hasValidTransactions()).toBe(false)
-    
   })
   
   it('hasValidTransactions returns true only if all transactions are valid', () => {
-    let tx1 = new Transaction("fromAddress", "toAddress", 45);
-    let tx2 = new Transaction("fromAddress", "toAddress", 35);
-    let tx3 = new Transaction("fromAddress", "toAddress", 35);
-    jest.spyOn(tx1, 'isValid').mockImplementation(() => true);
-    jest.spyOn(tx2, 'isValid').mockImplementation(() => true);
-    jest.spyOn(tx3, 'isValid').mockImplementation(() => true);
-    newBlock.transactions = [tx1, tx2, tx3]
     expect(newBlock.hasValidTransactions()).toBe(true)
   })
 
@@ -162,11 +155,11 @@ describe('hasValidTransactions', () => {
 describe('hasValidHash', () => {
 
   beforeEach(() => {
-    newBlock.hash = "ba8b1c70c3f454e745fb06cc7d6dc374506df2e6ff3c334ecf4d359129c6549f"
+    //set to valid SHA256 hash:
+    newBlock.hash = "6b30524c359e1259e8d3c3b066f8832bca6543607f71f45260b802a31a23b46d"
   });
 
   it('returns true if hash is valid', () => {
-    newBlock.hash = "ba8b1c70c3f454e745fb06cc7d6dc374506df2e6ff3c334ecf4d359129c6549f"
     expect(newBlock.hasValidHash()).toBe(true)
   })
   
@@ -176,37 +169,31 @@ describe('hasValidHash', () => {
   })
 
   it('returns false if timestamp is tampered with', () => {
-    expect(newBlock.hasValidHash()).toBe(true)
     newBlock.timestamp = "newTamperedTimestamp"
     expect(newBlock.hasValidHash()).toBe(false)
   });
 
   it('returns false if transactions are tampered with', () => {
-    expect(newBlock.hasValidHash()).toBe(true)
     newBlock.timestamp = ["newBogusTransaction1", "newbogusTransaction2"]
     expect(newBlock.hasValidHash()).toBe(false)
   });
 
   it('returns false if previous hash is tampered with', () => {
-    expect(newBlock.hasValidHash()).toBe(true)
     newBlock.previousHash = "newTamperedPrevHash"
     expect(newBlock.hasValidHash()).toBe(false)
   });
 
   it('returns false if block height is tampered with', () => {
-    expect(newBlock.hasValidHash()).toBe(true)
     newBlock.height = 999999
     expect(newBlock.hasValidHash()).toBe(false)
   });
 
   it('returns false if difficulty is tampered with', () => {
-    expect(newBlock.hasValidHash()).toBe(true)
     newBlock.difficulty = 666
     expect(newBlock.hasValidHash()).toBe(false)
   });
   
   it('returns false if nonce is tampered with', () => {
-    expect(newBlock.hasValidHash()).toBe(true)
     newBlock.nonce = 666
     expect(newBlock.hasValidHash()).toBe(false)
   });
@@ -222,20 +209,22 @@ describe('firstDCharsAreZero', () => {
 })
 
 describe('hasProofOfWork', () => {
-  it('returns true if hash is valid and first d (difficulty) characters are zero', () => {
+
+  beforeEach(() => {
     jest.spyOn(newBlock, 'hasValidHash').mockImplementation(() => true);
     jest.spyOn(newBlock, 'firstDCharsAreZero').mockImplementation(() => true);
+  })
+
+  it('returns true if hash is valid and first d (difficulty) characters are zero', () => {
     expect(newBlock.hasProofOfWork()).toBe(true)
   })
   
   it('returns false if hash is invalid', () => {
     jest.spyOn(newBlock, 'hasValidHash').mockImplementation(() => false);
-    jest.spyOn(newBlock, 'firstDCharsAreZero').mockImplementation(() => true);
     expect(newBlock.hasProofOfWork()).toBe(false)
   })
 
   it('returns false if hash does not contain first d (difficulty) characters of zero', () => {
-    jest.spyOn(newBlock, 'hasValidHash').mockImplementation(() => true);
     jest.spyOn(newBlock, 'firstDCharsAreZero').mockImplementation(() => false);
     expect(newBlock.hasProofOfWork()).toBe(false)
   })
