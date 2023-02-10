@@ -3,6 +3,7 @@ import EC from "elliptic"
 const ec = new EC.ec('secp256k1')
 import * as getSHA256HashModule from "../../utils/crypto-hash";
 import { COINBASE_TX } from "../../config";
+import {CoinbaseTransaction} from './Transaction'
 
 let newTransaction
 let key
@@ -117,10 +118,6 @@ describe('signTransaction', () => {
 });
 
 describe('isValid', () => {
-  test('If fromAddress is "Coinbase Tx" then returns true (mining reward)', () => {
-    newTransaction.fromAddress = "Coinbase Tx"
-    expect(newTransaction.isValid()).toBe(true)
-  });
 
   test('Returns false if missing signature', () => {
     expect(newTransaction.isValid()).toBe(false)
@@ -160,39 +157,74 @@ describe('isValid', () => {
 
 });
   
-describe('getCoinbaseTx', () => {
+describe('CoinbaseTransaction subclass', () => {
   let coinbaseTx
   let miningRewardAddress = "miningRewardAddress"
   let miningReward = 10
 
-  beforeAll(() => {
-    coinbaseTx = Transaction.getCoinbaseTx(miningRewardAddress, miningReward)
+  beforeEach(() => {
+    coinbaseTx = new CoinbaseTransaction(miningRewardAddress, miningReward)
   })
 
-  it('Returns a Transaction', () => {
-    expect(coinbaseTx).toBeInstanceOf(Transaction)
-    expect(Object.getPrototypeOf(coinbaseTx)).toBe(Transaction.prototype);
-  });
-
-  it('Return value includes the correct Coinbase Tx fields from config value', () => {
-    expect(coinbaseTx).toMatchObject({
-      fromAddress: COINBASE_TX.fromAddress,
-      memo: COINBASE_TX.memo,
+  describe('Constructor', () => {
+    it('Creates a transaction instance', () => {
+      expect(coinbaseTx).toBeInstanceOf(Transaction)
     });
-  }); 
+  
+    it('Has Coinbase Tx fields from config value', () => {
+      expect(coinbaseTx).toMatchObject({
+        fromAddress: COINBASE_TX.fromAddress,
+        memo: COINBASE_TX.memo,
+      });
+    }); 
+  
+    it('Sets toAddress and amount from method arguments', () => {
+      expect(coinbaseTx).toMatchObject({
+        toAddress: miningRewardAddress,
+        amount: miningReward,
+      });
+    }); 
+  
+    it('Has no fee', () => {
+      expect(coinbaseTx).toMatchObject({
+        fee: 0
+      });
+    }); 
+  })
 
-  it('Sets toAddress and amount from method arguments', () => {
-    expect(coinbaseTx).toMatchObject({
-      toAddress: miningRewardAddress,
-      amount: miningReward,
-    });
-  }); 
+  describe('isValid', () => {
 
-  it('Has no fee', () => {
-    expect(coinbaseTx).toMatchObject({
-      fee: 0
-    });
-  }); 
+    describe('Returns false', () => {
+
+      it('When amount is 0 or less', () => {
+        coinbaseTx.amount = 0
+        expect(coinbaseTx.isValid()).toBe(false)
+        coinbaseTx.amount = -1
+        expect(coinbaseTx.isValid()).toBe(false)
+      });
+
+      it('When fromAddress doesnt match config', () => {
+        coinbaseTx.fromAddress = "madeupFromAddress"
+        expect(coinbaseTx.isValid()).toBe(false)
+      });
+
+      it('When memo doesnt match config', () => {
+        coinbaseTx.memo = "madeupMemo"
+        expect(coinbaseTx.isValid()).toBe(false)
+      }); 
+    })
+
+
+    describe('Returns true', () => {
+      it('Otherwise', () => {
+        expect(coinbaseTx.isValid()).toBe(true)
+      });
+    })
+ 
+
+  })
+
+
 
 });
 

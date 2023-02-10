@@ -48,25 +48,13 @@ export default class Transaction {
     }
   }
 
-  // isCoinbaseTransaction():boolean {
-  //   //For mining reward:
-  //   return this.fromAddress === COINBASE_TX.fromAddress
-  // }
-
   hasRequiredFields() {
     return !!(this.fromAddress && this.toAddress && this.amount > 0)
   }
 
   isValid(): boolean {
-    // if (this.isCoinbaseTransaction()) {
-    //   return true
-    // }
     return this.hasRequiredFields() && this.hasValidSignature() && this.amount > 0
   }
-
-  // static getCoinbaseTx(miningRewardAddress: string, totalReward: number): Transaction {
-  //   return new Transaction(COINBASE_TX.fromAddress, miningRewardAddress, totalReward, COINBASE_TX.memo)
-  // }
 }
 
 export class CoinbaseTransaction extends Transaction {
