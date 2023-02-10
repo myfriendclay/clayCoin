@@ -92,16 +92,11 @@ export default class Blockchain {
 
    //Transaction helpers:
   addCoinbaseTxToMempool(miningRewardAddress: string): Transaction[] {
-    const coinbaseTx = this.getCoinbaseTx(miningRewardAddress)
-     this.pendingTransactions.push(coinbaseTx)
-     return this.pendingTransactions
+    const coinbaseTx = new CoinbaseTransaction(miningRewardAddress, this.getMiningReward())
+    this.pendingTransactions.push(coinbaseTx)
+    return this.pendingTransactions
   }
 
-  getCoinbaseTx(miningRewardAddress: string): Transaction {
-    const miningReward = this.getMiningReward()
-    // return Transaction.getCoinbaseTx(miningRewardAddress, miningReward)
-    return new CoinbaseTransaction(miningRewardAddress, miningReward)
-  }
 
   getTotalTransactionFees(): number {
     return this.pendingTransactions.map(tx => tx.fee).reduce((prev, curr) => prev + curr, 0)

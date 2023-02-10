@@ -1,5 +1,6 @@
 import Blockchain from "../Blockchain/Blockchain";
 import Transaction from "../Transaction/Transaction";
+import {CoinbaseTransaction} from "../Transaction/Transaction"
 import Block from "../Block/Block";
 import EC from "elliptic"
 import { INITIAL_DIFFICULTY } from "../../config"
@@ -23,6 +24,7 @@ beforeEach(() => {
       timestamp: 1
     }
   ));
+
 
   jest.mock('../Block/Block', () => {
     return jest.fn().mockImplementation((transactions, previousHash, height, difficulty) => {
@@ -49,7 +51,7 @@ describe('Constructor', () => {
     expect(testCoin.chain.length).toBe(1)
   });
   test('First block on chain is valid genesis block', () => {
-    expect(testCoin.chain[0].isValidGenesisBlock()).toBe(true)
+    expect(testCoin.chain[0].isValidBlock()).toBe(true)
   });
 });
 
@@ -96,7 +98,7 @@ describe('isChainValid', () => {
     jest.spyOn(block1, 'isValidBlock').mockImplementation(() => true);
     jest.spyOn(block2, 'isValidBlock').mockImplementation(() => true);
     jest.spyOn(block3, 'isValidBlock').mockImplementation(() => true);
-    jest.spyOn(testCoin.chain[0], 'isValidGenesisBlock').mockImplementation(() => true);
+    jest.spyOn(testCoin.chain[0], 'isValidBlock').mockImplementation(() => true);
     testCoin.chain.push(block1, block2, block3)
   })
 
@@ -106,14 +108,14 @@ describe('isChainValid', () => {
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
 
-  it('Returns false if any (nonGenesis) block is invalid', () => {
+  it('Returns false if any block is invalid', () => {
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
     jest.spyOn(block2, 'isValidBlock').mockImplementation(() => false);
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
   it('Returns false if genesis block is invalid', () => {
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
-    jest.spyOn(testCoin.chain[0], 'isValidGenesisBlock').mockImplementation(() => false);
+    jest.spyOn(testCoin.chain[0], 'isValidBlock').mockImplementation(() => false);
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
   it('Returns false if there is a negative jump in difficulty between blocks more than 1', () => {
@@ -225,10 +227,9 @@ describe('addCoinbaseTxToMempool', () => {
     expect(pendingTransactions).toBe(testCoin.pendingTransactions)
   })
 
-  test("Adds return value of getCoinbaseTx to to Blockchain's pending transactions", () => {
-    jest.spyOn(testCoin, 'getCoinbaseTx').mockImplementation(() => "returnValue");
+  test("Adds new coinbase transaction to Blockchain's pending transactions", () => {
     testCoin.addCoinbaseTxToMempool(minerAddress)
-    expect(testCoin.pendingTransactions[0]).toBe("returnValue")
+    expect(testCoin.pendingTransactions[0]).toBeInstanceOf(CoinbaseTransaction)
   })
 });
 
@@ -238,42 +239,6 @@ describe('getMiningReward', () => {
     jest.spyOn(testCoin, 'getTotalTransactionFees').mockImplementation(() => totalTxFees);
     const totalMiningReward = totalTxFees + testCoin.blockSubsidy
     expect(testCoin.getMiningReward()).toBe(totalMiningReward)
-  })
-})
-
-describe('getCoinbaseTx', () => {
-  it('Has right values', () => {
-    const totalTxFees = 20
-    jest.spyOn(testCoin, 'getTotalTransactionFees').mockImplementation(() => totalTxFees);
-    const totalMiningReward = totalTxFees + testCoin.blockSubsidy
-    const coinbaseTx = testCoin.getCoinbaseTx("minerAddress")
-    expect(coinbaseTx).toMatchObject({
-      amount: totalMiningReward,
-    });
-  })
-  it('CoinbaseTx returned has amount that getMiningReward function includes', () => {
-    const miningReward = 30
-    jest.spyOn(testCoin, 'getMiningReward').mockImplementation(() => miningReward);
-    const coinbaseTx = testCoin.getCoinbaseTx("minerAddress")
-    expect(coinbaseTx).toMatchObject({
-      amount: miningReward,
-    });
-  })
-
-  it('Returns coinbaseTx the same as Transaction class return value', () => {
-    const returnCoinbaseTx = "coinbaseTxReturnValue"
-    jest.spyOn(Transaction, 'getCoinbaseTx').mockImplementation(() => returnCoinbaseTx);
-    const coinbaseTx = testCoin.getCoinbaseTx("minerAddress")
-    expect(coinbaseTx).toBe(returnCoinbaseTx)
-    });
-
-  it('Calls on the Transaction class getCoinbaseTx with minerAddress and miningReward', () => {
-    const miningReward = 20
-    const minerAddress = "minerAddress"
-    jest.spyOn(testCoin, 'getMiningReward').mockImplementation(() => miningReward);
-    jest.spyOn(Transaction, 'getCoinbaseTx')
-    testCoin.getCoinbaseTx(minerAddress)
-    expect(Transaction.getCoinbaseTx).toBeCalledWith(minerAddress, miningReward)
   })
 })
 
