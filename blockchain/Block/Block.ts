@@ -1,7 +1,7 @@
 import SHA256 from "crypto-js/sha256.js"
 import hexToBinary from "hex-to-binary"
 import { GENESIS_BLOCK_DATA } from "../../config"
-import Transaction from "../Transaction/Transaction";
+import Transaction, { CoinbaseTransaction } from "../Transaction/Transaction";
 import { Type } from 'class-transformer';
 import 'reflect-metadata';
 
@@ -13,10 +13,10 @@ export default class Block {
   difficulty: number;
   nonce: number;
   timestamp: number;
-  timeSpentMiningInMilliSecs: number;
-  hash: string;
+  timeSpentMiningInMilliSecs: number | undefined;
+  hash: string | undefined;
 
-  constructor(transactions, difficulty, previousHash = '', height) {
+  constructor(transactions: Transaction[], difficulty: number, previousHash: string = '', height: number) {
     this.transactions = transactions
     this.previousHash = previousHash
     this.height = height
@@ -52,7 +52,7 @@ export default class Block {
   }
 
   hasOnlyOneCoinbaseTx(): boolean {
-    const count = this.transactions.filter(transaction => transaction.isCoinbaseTransaction()).length;
+    const count = this.transactions.filter(transaction => typeof transaction === CoinbaseTransaction).length;
     return count === 1
   }
 
@@ -71,17 +71,6 @@ export default class Block {
   isValidBlock(): boolean {
     return this.hasValidTransactions() && this.hasProofOfWork()
   }
-
-  // isValidGenesisBlock(): boolean {
-  //   const { difficulty, transactions, previousHash, height } = GENESIS_BLOCK_DATA
-  //   return this.isValidBlock() && this.difficulty === difficulty && this.transactions.length === transactions.length && this.previousHash === previousHash && this.height === height
-  // }
-
-  // static createGenesisBlock(): Block {
-  //   const genesisBlock = new Block(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
-  //   genesisBlock.mineBlock()
-  //   return genesisBlock
-  // }
 }
 
 export class GenesisBlock extends Block {
@@ -95,6 +84,3 @@ export class GenesisBlock extends Block {
     return this.hasProofOfWork() && this.difficulty === difficulty && this.transactions.length === transactions.length && this.previousHash === previousHash && this.height === height
   }
 }
-
-const clay = new GenesisBlock()
-console.log(clay.isValidBlock())

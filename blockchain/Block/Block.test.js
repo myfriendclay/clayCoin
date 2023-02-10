@@ -1,4 +1,5 @@
 import Block from './Block.ts'
+import {GenesisBlock} from './Block'
 import Transaction from '../Transaction/Transaction'
 import hexToBinary from "hex-to-binary"
 import { GENESIS_BLOCK_DATA } from "../../config"
@@ -83,44 +84,7 @@ describe('calculateHash', () => {
     newBlock.nonce = 666
     expect(newBlock.calculateHash()).not.toBe(originalHash)
   });
-
 })
-
-describe('createGenesisBlock', () => {
-  test('Creates correct block', () => {
-    const expectedGenesisBlock = new Block(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
-    const actualGenesisBlock = Block.createGenesisBlock()
-    //Need to make timestamps the same so hashes are the same
-    expectedGenesisBlock.timestamp = actualGenesisBlock.timestamp
-    expectedGenesisBlock.mineBlock()
-    expectedGenesisBlock.timeSpentMiningInMilliSecs = actualGenesisBlock.timeSpentMiningInMilliSecs
-    expect(actualGenesisBlock).toEqual(expectedGenesisBlock)
-  });
-});
-
-describe('isValidGenesisBlock', () => {
-  let actualBlock
-  beforeEach(() => {
-    actualBlock = new Block(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
-    actualBlock.mineBlock()
-  })
-
-  it('Returns false if Genesis block has non zero height', () => {
-    actualBlock.height = 1
-    expect(actualBlock.isValidGenesisBlock()).toBe(false)
-  })
-
-  it('Returns false if Genesis block has previous hash thats not null', () => {
-    actualBlock.previousHash = "someOtherHash"
-    expect(actualBlock.isValidGenesisBlock()).toBe(false)
-  })
-
-  it('Returns true if Genesis block is the same', () => {
-    expect(actualBlock.isValidGenesisBlock()).toBe(true)
-  })
-
-});
-
 
 describe('mineBlock', () => {
 
@@ -297,6 +261,61 @@ describe('isValidBlock', () => {
   })
 })
 
+describe('GenesisBlock', () => {
 
+  let genesisBlock
+  beforeEach(() => {
+    genesisBlock = new GenesisBlock()
+  })
 
+  describe('Constructor', () => {
+    test('Creates a block', () => {
+      expect(genesisBlock).toBeInstanceOf(Block)
+    });
+
+    test('Transactions match genesis config', () => {
+      expect(genesisBlock.transactions).toBe(GENESIS_BLOCK_DATA.transactions)
+    });
+    test('Difficulty match genesis config', () => {
+      expect(genesisBlock.difficulty).toBe(GENESIS_BLOCK_DATA.difficulty)
+    });
+    test('previousHash is null', () => {
+      expect(genesisBlock.previousHash).toBe(null)
+    });
+
+    test('height is 0', () => {
+      expect(genesisBlock.height).toBe(0)
+    });
+
+    it('Automatically creates a timestamp', () => {
+      const minTime = Date.now() - 100
+      const maxTime = Date.now() + 100
+      expect(genesisBlock.timestamp).toBeGreaterThanOrEqual(minTime);
+      expect(genesisBlock.timestamp).toBeLessThanOrEqual(maxTime);
+    });
+  });
+
+  describe('isValidBlock()', () => {
+
+    it('Returns false if Genesis block has non zero height', () => {
+      genesisBlock.height = 1
+      expect(genesisBlock.isValidBlock()).toBe(false)
+    })
+  
+    it('Returns false if Genesis block has previous hash thats not null', () => {
+      genesisBlock.previousHash = "someOtherHash"
+      expect(genesisBlock.isValidBlock()).toBe(false)
+    })
+
+    it('Returns false if doesnt have proof of work hash', () => {
+      jest.spyOn(genesisBlock, 'hasProofOfWork').mockImplementation(() => false);
+      expect(genesisBlock.isValidBlock()).toBe(false)
+    })
+  
+    it('Returns true otherwise', () => {
+      expect(genesisBlock.isValidBlock()).toBe(true)
+    })
+  
+  });
+});
 
