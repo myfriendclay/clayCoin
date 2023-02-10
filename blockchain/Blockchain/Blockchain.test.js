@@ -51,7 +51,7 @@ describe('Constructor', () => {
     expect(testCoin.chain.length).toBe(1)
   });
   test('First block on chain is valid genesis block', () => {
-    expect(testCoin.chain[0].isValidBlock()).toBe(true)
+    expect(testCoin.chain[0].isValid()).toBe(true)
   });
 });
 
@@ -95,10 +95,10 @@ describe('isChainValid', () => {
     block2 = new Block(["tx1", "tx2"], 2, block1.hash, 1)
     block2.hash = "block2Hash"
     block3 = new Block(["tx1", "tx2"], 2, block2.hash, 1)
-    jest.spyOn(block1, 'isValidBlock').mockImplementation(() => true);
-    jest.spyOn(block2, 'isValidBlock').mockImplementation(() => true);
-    jest.spyOn(block3, 'isValidBlock').mockImplementation(() => true);
-    jest.spyOn(testCoin.chain[0], 'isValidBlock').mockImplementation(() => true);
+    jest.spyOn(block1, 'isValid').mockImplementation(() => true);
+    jest.spyOn(block2, 'isValid').mockImplementation(() => true);
+    jest.spyOn(block3, 'isValid').mockImplementation(() => true);
+    jest.spyOn(testCoin.chain[0], 'isValid').mockImplementation(() => true);
     testCoin.chain.push(block1, block2, block3)
   })
 
@@ -110,12 +110,12 @@ describe('isChainValid', () => {
 
   it('Returns false if any block is invalid', () => {
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
-    jest.spyOn(block2, 'isValidBlock').mockImplementation(() => false);
+    jest.spyOn(block2, 'isValid').mockImplementation(() => false);
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
   it('Returns false if genesis block is invalid', () => {
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
-    jest.spyOn(testCoin.chain[0], 'isValidBlock').mockImplementation(() => false);
+    jest.spyOn(testCoin.chain[0], 'isValid').mockImplementation(() => false);
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
   it('Returns false if there is a negative jump in difficulty between blocks more than 1', () => {

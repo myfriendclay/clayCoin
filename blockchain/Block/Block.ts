@@ -13,10 +13,10 @@ export default class Block {
   difficulty: number;
   nonce: number;
   timestamp: number;
-  timeSpentMiningInMilliSecs: number | undefined;
+  miningDurationMs: number | undefined;
   hash: string | undefined;
 
-  constructor(transactions: Transaction[], difficulty: number, previousHash: string = '', height: number) {
+  constructor(transactions: Transaction[], difficulty: number, previousHash: string | null = '', height: number) {
     this.transactions = transactions
     this.previousHash = previousHash
     this.height = height
@@ -33,8 +33,8 @@ export default class Block {
     const startOfMining = Date.now()
     this.hash = this.getProofOfWorkHash()
     const endOfMining = Date.now()
-    this.timeSpentMiningInMilliSecs = endOfMining - startOfMining
-    return this.timeSpentMiningInMilliSecs
+    this.miningDurationMs = endOfMining - startOfMining
+    return this.miningDurationMs
   }
 
   getProofOfWorkHash(): string {
@@ -52,7 +52,7 @@ export default class Block {
   }
 
   hasOnlyOneCoinbaseTx(): boolean {
-    const count = this.transactions.filter(transaction => typeof transaction === CoinbaseTransaction).length;
+    const count = this.transactions.filter(transaction => transaction instanceof CoinbaseTransaction).length;
     return count === 1
   }
 
@@ -68,8 +68,8 @@ export default class Block {
     return this.hasValidHash() && this.firstDCharsAreZero()
   }
   
-  isValidBlock(): boolean {
-    return this.hasValidTransactions() && this.hasProofOfWork()
+  isValid(): boolean {
+    return this.hasValidTransactions() && this.hasProofOfWork() && this.hasOnlyOneCoinbaseTx()
   }
 }
 
@@ -79,7 +79,7 @@ export class GenesisBlock extends Block {
     this.mineBlock()
   }
 
-  isValidBlock(): boolean {
+  isValid(): boolean {
     const { difficulty, transactions, previousHash, height } = GENESIS_BLOCK_DATA
     return this.hasProofOfWork() && this.difficulty === difficulty && this.transactions.length === transactions.length && this.previousHash === previousHash && this.height === height
   }

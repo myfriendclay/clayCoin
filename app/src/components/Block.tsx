@@ -3,7 +3,7 @@ import { BlockType } from "../App";
 import { getTruncatedString } from "./MemPool/Transaction";
 
 function Block({block}: {block: BlockType}) {
-  const {hash, timestamp, height, nonce, timeSpentMiningInMilliSecs, previousHash, transactions, difficulty} = block
+  const {hash, timestamp, height, nonce, miningDurationMs, previousHash, transactions, difficulty} = block
   return (
     <TableRow>
       <TableCell>{height}</TableCell>
@@ -13,7 +13,7 @@ function Block({block}: {block: BlockType}) {
       <TableCell>{transactions.length}</TableCell>
       <TableCell>{difficulty}</TableCell>
       <TableCell>{nonce}</TableCell>
-      <TableCell>{Math.ceil(timeSpentMiningInMilliSecs / 1000 / 60)}</TableCell>
+      <TableCell>{Math.ceil(miningDurationMs / 1000 / 60)}</TableCell>
     </TableRow>
     );
 }

@@ -40,12 +40,11 @@ export default class Transaction {
   }
 
   hasValidSignature(): boolean {
-    if (this.signature) {
-      const publicKey = ec.keyFromPublic(this.fromAddress, 'hex')
-      return publicKey.verify(this.calculateHash(), this.signature)
-    } else {
+    if (!this.signature) {
       return false
-    }
+    } 
+    const publicKey = ec.keyFromPublic(this.fromAddress, 'hex')
+    return publicKey.verify(this.calculateHash(), this.signature)
   }
 
   hasRequiredFields() {

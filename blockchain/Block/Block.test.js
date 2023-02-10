@@ -241,23 +241,31 @@ describe('hasProofOfWork', () => {
   })
 })
 
-describe('isValidBlock', () => {
+describe('isValid', () => {
+
+  beforeEach(() => {
+    jest.spyOn(newBlock, 'hasValidTransactions').mockImplementation(() => true);
+    jest.spyOn(newBlock, 'hasProofOfWork').mockImplementation(() => true);
+    jest.spyOn(newBlock, 'hasOnlyOneCoinbaseTx').mockImplementation(() => true);
+  })
+
   it("returns false if all transactions aren't valid", () => {
     jest.spyOn(newBlock, 'hasValidTransactions').mockImplementation(() => false);
-    jest.spyOn(newBlock, 'hasProofOfWork').mockImplementation(() => true);
-    expect(newBlock.isValidBlock()).toBe(false)
+    expect(newBlock.isValid()).toBe(false)
   })
 
   it("returns false if doesn't have proof of work", () => {
-    jest.spyOn(newBlock, 'hasValidTransactions').mockImplementation(() => true);
     jest.spyOn(newBlock, 'hasProofOfWork').mockImplementation(() => false);
-    expect(newBlock.isValidBlock()).toBe(false)
+    expect(newBlock.isValid()).toBe(false)
+  })
+
+  it("returns false if has more than one coinbase Tx", () => {
+    jest.spyOn(newBlock, 'hasOnlyOneCoinbaseTx').mockImplementation(() => false);
+    expect(newBlock.isValid()).toBe(false)
   })
 
   it("returns true if all transactions are valid and has proof of work", () => {
-    jest.spyOn(newBlock, 'hasValidTransactions').mockImplementation(() => true);
-    jest.spyOn(newBlock, 'hasProofOfWork').mockImplementation(() => true);
-    expect(newBlock.isValidBlock()).toBe(true)
+    expect(newBlock.isValid()).toBe(true)
   })
 })
 
@@ -295,25 +303,25 @@ describe('GenesisBlock', () => {
     });
   });
 
-  describe('isValidBlock()', () => {
+  describe('isValid()', () => {
 
     it('Returns false if Genesis block has non zero height', () => {
       genesisBlock.height = 1
-      expect(genesisBlock.isValidBlock()).toBe(false)
+      expect(genesisBlock.isValid()).toBe(false)
     })
   
     it('Returns false if Genesis block has previous hash thats not null', () => {
       genesisBlock.previousHash = "someOtherHash"
-      expect(genesisBlock.isValidBlock()).toBe(false)
+      expect(genesisBlock.isValid()).toBe(false)
     })
 
     it('Returns false if doesnt have proof of work hash', () => {
       jest.spyOn(genesisBlock, 'hasProofOfWork').mockImplementation(() => false);
-      expect(genesisBlock.isValidBlock()).toBe(false)
+      expect(genesisBlock.isValid()).toBe(false)
     })
   
     it('Returns true otherwise', () => {
-      expect(genesisBlock.isValidBlock()).toBe(true)
+      expect(genesisBlock.isValid()).toBe(true)
     })
   
   });

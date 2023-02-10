@@ -10,7 +10,7 @@ export interface BlockType {
   hash: string;
   height: number;
   nonce: number;
-  timeSpentMiningInMilliSecs: number;
+  miningDurationMs: number;
   previousHash: string;
   transactions: TransactionType[];
   difficulty: number;

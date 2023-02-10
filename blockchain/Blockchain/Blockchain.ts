@@ -108,12 +108,12 @@ export default class Blockchain {
 
   addPendingTransactionsToBlock(): Block {
     this.difficulty = this.getNewMiningDifficulty()
-    const block = new Block(this.pendingTransactions, this.difficulty, this.getLatestBlock().calculateHash(), this.chain.length)
+    const block = new Block(this.pendingTransactions, this.difficulty, this.getLatestBlock().hash, this.chain.length)
     return block
   }
 
   getNewMiningDifficulty(): number {
-    const lastMiningTime = this.getLatestBlock().timeSpentMiningInMilliSecs || MINE_RATE_MS
+    const lastMiningTime = this.getLatestBlock().miningDurationMs || MINE_RATE_MS
     
     if (lastMiningTime < MINE_RATE_MS) {
       this.difficulty++
@@ -155,7 +155,7 @@ export default class Blockchain {
 
   static isChainValid(chain: Block[]) {
     // Check if the Genesis block hasn't been tampered with:
-    if (!chain[0].isValidBlock()) {
+    if (!chain[0].isValid()) {
       return false
     }
 
@@ -163,7 +163,7 @@ export default class Blockchain {
       const currentBlock = chain[i]
       const previousBlock = chain[i - 1]
       const difficultyJump = currentBlock.difficulty - previousBlock.difficulty
-      if (!currentBlock.isValidBlock()) {
+      if (!currentBlock.isValid()) {
         return false
       }
     
