@@ -9,4 +9,3 @@ const getSHA256Hash = (...inputs: any) => {
 }
 
 export default getSHA256Hash
-

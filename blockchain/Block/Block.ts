@@ -1,9 +1,9 @@
-import SHA256 from "crypto-js/sha256.js"
 import hexToBinary from "hex-to-binary"
 import { GENESIS_BLOCK_DATA } from "../../config"
 import Transaction, { CoinbaseTransaction } from "../Transaction/Transaction";
 import { Type } from 'class-transformer';
 import 'reflect-metadata';
+import getSHA256Hash from "../../utils/crypto-hash";
 
 export default class Block {
   @Type(() => Transaction)
@@ -26,7 +26,7 @@ export default class Block {
   }
 
   calculateHash(): string {
-    return SHA256(this.timestamp + JSON.stringify(this.transactions) + this.previousHash + this.height + this.difficulty + this.nonce).toString()
+    return getSHA256Hash(this.timestamp + JSON.stringify(this.transactions) + this.previousHash + this.height + this.difficulty + this.nonce)
   }
 
   mineBlock(): number {

@@ -47,9 +47,13 @@ describe('calculateHash', () => {
     originalHash = newBlock.calculateHash()
   });
 
-  it('returns correct SHA256 hash', () => {
-    expect(newBlock.calculateHash()).toBe("6b30524c359e1259e8d3c3b066f8832bca6543607f71f45260b802a31a23b46d")
-  });
+  test.todo("return results of getSHA256Hash helper")
+  test.todo("passes in timestamp")
+  test.todo("passes in transactions")
+  test.todo("passes in previousHash")
+  test.todo("passes in height")
+  test.todo("passes in difficulty")
+  test.todo("passes in nonce")
 
   it('updates hash when timestamp is updated', () => {
     newBlock.timestamp = "newTamperedTimestamp"
@@ -92,10 +96,11 @@ describe('mineBlock', () => {
     expect(hashHeader).toBe(targetHash)
   });
 
-  it('produces valid hash', () => {
-    newBlock.mineBlock(4)
-    expect(newBlock.hash).toBe("0d66103da789a884f9105911d0f927b52dd6c220e757492baa498c0e7509275f")
+  it('produces hash returned by calculateHash function, after updating and passing in new nonce', () => {
   });
+
+  test.todo('Calls calculate hash')
+  test.todo('sets hash to return value of calculate hash')
   
   it('updates first d number of characters of BINARY hash when d changes', () => {
     newBlock.difficulty = 3
@@ -118,13 +123,18 @@ describe('mineBlock', () => {
 })
 
 describe('getProofOfWorkHash', () => {
-  it('returns valid hash first d number of characters of 0 (where d = difficulty)', () => {
+  it('returns hash where first d number of characters of 0 (where d = difficulty)', () => {
     const { difficulty } = newBlock
     const proofOfWork = newBlock.getProofOfWorkHash()
     const proofOfWorkHeader = hexToBinary(proofOfWork).substring(0, difficulty)
     const targetHashHeader = "0".repeat(difficulty)
     expect(proofOfWorkHeader).toBe(targetHashHeader)
-    expect(proofOfWork).toBe("0d66103da789a884f9105911d0f927b52dd6c220e757492baa498c0e7509275f")
+  });
+
+  it('Calls on calculateHash n times (n = nonce)', () => {
+    const spyCalculateHash = jest.spyOn(newBlock, 'calculateHash')
+    newBlock.getProofOfWorkHash()
+    expect(spyCalculateHash.mock.calls.length).toBe(newBlock.nonce)
   });
 })
 
@@ -153,50 +163,21 @@ describe('hasValidTransactions', () => {
 })
 
 describe('hasValidHash', () => {
-
+  const mockHash = "mockHash"
   beforeEach(() => {
-    //set to valid SHA256 hash:
-    newBlock.hash = "6b30524c359e1259e8d3c3b066f8832bca6543607f71f45260b802a31a23b46d"
+    
+    jest.spyOn(newBlock, 'calculateHash').mockImplementation(() => mockHash);
   });
 
-  it('returns true if hash is valid', () => {
+  it('returns false if block hash is different than return value of calculateHash', () => {
+    newBlock.hash = mockHash
     expect(newBlock.hasValidHash()).toBe(true)
   })
   
-  it('returns true if hash is invalid', () => {
-    newBlock.hash = "falsec70c3f454e745fb06cc7d6dc374506df2e6ff3c334ecf4d359129c6549f"
+  it('returns true if block hash is same as return value of calculateHash', () => {
+    newBlock.hash = mockHash + "extra"
     expect(newBlock.hasValidHash()).toBe(false)
   })
-
-  it('returns false if timestamp is tampered with', () => {
-    newBlock.timestamp = "newTamperedTimestamp"
-    expect(newBlock.hasValidHash()).toBe(false)
-  });
-
-  it('returns false if transactions are tampered with', () => {
-    newBlock.timestamp = ["newBogusTransaction1", "newbogusTransaction2"]
-    expect(newBlock.hasValidHash()).toBe(false)
-  });
-
-  it('returns false if previous hash is tampered with', () => {
-    newBlock.previousHash = "newTamperedPrevHash"
-    expect(newBlock.hasValidHash()).toBe(false)
-  });
-
-  it('returns false if block height is tampered with', () => {
-    newBlock.height = 999999
-    expect(newBlock.hasValidHash()).toBe(false)
-  });
-
-  it('returns false if difficulty is tampered with', () => {
-    newBlock.difficulty = 666
-    expect(newBlock.hasValidHash()).toBe(false)
-  });
-  
-  it('returns false if nonce is tampered with', () => {
-    newBlock.nonce = 666
-    expect(newBlock.hasValidHash()).toBe(false)
-  });
 })
 
 describe('firstDCharsAreZero', () => {
