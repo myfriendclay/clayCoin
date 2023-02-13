@@ -26,7 +26,7 @@ export default class Block {
   }
 
   calculateHash(): string {
-    return getSHA256Hash(this.timestamp + JSON.stringify(this.transactions) + this.previousHash + this.height + this.difficulty + this.nonce)
+    return getSHA256Hash(this.timestamp, this.transactions, this.previousHash, this.height, this.difficulty, this.nonce)
   }
 
   mineBlock(): number {
@@ -39,8 +39,9 @@ export default class Block {
 
   getProofOfWorkHash(): string {
     let hash = ""
+    const proofOfWorkReq = "0".repeat(this.difficulty)
 
-    while (hexToBinary(hash).substring(0, this.difficulty) !== "0".repeat(this.difficulty)) {
+    while (hexToBinary(hash).substring(0, this.difficulty) !== proofOfWorkReq) {
         this.nonce ++
         hash = this.calculateHash()
     }

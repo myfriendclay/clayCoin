@@ -16,7 +16,8 @@ it('Returns the SHA256 hash of the stringified inputs, sorted and joined ', () =
 });
 
 it('Returns a 64 character string', () => {
-  expect(getSHA256Hash()).toHaveLength(64)
+  expect(typeof getSHA256Hash(inputToHash)).toBe('string')
+  expect(getSHA256Hash(inputToHash)).toHaveLength(64)
 });
 
 it('Returns the same value for the same inputs', () => {

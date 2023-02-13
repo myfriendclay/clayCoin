@@ -86,14 +86,12 @@ describe('calculateHash', () => {
     expect(newTransaction.calculateHash()).not.toBe(initialHash)
   })
 
-  it('Returns results of getSHA256Hash function', () => {
-    jest.spyOn(getSHA256HashModule, 'default').mockImplementation(() => 'expected-hash-value')
-    expect(newTransaction.calculateHash()).toBe('expected-hash-value')
-  })
-
-  it('Calls getSHA256Hash with all parameter properties', () => {
-    jest.spyOn(getSHA256HashModule, 'default').mockImplementation(() => 'expected-hash-value')
-    expect(getSHA256HashModule.default).toHaveBeenCalledWith(newTransaction.fromAddress, newTransaction.toAddress, newTransaction.amount, newTransaction.memo, newTransaction.fee, newTransaction.uuid, newTransaction.timestamp)
+  it('Returns result of getSHA256Hash method with all transaction properties passed in', () => {
+    const mockedReturnValue = "exampleHash"
+    jest.spyOn(getSHA256HashModule, 'default').mockReturnValueOnce(mockedReturnValue)
+    const {fromAddress, toAddress, amount, memo, fee, uuid, timestamp} = newTransaction
+    expect(newTransaction.calculateHash()).toBe(mockedReturnValue)
+    expect(getSHA256HashModule.default).toHaveBeenCalledWith(fromAddress, toAddress, amount, memo, fee, uuid, timestamp)
   })
 
   });

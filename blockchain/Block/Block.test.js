@@ -2,6 +2,7 @@ import Block from './Block.ts'
 import { GenesisBlock } from './Block'
 import hexToBinary from "hex-to-binary"
 import { GENESIS_BLOCK_DATA } from "../../config"
+import * as getSHA256HashModule from "../../utils/crypto-hash";
 
 let newBlock
 let testTransactions
@@ -37,52 +38,6 @@ describe('createBlock', () => {
     const maxTime = Date.now() + 10
     expect(timestampBlock.timestamp).toBeGreaterThanOrEqual(minTime);
     expect(timestampBlock.timestamp).toBeLessThanOrEqual(maxTime);
-  });
-})
-
-describe('calculateHash', () => {
-
-  beforeEach(() => {
-    newBlock.timestamp = 1
-    originalHash = newBlock.calculateHash()
-  });
-
-  test.todo("return results of getSHA256Hash helper")
-  test.todo("passes in timestamp")
-  test.todo("passes in transactions")
-  test.todo("passes in previousHash")
-  test.todo("passes in height")
-  test.todo("passes in difficulty")
-  test.todo("passes in nonce")
-
-  it('updates hash when timestamp is updated', () => {
-    newBlock.timestamp = "newTamperedTimestamp"
-    expect(newBlock.calculateHash()).not.toBe(originalHash)
-  });
-
-  it('updates hash when transactions is updated', () => {
-    newBlock.transactions = ["newBogusTransaction1", "newbogusTransaction2"]
-    expect(newBlock.calculateHash()).not.toBe(originalHash)
-  });
-
-  it('updates hash when previousHash is updated', () => {
-    newBlock.previousHash = "bogusPrevHash"
-    expect(newBlock.calculateHash()).not.toBe(originalHash)
-  });
-
-  it('updates hash when height is updated', () => {
-    newBlock.height = 9999999999999
-    expect(newBlock.calculateHash()).not.toBe(originalHash)
-  });
-
-  it('updates hash when difficulty is updated', () => {
-    newBlock.difficulty = 666
-    expect(newBlock.calculateHash()).not.toBe(originalHash)
-  });
-  
-  it('updates hash when nonce is updated', () => {
-    newBlock.nonce = 666
-    expect(newBlock.calculateHash()).not.toBe(originalHash)
   });
 })
 
@@ -123,7 +78,7 @@ describe('mineBlock', () => {
 })
 
 describe('getProofOfWorkHash', () => {
-  it('returns hash where first d number of characters of 0 (where d = difficulty)', () => {
+  it('returns hash where first d (difficulty) number of characters is 0', () => {
     const { difficulty } = newBlock
     const proofOfWork = newBlock.getProofOfWorkHash()
     const proofOfWorkHeader = hexToBinary(proofOfWork).substring(0, difficulty)
@@ -136,7 +91,63 @@ describe('getProofOfWorkHash', () => {
     newBlock.getProofOfWorkHash()
     expect(spyCalculateHash.mock.calls.length).toBe(newBlock.nonce)
   });
+
+  it('Returns a valid hash', () => {
+    const block = new Block(testTransactions, 4, 'testPrevHash', 23)
+    block.timestamp = 3
+    const proofOfWorkHash = block.getProofOfWorkHash()
+    expect(proofOfWorkHash).toBe("0083712d90c62878b7d305b648d558f9a715b34f3926b2ec59645e7a694427c3")
+  });
 })
+
+describe('calculateHash', () => {
+
+  beforeEach(() => {
+    newBlock.timestamp = 1
+    originalHash = newBlock.calculateHash()
+  });
+
+  it('updates hash when timestamp is updated', () => {
+    newBlock.timestamp = "newTamperedTimestamp"
+    expect(newBlock.calculateHash()).not.toBe(originalHash)
+  });
+
+  it('updates hash when transactions is updated', () => {
+    newBlock.transactions = ["newBogusTransaction1", "newbogusTransaction2"]
+    expect(newBlock.calculateHash()).not.toBe(originalHash)
+  });
+
+  it('updates hash when previousHash is updated', () => {
+    newBlock.previousHash = "bogusPrevHash"
+    expect(newBlock.calculateHash()).not.toBe(originalHash)
+  });
+
+  it('updates hash when height is updated', () => {
+    newBlock.height = 9999999999999
+    expect(newBlock.calculateHash()).not.toBe(originalHash)
+  });
+
+  it('updates hash when difficulty is updated', () => {
+    newBlock.difficulty = 666
+    expect(newBlock.calculateHash()).not.toBe(originalHash)
+  });
+  
+  it('updates hash when nonce is updated', () => {
+    newBlock.nonce = 666
+    expect(newBlock.calculateHash()).not.toBe(originalHash)
+  });
+
+  it('return results of getSHA256Hash helper with all block properties passed in', () => {
+    const mockedReturnValue = "exampleHash"
+    const { timestamp, transactions, previousHash, height, difficulty, nonce } = newBlock
+    jest.spyOn(getSHA256HashModule, 'default').mockReturnValueOnce(mockedReturnValue)
+    expect(newBlock.calculateHash()).toBe(mockedReturnValue)
+    expect(getSHA256HashModule.default).toHaveBeenCalledWith(timestamp, transactions, previousHash, height, difficulty, nonce)
+  });
+
+})
+
+
 
 describe('hasValidTransactions', () => {
 
@@ -158,14 +169,12 @@ describe('hasValidTransactions', () => {
   it('hasValidTransactions returns true only if all transactions are valid', () => {
     expect(newBlock.hasValidTransactions()).toBe(true)
   })
-
-  test.todo('Block should only contain one mining reward Tx')
 })
 
 describe('hasValidHash', () => {
   const mockHash = "mockHash"
+
   beforeEach(() => {
-    
     jest.spyOn(newBlock, 'calculateHash').mockImplementation(() => mockHash);
   });
 
