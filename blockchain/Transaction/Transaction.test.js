@@ -6,15 +6,12 @@ import { COINBASE_TX } from "../../config";
 import {CoinbaseTransaction} from './Transaction'
 
 let newTransaction
-let key
 let publicKey
 let privateKey
 
 beforeEach(() => {
-
-  key = ec.genKeyPair();
-  publicKey = key.getPublic('hex');
-  privateKey = key.getPrivate('hex');
+  publicKey = "0466106d7a83b41134c3e973fe13c0aa682ec8ee94c32cf6d66429e429554dc4ed9d7c64d0c5685229f503307a30f65c954e781d0f3cf4f77d07e0a9d4c37e1d02"
+  privateKey = "0b9e25155f05ba792d8ed7d670201e60959184af77ab433ea814b67422276149"
   newTransaction = new Transaction("bogus_from_address", "bogus_to_address", 45, "pizza and beer")
   newTransaction.uuid = "123456789"
 });
@@ -115,41 +112,128 @@ describe('signTransaction', () => {
 
 });
 
-describe('isValid', () => {
+describe('hasValidSignature', () => {
+
+  beforeEach(() => {
+    newTransaction.timestamp = 1
+    newTransaction.signature = "30450221009053cc684f78c5173d389874fa556fde4f3314685650e58b89c1ac5ef920fc4c022042aae57e122bf5b13e75f45db4c3b1c59e7210b72197fa9b40ac3ca2955d395a"
+    newTransaction.fromAddress = publicKey
+  });
 
   test('Returns false if missing signature', () => {
+    newTransaction.signature = null
     expect(newTransaction.isValid()).toBe(false)
   });
 
+  test('Calls calculateHash method', () => {
+    const mockedCalcHash = jest.spyOn(newTransaction, 'calculateHash')
+    newTransaction.hasValidSignature()
+    expect(mockedCalcHash).toHaveBeenCalled()
+  });
+
+  test('Returns false if signature is valid signature from different public key', () => {
+    //Valid signature from another public/private key pair
+    newTransaction.signature = "3045022100e89ec48b4645c96d64b138e2a1628ddcbe63e8c1eb47c29b3ba4c53a18aa004a02205288382a46f3c9d8ab9833a3f5300fcf38814873d0484b05f30e44b05fba20c0"
+    expect(newTransaction.hasValidSignature()).toBe(false)
+  });
+
+  test('Returns true if signature matches fromAddress public key and all transaction details', () => {
+    expect(newTransaction.hasValidSignature()).toBe(true)
+  });
+
+  test('Returns false if amount changes', () => {
+    expect(newTransaction.hasValidSignature()).toBe(true)
+    newTransaction.amount = newTransaction.amount + 1
+    expect(newTransaction.hasValidSignature()).toBe(false)
+  });
+
+  test('Returns false if toAddress changes', () => {
+    expect(newTransaction.hasValidSignature()).toBe(true)
+    newTransaction.toAddress = newTransaction.toAddress + "badData"
+    expect(newTransaction.hasValidSignature()).toBe(false)
+  });
+
+  test('Returns false if memo changes', () => {
+    expect(newTransaction.hasValidSignature()).toBe(true)
+    newTransaction.memo = "badData"
+    expect(newTransaction.hasValidSignature()).toBe(false)
+  });
+
+  test('Returns false if fee changes', () => {
+    expect(newTransaction.hasValidSignature()).toBe(true)
+    newTransaction.fee = 99999
+    expect(newTransaction.hasValidSignature()).toBe(false)
+  });
+
+  test('Returns false if timestamp changes', () => {
+    expect(newTransaction.hasValidSignature()).toBe(true)
+    newTransaction.timestamp = 999999
+    expect(newTransaction.hasValidSignature()).toBe(false)
+  });
+
+  test('Returns false if uuid changes', () => {
+    expect(newTransaction.hasValidSignature()).toBe(true)
+    newTransaction.uuid = "badUUID"
+    expect(newTransaction.hasValidSignature()).toBe(false)
+  });
+
+  test('Returns false if fromAddress changes', () => {
+    expect(newTransaction.hasValidSignature()).toBe(true)
+    newTransaction.fromAddress = "0466106d7a83b41134c3e973fe13c0aa682ec8ee94c32cf6d66429e429554dc4ed9d7c64d0c5685229f503307a30f65c954e781d0f3cf4f77d07e0a9d4c37e1d01"
+    expect(newTransaction.hasValidSignature()).toBe(false)
+  });
+
+});
+
+
+describe('hasRequiredFields', () => {
+
   test('Returns false if missing fromAddress', () => {
     newTransaction.fromAddress = null
-    expect(newTransaction.isValid()).toBe(false)
+    expect(newTransaction.hasRequiredFields()).toBe(false)
   });
 
   test('Returns false if missing toAddress', () => {
     newTransaction.toAddress = null
-    expect(newTransaction.isValid()).toBe(false)
-  });
-  
-  test('Returns false if signature doesnt match fromAddress public key', () => {
-    newTransaction.fromAddress = publicKey
-    const different_key = ec.genKeyPair();
-    const transactionHash = newTransaction.calculateHash()
-    const different_signature = different_key.sign(transactionHash, 'base64')
-    newTransaction.signature = different_signature
-    expect(newTransaction.isValid()).toBe(false)
+    expect(newTransaction.hasRequiredFields()).toBe(false)
   });
 
   test('Returns false if amount is zero or negative', () => {
     newTransaction.amount = 0
-    expect(newTransaction.isValid()).toBe(false)
+    expect(newTransaction.hasRequiredFields()).toBe(false)
     newTransaction.amount = -1
+    expect(newTransaction.hasRequiredFields()).toBe(false)
+  });
+
+  test('Returns true if required fields are present and amount > 0', () => {
+    expect(newTransaction.hasRequiredFields()).toBe(true)
+  });
+
+});
+
+describe('isValid', () => {
+
+  beforeEach(() => {
+    jest.spyOn(newTransaction, 'hasRequiredFields').mockImplementation(() => true);
+    jest.spyOn(newTransaction, 'hasValidSignature').mockImplementation(() => true);
+  })
+
+  test('Returns false if hasRequiredFields returns false', () => {
+    jest.spyOn(newTransaction, 'hasRequiredFields').mockImplementation(() => false);
     expect(newTransaction.isValid()).toBe(false)
   });
 
-  test('Returns true if signature matches fromAddress public key', () => {
-    newTransaction.fromAddress = publicKey
-    newTransaction.signTransaction(privateKey)
+  test('Returns false if hasValidSignature returns false', () => {
+    jest.spyOn(newTransaction, 'hasValidSignature').mockImplementation(() => false);
+    expect(newTransaction.isValid()).toBe(false)
+  });
+
+  test('Returns false if amount <= 0', () => {
+    newTransaction.amount = 0
+    expect(newTransaction.isValid()).toBe(false)
+  });
+
+  test('Returns true if has required fields, valid signature, and amount > 0', () => {
     expect(newTransaction.isValid()).toBe(true)
   });
 

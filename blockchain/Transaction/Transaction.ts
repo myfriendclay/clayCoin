@@ -42,7 +42,7 @@ export default class Transaction {
   hasValidSignature(): boolean {
     if (!this.signature) {
       return false
-    } 
+    }
     const publicKey = ec.keyFromPublic(this.fromAddress, 'hex')
     return publicKey.verify(this.calculateHash(), this.signature)
   }
