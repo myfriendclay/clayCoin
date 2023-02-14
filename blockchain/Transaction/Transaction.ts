@@ -57,8 +57,8 @@ export default class Transaction {
 }
 
 export class CoinbaseTransaction extends Transaction {
-  constructor(miningRewardAddress: string, reward: number) {
-    super(COINBASE_TX.fromAddress, miningRewardAddress, reward, COINBASE_TX.memo)
+  constructor(miningRewardAddress: string, miningReward: number) {
+    super(COINBASE_TX.fromAddress, miningRewardAddress, miningReward, COINBASE_TX.memo)
   }
 
   isValid(): boolean {

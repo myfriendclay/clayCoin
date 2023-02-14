@@ -147,8 +147,6 @@ describe('calculateHash', () => {
 
 })
 
-
-
 describe('hasValidTransactions', () => {
 
   let transactions

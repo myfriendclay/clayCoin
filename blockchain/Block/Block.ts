@@ -1,3 +1,4 @@
+//@ts-ignore
 import hexToBinary from "hex-to-binary"
 import { GENESIS_BLOCK_DATA } from "../../config"
 import Transaction, { CoinbaseTransaction } from "../Transaction/Transaction";
@@ -82,6 +83,12 @@ export class GenesisBlock extends Block {
 
   isValid(): boolean {
     const { difficulty, transactions, previousHash, height } = GENESIS_BLOCK_DATA
-    return this.hasProofOfWork() && this.difficulty === difficulty && this.transactions.length === transactions.length && this.previousHash === previousHash && this.height === height
+    return (
+      this.hasProofOfWork() && 
+      this.difficulty === difficulty && 
+      this.transactions.length === transactions.length && 
+      this.previousHash === previousHash && 
+      this.height === height
+      )
   }
 }

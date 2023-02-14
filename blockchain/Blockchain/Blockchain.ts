@@ -97,7 +97,6 @@ export default class Blockchain {
     return this.pendingTransactions
   }
 
-
   getTotalTransactionFees(): number {
     return this.pendingTransactions.map(tx => tx.fee).reduce((prev, curr) => prev + curr, 0)
   }
