@@ -28,7 +28,7 @@ export default class Transaction {
     return getSHA256Hash(this.fromAddress, this.toAddress, this.amount, this.memo, this.fee, this.uuid, this.timestamp)
   }
 
-  signTransaction(secretKey: string) {
+  signTransaction(secretKey: string): void {
     const signingKey = ec.keyFromPrivate(secretKey, 'hex')
     if (signingKey.getPublic('hex') !== this.fromAddress) {
       throw new Error("you can't sign transactions for other wallets")
@@ -47,7 +47,7 @@ export default class Transaction {
     return publicKey.verify(this.calculateHash(), this.signature)
   }
 
-  hasRequiredFields() {
+  hasRequiredFields(): boolean {
     return !!(this.fromAddress && this.toAddress && this.amount > 0)
   }
 
