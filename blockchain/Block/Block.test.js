@@ -3,6 +3,7 @@ import { GenesisBlock } from './Block'
 import hexToBinary from "hex-to-binary"
 import { GENESIS_BLOCK_DATA } from "../../config"
 import * as getSHA256HashModule from "../../utils/crypto-hash";
+import { CoinbaseTransaction } from '../Transaction/Transaction';
 
 let newBlock
 let testTransactions
@@ -51,12 +52,14 @@ describe('mineBlock', () => {
     expect(hashHeader).toBe(targetHash)
   });
 
-  it('produces hash returned by calculateHash function, after updating and passing in new nonce', () => {
+  it('sets hash to return value of getProofOfWork', () => {
+    expect(newBlock.hash).toBeUndefined()
+    const proofOfWork = "myProofOfWork"
+    jest.spyOn(newBlock, 'getProofOfWorkHash').mockReturnValueOnce(proofOfWork)
+    newBlock.mineBlock()
+    expect(newBlock.hash).toBe(proofOfWork)
   });
 
-  test.todo('Calls calculate hash')
-  test.todo('sets hash to return value of calculate hash')
-  
   it('updates first d number of characters of BINARY hash when d changes', () => {
     newBlock.difficulty = 3
     const targetHash = "0".repeat(newBlock.difficulty)
@@ -75,6 +78,16 @@ describe('mineBlock', () => {
     expect(originalBlock.difficulty).toBe(newBlock.difficulty)
     expect(originalBlock.nonce).not.toBe(newBlock.nonce)
   })
+
+  it('sets miningTime to time it took to mine block', () => {
+    //Need to set difficulty to something decently high so duration isn't 0
+    newBlock.difficulty = 15
+    const before = Date.now()
+    newBlock.mineBlock()
+    const after = Date.now()
+    const duration = after - before
+    expect(newBlock.miningDurationMs).toBe(duration)
+  });
 })
 
 describe('getProofOfWorkHash', () => {
@@ -218,12 +231,41 @@ describe('hasProofOfWork', () => {
   })
 })
 
+describe('hasOnlyOneCoinbaseTx', () => {
+  let coinbaseTx
+  beforeEach(() => {
+    coinbaseTx = Object.create(CoinbaseTransaction.prototype, {
+      miningRewardAddress: { value: 'mock-address' },
+      miningReward: { value: 10 },
+    });
+    newBlock.transactions.push(coinbaseTx)
+  })
+
+  it("returns true if block has one coinbase Tx", () => {
+    expect(newBlock.hasOnlyOneCoinbaseTx()).toBe(true)
+  })
+
+  it("returns false if block has 0 coinbase Tx", () => {
+    newBlock.transactions.pop()
+    expect(newBlock.hasOnlyOneCoinbaseTx()).toBe(false)
+  })
+
+  it("returns false if block has 2 or more coinbase Txs", () => {
+    newBlock.transactions.push(coinbaseTx)
+    expect(newBlock.hasOnlyOneCoinbaseTx()).toBe(false)
+  })
+})
+
 describe('isValid', () => {
 
   beforeEach(() => {
     jest.spyOn(newBlock, 'hasValidTransactions').mockImplementation(() => true);
     jest.spyOn(newBlock, 'hasProofOfWork').mockImplementation(() => true);
     jest.spyOn(newBlock, 'hasOnlyOneCoinbaseTx').mockImplementation(() => true);
+  })
+
+  it("returns true if all transactions are valid and has proof of work", () => {
+    expect(newBlock.isValid()).toBe(true)
   })
 
   it("returns false if all transactions aren't valid", () => {
@@ -241,9 +283,6 @@ describe('isValid', () => {
     expect(newBlock.isValid()).toBe(false)
   })
 
-  it("returns true if all transactions are valid and has proof of work", () => {
-    expect(newBlock.isValid()).toBe(true)
-  })
 })
 
 describe('GenesisBlock', () => {
