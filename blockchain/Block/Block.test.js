@@ -61,7 +61,7 @@ describe('mineBlock', () => {
   });
 
   it('updates first d number of characters of BINARY hash when d changes', () => {
-    newBlock.difficulty = 3
+    newBlock.difficulty = 7
     const targetHash = "0".repeat(newBlock.difficulty)
     newBlock.mineBlock(newBlock.difficulty)
     const hashHeader = hexToBinary(newBlock.hash).substring(0, newBlock.difficulty)
@@ -194,19 +194,27 @@ describe('hasValidHash', () => {
     expect(newBlock.hasValidHash()).toBe(true)
   })
   
-  it('returns true if block hash is same as return value of calculateHash', () => {
+  it('returns false if block hash is different than return value of calculateHash', () => {
     newBlock.hash = mockHash + "extra"
     expect(newBlock.hasValidHash()).toBe(false)
   })
 })
 
 describe('firstDCharsAreZero', () => {
-  it('returns true if first d (difficulty) chars are 0', () => {
-    newBlock.hash = "0".repeat(newBlock.difficulty) + "blahblah"
+  beforeEach(() => {
+    newBlock.hash = "0008"
+    // 0008 in hex === 0000 0000 0000 1000 in binary (i.e. 12 leading zeros)
+  })
+
+  test('returns true if first d (difficulty) chars of binary are 0', () => {
+    newBlock.difficulty = 12
     expect(newBlock.firstDCharsAreZero()).toBe(true)
   })
-  test.todo('returns false first d (difficulty) chars are not 0')
 
+  test('returns false first d (difficulty) chars of binary are not 0', () => {
+    newBlock.difficulty = 13
+    expect(newBlock.firstDCharsAreZero()).toBe(false)
+  })
 })
 
 describe('hasProofOfWork', () => {
@@ -282,7 +290,6 @@ describe('isValid', () => {
     jest.spyOn(newBlock, 'hasOnlyOneCoinbaseTx').mockImplementation(() => false);
     expect(newBlock.isValid()).toBe(false)
   })
-
 })
 
 describe('GenesisBlock', () => {

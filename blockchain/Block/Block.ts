@@ -57,13 +57,14 @@ export default class Block {
     const count = this.transactions.filter(transaction => transaction instanceof CoinbaseTransaction).length;
     return count === 1
   }
-
+  
   hasValidHash(): boolean {
     return this.hash === this.calculateHash()
   }
 
   firstDCharsAreZero(): boolean {
-    return hexToBinary(this.hash).substring(0, this.difficulty) === "0".repeat(this.difficulty)
+    const proofOfWorkReq = "0".repeat(this.difficulty)
+    return hexToBinary(this.hash).substring(0, this.difficulty) === proofOfWorkReq
   }
 
   hasProofOfWork(): boolean {
