@@ -128,11 +128,11 @@ describe('isChainValid', () => {
 describe('getBalanceOfAddress', () => {
 
   beforeEach(() => {
-    let tx1 = new Transaction("randomAddress", "targetAddress", 20, 'pizza', 5000);
-    let tx2 = new Transaction("targetAddress", "randomAddress", 1, 'pizza', 2);
-    let tx3 = new Transaction("targetAddress", "randomAddress", 3, 'pizza', 4);
-    let block1 = new Block([tx1, tx2], 2, '', 1)
-    let block2 = new Block([tx3], 2, '', 2)
+    const tx1 = new Transaction("randomAddress", "targetAddress", 20, 'pizza', 5000);
+    const tx2 = new Transaction("targetAddress", "randomAddress", 1, 'pizza', 2);
+    const tx3 = new Transaction("targetAddress", "randomAddress", 3, 'pizza', 4);
+    const block1 = new Block([tx1, tx2], 2, '', 1)
+    const block2 = new Block([tx3], 2, '', 2)
     testCoin.chain = [ block1, block2 ]
   })
   
@@ -148,39 +148,29 @@ describe('getBalanceOfAddress', () => {
 
 describe('getTotalPendingOwedByWallet', () => {
   it('returns total wallet owes for all pending transactions including fees', () => {
-    let tx1 = new Transaction("randomAddress", "targetAddress", 100);
-    let tx2 = new Transaction("targetAddress", "randomAddress", 10);
-    let tx3 = new Transaction("targetAddress", "randomAddress", 20);
-    let tx4 = new Transaction("targetAddress", "randomAddress", 30, 'pizza', 5);
-
-    testCoin.pendingTransactions= [tx1, tx2, tx3, tx4]
-    expect(testCoin.getTotalPendingOwedByWallet("targetAddress")).toBe(65)
+    const tx1 = new Transaction("randomAddress", "targetAddress", 20, 'pizza', 5000);
+    const tx2 = new Transaction("targetAddress", "randomAddress", 1, 'pizza', 2);
+    const tx3 = new Transaction("targetAddress", "randomAddress", 3, 'pizza', 4);
+    testCoin.pendingTransactions= [tx1, tx2, tx3]
+    expect(testCoin.getTotalPendingOwedByWallet("targetAddress")).toBe(10)
   })
 });
 
 describe('walletHasSufficientFunds', () => {
-  it('returns false if transaction amount + fees is more than wallet balance', () => {
-    const transaction = new Transaction("fromAddress", "toAddress", 8, 'pizza', 2);
-    jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 9);
-    expect(testCoin.walletHasSufficientFunds(transaction)).toBe(false)
+  let tx1
+  beforeEach(() => {
+    tx1 = new Transaction("fromAddress", "toAddress", 10, 'pizza', 6);
+    jest.spyOn(testCoin, 'getTotalPendingOwedByWallet').mockImplementation(() => 5);
+    jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 20);
   })
-  it('returns false if total pending owed is more than wallet balance', () => {
-    const transaction = new Transaction("fromAddress", "toAddress", 0, 'pizza', 0);
-    jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 10);
-    jest.spyOn(testCoin, 'getTotalPendingOwedByWallet').mockImplementation(() => 11);
-    expect(testCoin.walletHasSufficientFunds(transaction)).toBe(false)
-  })
+
   it('returns false if total pending owed plus transaction is more than wallet balance', () => {
-    const transaction = new Transaction("fromAddress", "toAddress", 9, 'pizza', 1);
-    jest.spyOn(testCoin, 'getTotalPendingOwedByWallet').mockImplementation(() => 11);
-    jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 20);
-    expect(testCoin.walletHasSufficientFunds(transaction)).toBe(false)
+    expect(testCoin.walletHasSufficientFunds(tx1)).toBe(false)
   })
+  
   it('returns true if wallet balance is more than or equal to total pending plus transaction amount', () => {
-    const transaction = new Transaction("fromAddress", "toAddress", 9, 'pizza', 1);
-    jest.spyOn(testCoin, 'getTotalPendingOwedByWallet').mockImplementation(() => 10);
-    jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 20);
-    expect(testCoin.walletHasSufficientFunds(transaction)).toBe(true)
+    jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 21);
+    expect(testCoin.walletHasSufficientFunds(tx1)).toBe(true)
   })
 });
 

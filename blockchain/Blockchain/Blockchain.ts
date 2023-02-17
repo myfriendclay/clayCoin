@@ -64,7 +64,6 @@ export default class Blockchain {
   getTotalPendingOwedByWallet(address: string): number {
     const pendingTransactionsForWallet = this.pendingTransactions.filter(tx => tx.fromAddress === address)
     const totalPendingAmount = pendingTransactionsForWallet.map(tx => tx.amount + tx.fee).reduce((prev, curr) => prev + curr, 0)
-    // const totalFeesOwed = pendingTransactionsForWallet.map(tx => tx.fee).reduce((prev, curr) => prev + curr, 0)
     return totalPendingAmount
   }
 
