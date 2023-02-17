@@ -2,7 +2,7 @@ import Blockchain from "../Blockchain/Blockchain";
 import Transaction from "../Transaction/Transaction";
 import {CoinbaseTransaction} from "../Transaction/Transaction"
 import Block from "../Block/Block";
-import { INITIAL_DIFFICULTY } from "../../config"
+import { INITIAL_DIFFICULTY, MINE_RATE_MS } from "../../config"
 
 let testCoin
 let transaction
@@ -109,18 +109,21 @@ describe('isChainValid', () => {
     jest.spyOn(block2, 'isValid').mockImplementation(() => false);
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
+
   it('Returns false if genesis block is invalid', () => {
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
     jest.spyOn(testCoin.chain[0], 'isValid').mockImplementation(() => false);
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
+
   it('Returns false if there is a negative jump in difficulty between blocks more than 1', () => {
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
     block2.difficulty = 10
     block3.difficulty = 8
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
-  it('Returns true if all blocks are valid (or genesis) and each block connects', () => {
+  
+  it('Returns true if all blocks are valid and each block connects', () => {
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
   })
 });
@@ -167,7 +170,7 @@ describe('walletHasSufficientFunds', () => {
   it('returns false if total pending owed plus transaction is more than wallet balance', () => {
     expect(testCoin.walletHasSufficientFunds(tx1)).toBe(false)
   })
-  
+
   it('returns true if wallet balance is more than or equal to total pending plus transaction amount', () => {
     jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 21);
     expect(testCoin.walletHasSufficientFunds(tx1)).toBe(true)
@@ -222,7 +225,7 @@ describe('getTotalTransactionFees', () => {
     let tx1 = new Transaction("randomAddress", "targetAddress", 100);
     let tx2 = new Transaction("targetAddress", "randomAddress", 10, 'pizza', 0);
 
-    testCoin.pendingTransactions = [tx1, tx2 ]
+    testCoin.pendingTransactions = [tx1, tx2]
     expect(testCoin.getTotalTransactionFees()).toBe(0)
   })
 
@@ -341,8 +344,26 @@ describe('replaceChain', () => {
   })
 })
 
-describe('adjustDifficulty', () => { 
-  test.todo('it raises the difficulty for a quickly mined block')
-  test.todo('it lowers the difficulty for a quickly mined block')
-  test.todo('it never lowers before 1')
+describe('getNewMiningDifficulty', () => {
+  let block
+  beforeEach(() => {
+    block = new Block([], 4, '', 1)
+    jest.spyOn(testCoin, 'getLatestBlock').mockImplementation(() => block);
+  })
+
+  it('it raises the difficulty for a quickly mined block', () => {
+    block.miningDurationMs = MINE_RATE_MS - 1
+    expect(testCoin.getNewMiningDifficulty()).toBe(testCoin.difficulty + 1)
+  })
+
+  it('it lowers the difficulty for a quickly mined block', () => {
+    block.miningDurationMs = MINE_RATE_MS + 1
+    expect(testCoin.getNewMiningDifficulty()).toBe(testCoin.difficulty - 1)
+  })
+
+  it('it never lowers before 1', () => {
+    testCoin.difficulty = 1
+    block.miningDurationMs = MINE_RATE_MS + 1
+    expect(testCoin.getNewMiningDifficulty()).toBe(1)
+  })
 })

@@ -112,13 +112,14 @@ export default class Blockchain {
 
   getNewMiningDifficulty(): number {
     const lastMiningTime = this.getLatestBlock().miningDurationMs || MINE_RATE_MS
-    
+    let difficulty = this.difficulty
+
     if (lastMiningTime < MINE_RATE_MS) {
-      this.difficulty++
+      difficulty++
     } else if (this.difficulty > 1){
-      this.difficulty--
+      difficulty--
     }
-    return this.difficulty
+    return difficulty
   }
 
   minePendingTransactions(miningRewardAddress: string): Block {
