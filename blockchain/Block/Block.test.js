@@ -114,7 +114,6 @@ describe('getProofOfWorkHash', () => {
 })
 
 describe('calculateHash', () => {
-
   beforeEach(() => {
     newBlock.timestamp = 1
     originalHash = newBlock.calculateHash()

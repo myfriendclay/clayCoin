@@ -2,12 +2,8 @@ import Blockchain from "../Blockchain/Blockchain";
 import Transaction from "../Transaction/Transaction";
 import {CoinbaseTransaction} from "../Transaction/Transaction"
 import Block from "../Block/Block";
-import EC from "elliptic"
 import { INITIAL_DIFFICULTY } from "../../config"
 
-const ec = new EC.ec('secp256k1')
-
-const key = ec.genKeyPair();
 let testCoin
 let transaction
 
@@ -130,56 +126,24 @@ describe('isChainValid', () => {
 });
 
 describe('getBalanceOfAddress', () => {
+
+  beforeEach(() => {
+    let tx1 = new Transaction("randomAddress", "targetAddress", 20, 'pizza', 5000);
+    let tx2 = new Transaction("targetAddress", "randomAddress", 1, 'pizza', 2);
+    let tx3 = new Transaction("targetAddress", "randomAddress", 3, 'pizza', 4);
+    let block1 = new Block([tx1, tx2], 2, '', 1)
+    let block2 = new Block([tx3], 2, '', 2)
+    testCoin.chain = [ block1, block2 ]
+  })
   
   test('Returns null if address is not found', () => {
     expect(testCoin.getBalanceOfAddress("nonExistentAddress")).toBe(null)
   })
 
-  test('Subtracts fees from fromAddress', () => {
-    let tx1 = new Transaction("targetAddress", "randomAddress", 5, 'pizza', 20);
-    let tx2 = new Transaction("targetAddress", "randomAddress", 10, 'pizza', 25);
-    testCoin.pendingTransactions.push(tx1, tx2)
-    testCoin.minePendingTransactions("miningAddress")
-    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(-60)
+  test('Returns correct balance, subtracting fees, and adding/subtracting received/sent amounts respectively for each transaction across all blocks', () => {
+    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(10)
   })
 
-  test('Returns correct balance if positive', () => {
-    let tx1 = new Transaction("randomAddress", "targetAddress", 100);
-    let tx2 = new Transaction("targetAddress", "randomAddress", 10);
-    let tx3 = new Transaction("targetAddress", "randomAddress", 20);
-    let tx4 = new Transaction("randomAddress", "targetAddress", 5);
-    let tx5 = new Transaction("targetAddress", "randomAddress", 10, 'test', 30);
-    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4, tx5)
-    testCoin.minePendingTransactions("miningAddress")
-    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(35)
-  })
-
-  test('Returns correct balance if negative', () => {
-    let tx1 = new Transaction("randomAddress", "targetAddress", 100);
-    let tx2 = new Transaction("targetAddress", "randomAddress", 100);
-    let tx3 = new Transaction("targetAddress", "randomAddress", 20);
-    let tx4 = new Transaction("randomAddress", "targetAddress", 5);
-    let tx5 = new Transaction("targetAddress", "randomAddress", 10, 'test', 10);
-    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4, tx5)
-    testCoin.minePendingTransactions("miningAddress")
-    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(-35)
-  })
-
-  test('Returns correct balance if zero', () => {
-    let tx1 = new Transaction("randomAddress", "targetAddress", 100);
-    let tx2 = new Transaction("targetAddress", "randomAddress", 200);
-    let tx3 = new Transaction("targetAddress", "randomAddress", 100);
-    let tx4 = new Transaction("randomAddress", "targetAddress", 400);
-    let tx5 = new Transaction("targetAddress", "randomAddress", 150, 'pizza', 50);
-    testCoin.pendingTransactions.push(tx1, tx2, tx3, tx4, tx5)
-    testCoin.minePendingTransactions("miningAddress")
-    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(0)
-  })
-
-  test('Returns correct balance if no transactions', () => {
-    testCoin.minePendingTransactions("miningAddress")
-    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(null)
-  })
 });
 
 describe('getTotalPendingOwedByWallet', () => {
@@ -188,6 +152,7 @@ describe('getTotalPendingOwedByWallet', () => {
     let tx2 = new Transaction("targetAddress", "randomAddress", 10);
     let tx3 = new Transaction("targetAddress", "randomAddress", 20);
     let tx4 = new Transaction("targetAddress", "randomAddress", 30, 'pizza', 5);
+
     testCoin.pendingTransactions= [tx1, tx2, tx3, tx4]
     expect(testCoin.getTotalPendingOwedByWallet("targetAddress")).toBe(65)
   })
