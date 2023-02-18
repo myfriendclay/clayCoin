@@ -3,6 +3,7 @@ import Transaction from "../Transaction/Transaction";
 import {CoinbaseTransaction} from "../Transaction/Transaction"
 import Block from "../Block/Block";
 import { INITIAL_DIFFICULTY, MINE_RATE_MS } from "../../config"
+import Wallet from "../Wallet/Wallet";
 
 let testCoin
 let transaction
@@ -66,13 +67,13 @@ describe('addTransaction', () => {
   })
 
   test('Throws error if fromAddress does not have enough money', () => {
-    jest.spyOn(testCoin, 'walletHasSufficientFunds').mockImplementation(() => false);
+    jest.spyOn(Wallet, 'walletHasSufficientFunds').mockImplementation(() => false);
     expect(() => testCoin.addTransaction(transaction)).toThrow(Error)
   })
 
   test('Adds to mempool if valid transaction and fromAddress wallet has sufficient funds', () => {
     transaction.isValid.mockReturnValue(true)
-    jest.spyOn(testCoin, 'walletHasSufficientFunds').mockImplementation(() => true);
+    jest.spyOn(Wallet, 'walletHasSufficientFunds').mockImplementation(() => true);
     testCoin.addTransaction(transaction)
     expect(testCoin.pendingTransactions[0]).toBe(transaction)
   })
@@ -125,55 +126,6 @@ describe('isChainValid', () => {
   
   it('Returns true if all blocks are valid and each block connects', () => {
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
-  })
-});
-
-describe('getBalanceOfAddress', () => {
-
-  beforeEach(() => {
-    const tx1 = new Transaction("randomAddress", "targetAddress", 20, 'pizza', 5000);
-    const tx2 = new Transaction("targetAddress", "randomAddress", 1, 'pizza', 2);
-    const tx3 = new Transaction("targetAddress", "randomAddress", 3, 'pizza', 4);
-    const block1 = new Block([tx1, tx2], 2, '', 1)
-    const block2 = new Block([tx3], 2, '', 2)
-    testCoin.chain = [ block1, block2 ]
-  })
-  
-  test('Returns null if address is not found', () => {
-    expect(testCoin.getBalanceOfAddress("nonExistentAddress")).toBe(null)
-  })
-
-  test('Returns correct balance, subtracting fees, and adding/subtracting received/sent amounts respectively for each transaction across all blocks', () => {
-    expect(testCoin.getBalanceOfAddress("targetAddress")).toBe(10)
-  })
-
-});
-
-describe('getTotalPendingOwedByWallet', () => {
-  it('returns total wallet owes for all pending transactions including fees', () => {
-    const tx1 = new Transaction("randomAddress", "targetAddress", 20, 'pizza', 5000);
-    const tx2 = new Transaction("targetAddress", "randomAddress", 1, 'pizza', 2);
-    const tx3 = new Transaction("targetAddress", "randomAddress", 3, 'pizza', 4);
-    testCoin.pendingTransactions= [tx1, tx2, tx3]
-    expect(testCoin.getTotalPendingOwedByWallet("targetAddress")).toBe(10)
-  })
-});
-
-describe('walletHasSufficientFunds', () => {
-  let tx1
-  beforeEach(() => {
-    tx1 = new Transaction("fromAddress", "toAddress", 10, 'pizza', 6);
-    jest.spyOn(testCoin, 'getTotalPendingOwedByWallet').mockImplementation(() => 5);
-    jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 20);
-  })
-
-  it('returns false if total pending owed plus transaction is more than wallet balance', () => {
-    expect(testCoin.walletHasSufficientFunds(tx1)).toBe(false)
-  })
-
-  it('returns true if wallet balance is more than or equal to total pending plus transaction amount', () => {
-    jest.spyOn(testCoin, 'getBalanceOfAddress').mockImplementation(() => 21);
-    expect(testCoin.walletHasSufficientFunds(tx1)).toBe(true)
   })
 });
 

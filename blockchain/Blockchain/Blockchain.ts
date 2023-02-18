@@ -2,10 +2,9 @@ import Block from '../Block/Block'
 import { GenesisBlock } from '../Block/Block'
 import Transaction from '../Transaction/Transaction'
 import { CoinbaseTransaction } from '../Transaction/Transaction'
-import EC from "elliptic"
-const ec = new EC.ec('secp256k1')
 import { MINE_RATE_MS, INITIAL_DIFFICULTY, BLOCK_SUBSIDY, COINBASE_TX } from "../../config"
 import { Type } from 'class-transformer';
+import Wallet from '../Wallet/Wallet'
 import 'reflect-metadata';
 
 export default class Blockchain {
@@ -31,62 +30,11 @@ export default class Blockchain {
       throw new Error("Cannot add invalid transaction to chain")
     }
 
-    if (!this.walletHasSufficientFunds(transaction)) {
+    if (!Wallet.walletHasSufficientFunds(transaction.fromAddress, transaction, this.chain, this.pendingTransactions)) {
       throw new Error("not enough funds for transactions in mempool or this transaction itself")
     }
     
     this.pendingTransactions.push(transaction)
-  }
-  //Validity methods:
-
-  //Wallet helpers
-
-  getBalanceOfAddress(address: string): number | null {
-    if (this.getAllTransactionsForWallet(address).length === 0) {
-      return null
-    }
-    let balance = 0
-    for (const block of this.chain) {
-      for (const transaction of block.transactions) {
-        if (transaction.fromAddress === address) {
-          balance -= transaction.amount
-          balance -= transaction.fee
-        }
-
-        if (transaction.toAddress === address) {
-          balance += transaction.amount
-        }
-      }
-    }
-    return balance
-  }
-
-  getTotalPendingOwedByWallet(address: string): number {
-    const pendingTransactionsForWallet = this.pendingTransactions.filter(tx => tx.fromAddress === address)
-    const totalPendingAmount = pendingTransactionsForWallet.map(tx => tx.amount + tx.fee).reduce((prev, curr) => prev + curr, 0)
-    return totalPendingAmount
-  }
-
-  walletHasSufficientFunds(transaction: Transaction): boolean {
-    const walletBalance = this.getBalanceOfAddress(transaction.fromAddress)
-    if (walletBalance === null) {
-      return false
-    }
-    const totalPendingOwed = this.getTotalPendingOwedByWallet(transaction.fromAddress)
-    return walletBalance >= totalPendingOwed + transaction.amount + transaction.fee
-  }
-  
-  //For possible API use:
-  getAllTransactionsForWallet(address: string): Transaction[] {
-    const transactions = []
-    for (const block of this.chain) {
-      for (const transaction of block.transactions) {
-        if (transaction.fromAddress === address || transaction.toAddress === address) {
-          transactions.push(transaction)
-        }
-      }
-    }
-    return transactions
   }
 
    //Transaction helpers:
