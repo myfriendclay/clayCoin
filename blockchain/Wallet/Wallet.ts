@@ -12,7 +12,7 @@ export default class Wallet {
     this.privateKey = key.getPrivate('hex');
   }
 
-  public getpublicKey() : string {
+  public getPublicKey() : string {
     return this.publicKey
   }
 

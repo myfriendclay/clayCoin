@@ -4,6 +4,7 @@ import './App.css';
 import MemPool from './components/MemPool/MemPool';
 import CreatePayment from './components/createPayment/CreatePayment';
 import { Blockchain } from './components/Blockchain';
+import { Wallet } from './components/Wallet';
 
 export interface BlockType {
   timestamp: string;
@@ -48,6 +49,7 @@ function App() {
 
   return (
     <div>
+      <Wallet/>
       <CreatePayment/>
       <MemPool memPool={memPool}/>
       <Blockchain blockchain={blockchain}/>

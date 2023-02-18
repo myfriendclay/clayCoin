@@ -9,6 +9,7 @@ import request from 'request'
 import { plainToClass } from 'class-transformer';
 import cors from 'cors'
 import { DEFAULT_PORT } from '../config'
+import Wallet from '../blockchain/Wallet/Wallet'
 const app = express()
 
 app.use(cors({
@@ -56,6 +57,15 @@ app.get('/blockchain', (req, res) => {
     'blockchain': blockchain,
     'length': blockchain.chain.length,
     'isChainValid': Blockchain.isChainValid(blockchain.chain)
+  }
+  res.json(response)
+})
+
+app.get('/wallet', (req, res) => {
+  const wallet = new Wallet()
+  const response = {
+    'publicKey': wallet.getPublicKey(),
+    'privateKey': wallet.getPrivateKey(),
   }
   res.json(response)
 })
