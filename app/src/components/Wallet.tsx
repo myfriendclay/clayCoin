@@ -1,6 +1,7 @@
 import { Button, Container } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
+import { WalletBalanceChecker } from "./WalletBalanceChecker";
 
 export function Wallet() {
 
@@ -13,7 +14,7 @@ export function Wallet() {
 
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
     event.preventDefault();
-    axios.get('http://localhost:3001/wallet')
+    axios.get('http://localhost:3001/wallets/new')
       .then(response => {
         const walletKeyPair = response.data
         setWallet({...wallet, 
@@ -41,12 +42,15 @@ export function Wallet() {
     </Button>
       {wallet.publicKey ?
       <div>
-        <p>Public Key: {wallet.publicKey}</p>
-        <p>Private Key: {wallet.privateKey}</p> 
+        <p>Public Key 🔓: {wallet.publicKey}</p>
+        <p>Private Key 🔒: {wallet.privateKey}</p> 
       </div>
       :
       <div/>
     }
+
+    <WalletBalanceChecker/>
   </Container>
+  
   )
 } 

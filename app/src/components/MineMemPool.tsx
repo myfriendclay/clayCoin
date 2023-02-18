@@ -30,7 +30,9 @@ function MineMemPool() {
       .catch(err => {
         console.error(err)
       })
-      setFormData(blankFormValues)
+      .finally(() => {
+        setFormData(blankFormValues)
+      })
   }
 
 
