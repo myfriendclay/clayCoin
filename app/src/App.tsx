@@ -7,12 +7,12 @@ import { Blockchain } from './components/Blockchain';
 import { Wallet } from './components/Wallet';
 
 export interface BlockType {
-  timestamp: string;
-  hash: string;
+  timestamp: number;
+  hash: string | undefined;
   height: number;
   nonce: number;
-  miningDurationMs: number;
-  previousHash: string;
+  miningDurationMs: number | undefined;
+  previousHash: string | null;
   transactions: TransactionType[];
   difficulty: number;
 }
