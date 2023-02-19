@@ -1,6 +1,6 @@
 import Transaction, { CoinbaseTransaction } from "./Transaction";
 import { COINBASE_TX } from "../../config";
-import * as getSHA256HashModule from "../../utils/crypto-hash";
+import * as getSHA256HashModule from "../utils/crypto-hash";
 
 let transaction
 const publicKey = "0466106d7a83b41134c3e973fe13c0aa682ec8ee94c32cf6d66429e429554dc4ed9d7c64d0c5685229f503307a30f65c954e781d0f3cf4f77d07e0a9d4c37e1d02"

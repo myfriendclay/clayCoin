@@ -2,7 +2,7 @@ import Block from './Block.ts'
 import { GenesisBlock } from './Block'
 import hexToBinary from "hex-to-binary"
 import { GENESIS_BLOCK_DATA } from "../../config"
-import * as getSHA256HashModule from "../../utils/crypto-hash";
+import * as getSHA256HashModule from "../utils/crypto-hash";
 import { CoinbaseTransaction } from '../Transaction/Transaction';
 
 let newBlock

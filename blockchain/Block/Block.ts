@@ -4,7 +4,7 @@ import { GENESIS_BLOCK_DATA } from "../../config"
 import Transaction, { CoinbaseTransaction } from "../Transaction/Transaction";
 import { Type } from 'class-transformer';
 import 'reflect-metadata';
-import getSHA256Hash from "../../utils/crypto-hash";
+import getSHA256Hash from "../utils/crypto-hash";
 
 export default class Block {
   @Type(() => Transaction)

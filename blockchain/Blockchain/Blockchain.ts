@@ -1,10 +1,9 @@
-import Block from '../Block/Block'
-import { GenesisBlock } from '../Block/Block'
+import Block, { GenesisBlock } from '../Block/Block'
 import Transaction from '../Transaction/Transaction'
-import { CoinbaseTransaction } from '../Transaction/Transaction'
-import { MINE_RATE_MS, INITIAL_DIFFICULTY, BLOCK_SUBSIDY, COINBASE_TX } from "../../config"
-import { Type } from 'class-transformer';
 import Wallet from '../Wallet/Wallet'
+import { CoinbaseTransaction } from '../Transaction/Transaction'
+import { MINE_RATE_MS, INITIAL_DIFFICULTY, BLOCK_SUBSIDY } from "../../config"
+import { Type } from 'class-transformer';
 import 'reflect-metadata';
 
 export default class Blockchain {
@@ -99,6 +98,10 @@ export default class Blockchain {
   replaceMempool() {
 
   }
+  static areBlocksValidlyConnected(block1: Block, block2: Block): boolean {
+    const difficultyJump = block2.difficulty - block1.difficulty
+    return block2.previousHash === block1.hash && difficultyJump >= -1
+  }
 
   static isChainValid(chain: Block[]) {
     // Check if the Genesis block hasn't been tampered with:
@@ -107,23 +110,13 @@ export default class Blockchain {
     }
 
     for (let i = 1; i < chain.length; i++) {
-      const currentBlock = chain[i]
       const previousBlock = chain[i - 1]
-      const difficultyJump = currentBlock.difficulty - previousBlock.difficulty
-      if (!currentBlock.isValid()) {
-        return false
-      }
-    
-      if (currentBlock.previousHash !== previousBlock.hash) {
-        return false
-      }
+      const currentBlock = chain[i]
 
-      //Detect negative difficulty jump greater than 1
-      if (difficultyJump < -1) {
+      if (!currentBlock.isValid() || !this.areBlocksValidlyConnected(previousBlock, currentBlock)) {
         return false
       }
     }
     return true
   }
-  
 }
