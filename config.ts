@@ -1,4 +1,4 @@
-export const DEFAULT_PORT = 3001
+export const DEFAULT_PORT = 3002
 //Note for test suite needs to be 100, 3, and 100 respectively:
 export const MINE_RATE_MS: number = 100;
 export const INITIAL_DIFFICULTY: number = 3;

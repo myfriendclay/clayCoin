@@ -34,7 +34,7 @@ function App() {
   const [memPool, setmemPool] = useState<TransactionType[]>([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:3001/blockchain`)
+    axios.get(`http://localhost:3005/blockchain`)
       .then(response => {
         const { chain } = response.data.blockchain
         const {pendingTransactions} = response.data.blockchain
