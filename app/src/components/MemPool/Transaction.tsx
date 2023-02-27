@@ -2,7 +2,7 @@
 import { TableRow, TableCell } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-export const getTruncatedString = (string: String, limit: number) => {
+export const getTruncatedString = (string: String | null | undefined, limit: number) => {
   if (!string) {
     return "N/A"
   }

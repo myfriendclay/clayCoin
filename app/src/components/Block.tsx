@@ -13,7 +13,7 @@ function Block({block}: {block: BlockType}) {
       <TableCell>{transactions.length}</TableCell>
       <TableCell>{difficulty}</TableCell>
       <TableCell>{nonce}</TableCell>
-      <TableCell>{Math.ceil(miningDurationMs / 1000 / 60)}</TableCell>
+      <TableCell>{Math.ceil(miningDurationMs || 0 / 1000 / 60)}</TableCell>
     </TableRow>
     );
 }
