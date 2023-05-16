@@ -49,7 +49,7 @@ export function WalletBalanceChecker() {
           >
           Check Wallet Balance
         </Button>
-        {walletBalance ?
+        {walletBalance !== null ?
       <div>
         <p>Wallet balance: {walletBalance}</p>
       </div>
