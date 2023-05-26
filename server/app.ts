@@ -8,8 +8,12 @@ import 'es6-shim';
 import request from 'request'
 import { plainToClass } from 'class-transformer';
 import cors from 'cors'
-import { DEFAULT_PORT } from '../config'
 import Wallet from '../blockchain/Wallet/Wallet'
+
+require('dotenv').config();
+
+const DEFAULT_PORT: string = process.env.DEFAULT_PORT || "3000";
+
 const app = express()
 
 app.use(cors({
