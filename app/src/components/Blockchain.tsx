@@ -20,16 +20,16 @@ export function Blockchain({blockchain}: {blockchain: BlockType[]}) {
         <TableHead>
           <TableRow>
             {headers.map(header => 
-              <TableCell 
-                key={header} 
-                sx={{ fontWeight: 'bold', fontSize: 18 }} 
+              <TableCell
+                key={header}
+                sx={{ fontWeight: 'bold', fontSize: 18 }}
                 >
                   {header}
               </TableCell>)}
           </TableRow>
         </TableHead>
         <TableBody>
-          { 
+          {
             blockchain.map(block => <Block block={block} key={block.hash}/>)
           }
         </TableBody>

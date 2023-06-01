@@ -3,7 +3,8 @@ import { Container } from "@mui/system";
 import MineMemPool from "../MineMemPool";
 import { TransactionType } from "../../App";
 
-export default function MemPool({memPool} : {memPool: TransactionType[]}) {
+export default function MemPool({memPool, setBlockchain, blockchain} : 
+  {memPool: TransactionType[], setBlockchain: any, blockchain: any }) {
 
   return (
     <Container sx={{ display: 'flex', flexFlow: "column", alignItems: "center"}}>
@@ -13,7 +14,7 @@ export default function MemPool({memPool} : {memPool: TransactionType[]}) {
         <Transactions memPool={memPool}/> :
         "No transactions currently in memPool. Sad!"
       }
-      <MineMemPool/>
+      <MineMemPool setBlockchain={setBlockchain} blockchain={blockchain}/>
     </Container>
   )
 }

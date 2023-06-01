@@ -1,12 +1,13 @@
 import { Box, Button, Container, TextField } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
+import { BlockType } from "../App";
 
 interface FormData {
   miningAddress: string;
 }
 
-function MineMemPool() {
+function MineMemPool({setBlockchain, blockchain}: {setBlockchain: any, blockchain: BlockType[]}) {
 
   const blankFormValues = {
     miningAddress: '',
@@ -21,11 +22,12 @@ function MineMemPool() {
   }
 
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
-    console.log(formData)
     event.preventDefault();
     axios.post('http://localhost:3001/mine', formData)
       .then(response => {
         console.log(response)
+        const block = response.data
+        setBlockchain([...blockchain, block])
       })
       .catch(err => {
         console.error(err)
