@@ -86,8 +86,8 @@ app.get(`/wallets/:publicAddress`, (req, res) => {
 })
 
 app.post('/transactions', (req, res) => {
-  const { fromAddress, toAddress, amount, memo, secretKey } = req.body
-  const newTransaction = new Transaction(fromAddress, toAddress, amount, memo)
+  const { fromAddress, toAddress, amount, memo, secretKey, fee } = req.body
+  const newTransaction = new Transaction(fromAddress, toAddress, amount, memo, fee)
   newTransaction.signTransaction(secretKey)
   blockchain.addTransaction(newTransaction)
   pubsub.broadcastTransaction(newTransaction)

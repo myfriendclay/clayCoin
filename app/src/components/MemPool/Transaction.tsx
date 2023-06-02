@@ -33,7 +33,15 @@ export default function Transaction({transaction}) {
         </Tooltip>
       </TableCell>
       <TableCell sx={{ color: 'success.main' }}>{transaction.amount} ₿</TableCell>
-      {/* @ts-ignore */}
+      <TableCell>
+        <Tooltip title={transaction.memo} arrow>
+          <span>
+            {getTruncatedString(transaction.memo, 15)}
+          </span>
+        </Tooltip>
+      </TableCell>
+      <TableCell>{transaction.fee} ₿</TableCell>
+      <TableCell>{new Date (transaction.timestamp).toLocaleString()}</TableCell>
     </TableRow>
   )
 }

@@ -4,10 +4,10 @@ import Transaction from "./Transaction"
 
 export default function Transactions({transactions}: {transactions: TransactionType[]}) {
 
-  const headers = ["Sender 💸", "", "Receiver 🤑", "Amount 💰"]
+  const headers = ["Sender 💸", "", "Receiver 🤑", "Amount 💰", "Memo 📝", "Fee", "Timestamp"]
 
   return (
-    <TableContainer component={Paper} sx={{ width: 700 }}>
+    <TableContainer component={Paper} sx={{ width: 800 }}>
    
       <Table aria-label="payments table">
         <TableHead>
@@ -17,7 +17,12 @@ export default function Transactions({transactions}: {transactions: TransactionT
             </Typography>
           </TableRow>
           <TableRow>
-            {headers.map(header => <TableCell key={header} sx={{ fontWeight: 'bold', fontSize: 18 }}>{header}</TableCell>)}
+            {headers.map(header => 
+              <TableCell 
+                key={header} 
+                sx={{ fontWeight: 'bold', fontSize: 18 }}>
+                  {header}
+              </TableCell>)}
           </TableRow>
         </TableHead>
         <TableBody>
