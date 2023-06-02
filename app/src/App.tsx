@@ -50,7 +50,7 @@ function App() {
   return (
     <div>
       <Wallet/>
-      <CreatePayment/>
+      <CreatePayment setmemPool={setmemPool} memPool={memPool}/>
       <MemPool memPool={memPool} setBlockchain={setBlockchain} blockchain={blockchain}/>
       <Blockchain blockchain={blockchain}/>
     </div>

@@ -5,7 +5,7 @@ import { BlockType, TransactionType } from "../../App";
 
 interface MemPoolProps {
   memPool: TransactionType[];
-  setBlockchain: (blockchain: BlockType[]) => void;
+  setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
 }
 

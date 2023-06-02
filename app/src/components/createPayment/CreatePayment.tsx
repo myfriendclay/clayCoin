@@ -5,6 +5,7 @@ import { Box, Container, FormControl, TextField } from "@mui/material";
 import Amount from './Amount'
 import Memo from './Memo'
 import SendPaymentButton from "./SendPaymentButton";
+import { TransactionType, BlockType } from "../../App";
 
 interface FormData {
   fromAddress: string;
@@ -15,7 +16,13 @@ interface FormData {
   secretKey: string;
 }
 
-export default function CreatePayment() {
+interface MemPoolProps {
+  memPool: TransactionType[];
+  setmemPool: (mempool: TransactionType[]) => void;
+}
+
+export default function CreatePayment({memPool, setmemPool} : 
+  MemPoolProps) {
 
   const blankFormValues = {
     fromAddress: '',
@@ -41,7 +48,8 @@ export default function CreatePayment() {
       event.preventDefault();
       axios.post('http://localhost:3001/transactions', formData)
         .then(response => {
-          console.log(response)
+          const pendingTransactions = response.data
+          setmemPool(pendingTransactions)
         })
         .catch(err => {
           console.error(err)
