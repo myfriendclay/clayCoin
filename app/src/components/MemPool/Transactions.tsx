@@ -1,22 +1,28 @@
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper } from "@mui/material"
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Typography } from "@mui/material"
 import { TransactionType } from "../../App"
 import Transaction from "./Transaction"
 
-export default function Transactions({memPool}: {memPool: TransactionType[]}) {
+export default function Transactions({transactions}: {transactions: TransactionType[]}) {
 
   const headers = ["Sender 💸", "", "Receiver 🤑", "Amount 💰"]
 
   return (
     <TableContainer component={Paper} sx={{ width: 700 }}>
+   
       <Table aria-label="payments table">
         <TableHead>
+          <TableRow sx={{ textAlign: 'center'}}>
+          <Typography variant="h6" gutterBottom component="div">
+              Transactions
+            </Typography>
+          </TableRow>
           <TableRow>
             {headers.map(header => <TableCell key={header} sx={{ fontWeight: 'bold', fontSize: 18 }}>{header}</TableCell>)}
           </TableRow>
         </TableHead>
         <TableBody>
           { 
-            memPool
+            transactions
             .map((transaction: TransactionType) => 
               <Transaction 
                 transaction={transaction}

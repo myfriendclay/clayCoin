@@ -11,7 +11,7 @@ export default function MemPool({memPool, setBlockchain, blockchain} :
       <h1>Mempool</h1>
       {
         memPool.length ?
-        <Transactions memPool={memPool}/> :
+        <Transactions transactions={memPool}/> :
         "No transactions currently in memPool. Sad!"
       }
       <MineMemPool setBlockchain={setBlockchain} blockchain={blockchain}/>

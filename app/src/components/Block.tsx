@@ -4,6 +4,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { BlockType } from "../App";
 import Transaction, { getTruncatedString } from "./MemPool/Transaction";
 import { useState } from "react";
+import Transactions from "./MemPool/Transactions";
 
 function Block({block}: {block: BlockType}) {
 
@@ -48,29 +49,11 @@ function Block({block}: {block: BlockType}) {
     <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <Box sx={{ margin: 1 }}>
-          <Typography variant="h6" gutterBottom component="div">
-            Transactions
-          </Typography>
+
           {
           transactions.length !== 0 
           ? 
-          <Table size="small" aria-label="purchases">
-            <TableHead>
-              <TableRow>
-                <TableCell>Sender</TableCell>
-                <TableCell></TableCell>
-                <TableCell>Receiver</TableCell>
-                <TableCell>Amount</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {transactions.map(transaction => 
-                <Transaction 
-                  transaction={transaction}
-                  key={transaction.uuid}/>
-              )}
-            </TableBody>
-          </Table>
+          <Transactions transactions={transactions}/>
           : <p>Strangely, there are no transactions found for this block.</p>
           }
         </Box>
