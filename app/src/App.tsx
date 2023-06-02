@@ -29,7 +29,6 @@ export interface TransactionType {
 }
 
 function App() {
-  const [notifications, setNotifications] = useState<{id: string, message: string}[]>([]);
 
   const [blockchain, setBlockchain] = useState<BlockType[]>([]);
   const [memPool, setmemPool] = useState<TransactionType[]>([]);
@@ -46,7 +45,7 @@ function App() {
         console.error(err)
       })
 
-  }, [notifications])
+  }, [])
 
   return (
     <div>
