@@ -7,9 +7,10 @@ interface MemPoolProps {
   memPool: TransactionType[];
   setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
+  setmemPool: (mempool: TransactionType[]) => void;
 }
 
-export default function MemPool({memPool, setBlockchain, blockchain} : 
+export default function MemPool({memPool, setBlockchain, blockchain, setmemPool} : 
   MemPoolProps) {
 
   return (
@@ -20,7 +21,7 @@ export default function MemPool({memPool, setBlockchain, blockchain} :
         <Transactions transactions={memPool}/> :
         "No transactions currently in memPool. Sad!"
       }
-      <MineMemPool setBlockchain={setBlockchain} blockchain={blockchain}/>
+      <MineMemPool setBlockchain={setBlockchain} blockchain={blockchain} setmemPool={setmemPool}/>
     </Container>
   )
 }

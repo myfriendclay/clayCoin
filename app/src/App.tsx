@@ -51,7 +51,7 @@ function App() {
     <div>
       <Wallet/>
       <CreatePayment setmemPool={setmemPool} memPool={memPool}/>
-      <MemPool memPool={memPool} setBlockchain={setBlockchain} blockchain={blockchain}/>
+      <MemPool memPool={memPool} setBlockchain={setBlockchain} blockchain={blockchain} setmemPool={setmemPool}/>
       <Blockchain blockchain={blockchain}/>
     </div>
   );

@@ -1,13 +1,19 @@
 import { Box, Button, Container, TextField } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
-import { BlockType } from "../App";
+import { BlockType, TransactionType } from "../App";
 
 interface FormData {
   miningAddress: string;
 }
 
-function MineMemPool({setBlockchain, blockchain}: {setBlockchain: any, blockchain: BlockType[]}) {
+interface MineMemPoolProps {
+  setBlockchain: (mempool: BlockType[]) => void;
+  blockchain: BlockType[];
+  setmemPool: (mempool: TransactionType[]) => void;
+}
+
+function MineMemPool({setBlockchain, blockchain, setmemPool}: MineMemPoolProps) {
 
   const blankFormValues = {
     miningAddress: '',
@@ -28,6 +34,7 @@ function MineMemPool({setBlockchain, blockchain}: {setBlockchain: any, blockchai
         console.log(response)
         const block = response.data
         setBlockchain([...blockchain, block])
+        setmemPool([])
       })
       .catch(err => {
         console.error(err)
