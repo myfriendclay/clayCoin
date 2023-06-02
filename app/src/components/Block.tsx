@@ -1,11 +1,27 @@
-import { TableCell, TableRow, Tooltip } from "@mui/material";
+import { Box, Collapse, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { BlockType } from "../App";
-import { getTruncatedString } from "./MemPool/Transaction";
+import Transaction, { getTruncatedString } from "./MemPool/Transaction";
+import { useState } from "react";
 
 function Block({block}: {block: BlockType}) {
+
+  const [open, setOpen] = useState(false);
+
   const {hash, timestamp, height, nonce, miningDurationMs, previousHash, transactions, difficulty} = block
   return (
+    <>
     <TableRow>
+      <TableCell>
+        <IconButton
+          aria-label="expand row"
+          size="small"
+          onClick={() => setOpen(!open)}
+          >
+          {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+        </IconButton>
+      </TableCell>
       <TableCell>{height}</TableCell>
       <TableCell>{new Date (timestamp).toLocaleString()}</TableCell>
       <TableCell>
@@ -27,6 +43,41 @@ function Block({block}: {block: BlockType}) {
       <TableCell>{nonce}</TableCell>
       <TableCell>{Math.ceil(miningDurationMs || 0 / 1000 / 60)}</TableCell>
     </TableRow>
+
+    <TableRow>
+    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <Box sx={{ margin: 1 }}>
+          <Typography variant="h6" gutterBottom component="div">
+            Transactions
+          </Typography>
+          {
+          transactions.length !== 0 
+          ? 
+          <Table size="small" aria-label="purchases">
+            <TableHead>
+              <TableRow>
+                <TableCell>Sender</TableCell>
+                <TableCell></TableCell>
+                <TableCell>Receiver</TableCell>
+                <TableCell>Amount</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {transactions.map(transaction => 
+                <Transaction 
+                  transaction={transaction}
+                  key={transaction.uuid}/>
+              )}
+            </TableBody>
+          </Table>
+          : <p>Strangely, there are no transactions found for this block.</p>
+          }
+        </Box>
+      </Collapse>
+    </TableCell>
+    </TableRow>
+    </>
     );
 }
 

@@ -15,7 +15,6 @@ export const getTruncatedString = (string: String | null | undefined, limit: num
 //@ts-ignore
 export default function Transaction({transaction}) {
 
-
   return (
     <TableRow >
       <TableCell>      
