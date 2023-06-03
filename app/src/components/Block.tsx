@@ -1,8 +1,8 @@
-import { Box, Collapse, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
+import { Box, Collapse, IconButton, TableCell, TableRow, Tooltip } from "@mui/material";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { BlockType } from "../App";
-import Transaction, { getTruncatedString } from "./MemPool/Transaction";
+import { getTruncatedString } from "./MemPool/Transaction";
 import { useState } from "react";
 import Transactions from "./MemPool/Transactions";
 

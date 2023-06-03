@@ -8,11 +8,10 @@ interface MemPoolProps {
   setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
   setmemPool: (mempool: TransactionType[]) => void;
-  alertDetails: AlertType;
   setAlertDetails: (alertDetails: AlertType) => void;
 }
 
-export default function MemPool({memPool, setBlockchain, blockchain, setmemPool, alertDetails, setAlertDetails} : 
+export default function MemPool({memPool, setBlockchain, blockchain, setmemPool, setAlertDetails} : 
   MemPoolProps) {
 
   return (
@@ -27,7 +26,6 @@ export default function MemPool({memPool, setBlockchain, blockchain, setmemPool,
         setBlockchain={setBlockchain} 
         blockchain={blockchain} 
         setmemPool={setmemPool}
-        alertDetails={alertDetails} 
         setAlertDetails={setAlertDetails}
       />
     </Container>

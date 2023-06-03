@@ -5,7 +5,7 @@ import { Box, Container, FormControl, TextField } from "@mui/material";
 import Amount from './Amount'
 import Memo from './Memo'
 import SendPaymentButton from "./SendPaymentButton";
-import { TransactionType, BlockType, AlertType } from "../../App";
+import { TransactionType, AlertType } from "../../App";
 
 interface FormData {
   fromAddress: string;
@@ -17,13 +17,11 @@ interface FormData {
 }
 
 interface MemPoolProps {
-  memPool: TransactionType[];
   setmemPool: (mempool: TransactionType[]) => void;
-  alertDetails: AlertType;
   setAlertDetails: (alertDetails: AlertType) => void;
 }
 
-export default function CreatePayment({memPool, setmemPool, alertDetails, setAlertDetails} : 
+export default function CreatePayment({setmemPool, setAlertDetails} : 
   MemPoolProps) {
 
   const blankFormValues = {

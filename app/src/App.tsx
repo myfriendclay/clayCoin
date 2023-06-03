@@ -7,7 +7,6 @@ import { Blockchain } from './components/Blockchain';
 import { Wallet } from './components/Wallet';
 import AlertBanner from './components/AlertBanner';
 
-
 export interface BlockType {
   timestamp: number;
   hash: string | undefined;
@@ -60,16 +59,13 @@ function App() {
       <Wallet/>
       <CreatePayment 
         setmemPool={setmemPool} 
-        memPool={memPool} 
-        alertDetails={alertDetails} 
         setAlertDetails={setAlertDetails}
       />
       <MemPool 
         memPool={memPool} 
+        setmemPool={setmemPool}
         setBlockchain={setBlockchain} 
         blockchain={blockchain} 
-        setmemPool={setmemPool}
-        alertDetails={alertDetails} 
         setAlertDetails={setAlertDetails}
       />
       <Blockchain blockchain={blockchain}/>

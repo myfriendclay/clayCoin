@@ -11,11 +11,10 @@ interface MineMemPoolProps {
   setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
   setmemPool: (mempool: TransactionType[]) => void;
-  alertDetails: AlertType;
   setAlertDetails: (alertDetails: AlertType) => void;
 }
 
-function MineMemPool({setBlockchain, blockchain, setmemPool, alertDetails, setAlertDetails}: MineMemPoolProps) {
+function MineMemPool({setBlockchain, blockchain, setmemPool, setAlertDetails}: MineMemPoolProps) {
 
   const blankFormValues = {
     miningAddress: '',
