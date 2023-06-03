@@ -11,9 +11,12 @@ interface MineMemPoolProps {
   setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
   setmemPool: (mempool: TransactionType[]) => void;
+  setOpen: (open: boolean) => void;
+  setAlertMessage: (alertMessage: string) => void;
+  setAlertType: (alertType: 'success' | 'error' | 'warning' | 'info') => void;
 }
 
-function MineMemPool({setBlockchain, blockchain, setmemPool}: MineMemPoolProps) {
+function MineMemPool({setBlockchain, blockchain, setmemPool, setOpen, setAlertMessage, setAlertType}: MineMemPoolProps) {
 
   const blankFormValues = {
     miningAddress: '',
@@ -34,9 +37,15 @@ function MineMemPool({setBlockchain, blockchain, setmemPool}: MineMemPoolProps) 
         const block = response.data
         setBlockchain([...blockchain, block])
         setmemPool([])
+        setOpen(true)
+        setAlertType('success')
+        setAlertMessage("You mined a block and it was added to blockchain!")
       })
       .catch(err => {
         console.error(err)
+        setOpen(true)
+        setAlertType('error')
+        setAlertMessage(err.message)
       })
       .finally(() => {
         setFormData(blankFormValues)

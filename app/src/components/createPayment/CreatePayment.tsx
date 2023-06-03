@@ -19,9 +19,12 @@ interface FormData {
 interface MemPoolProps {
   memPool: TransactionType[];
   setmemPool: (mempool: TransactionType[]) => void;
+  setOpen: (open: boolean) => void;
+  setAlertMessage: (alertMessage: string) => void;
+  setAlertType: (alertType: 'success' | 'error' | 'warning' | 'info') => void;
 }
 
-export default function CreatePayment({memPool, setmemPool} : 
+export default function CreatePayment({memPool, setmemPool, setOpen, setAlertMessage, setAlertType} : 
   MemPoolProps) {
 
   const blankFormValues = {
@@ -50,10 +53,16 @@ export default function CreatePayment({memPool, setmemPool} :
         .then(response => {
           const pendingTransactions = response.data
           setmemPool(pendingTransactions)
+          setOpen(true)
+          setAlertMessage("You added a transaction to the mempool!")
+          setAlertType('success')
         })
         .catch(err => {
           const errorMessage = err.response.data.error
           console.error(errorMessage)
+          setOpen(true)
+          setAlertMessage(errorMessage)
+          setAlertType('error')
         })
       setFormData(blankFormValues)
     }

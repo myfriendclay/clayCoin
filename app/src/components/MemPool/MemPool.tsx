@@ -8,9 +8,12 @@ interface MemPoolProps {
   setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
   setmemPool: (mempool: TransactionType[]) => void;
+  setOpen: (open: boolean) => void;
+  setAlertMessage: (alertMessage: string) => void;
+  setAlertType: (alertType: 'success' | 'error' | 'warning' | 'info') => void;
 }
 
-export default function MemPool({memPool, setBlockchain, blockchain, setmemPool} : 
+export default function MemPool({memPool, setBlockchain, blockchain, setmemPool, setOpen, setAlertMessage, setAlertType} : 
   MemPoolProps) {
 
   return (
@@ -21,7 +24,14 @@ export default function MemPool({memPool, setBlockchain, blockchain, setmemPool}
         <Transactions transactions={memPool}/> :
         "No transactions currently in memPool. Sad!"
       }
-      <MineMemPool setBlockchain={setBlockchain} blockchain={blockchain} setmemPool={setmemPool}/>
+      <MineMemPool 
+        setBlockchain={setBlockchain} 
+        blockchain={blockchain} 
+        setmemPool={setmemPool}
+        setOpen={setOpen} 
+        setAlertMessage={setAlertMessage} 
+        setAlertType={setAlertType}
+      />
     </Container>
   )
 }

@@ -5,6 +5,7 @@ import MemPool from './components/MemPool/MemPool';
 import CreatePayment from './components/createPayment/CreatePayment';
 import { Blockchain } from './components/Blockchain';
 import { Wallet } from './components/Wallet';
+import AlertBanner from './components/AlertBanner';
 
 
 export interface BlockType {
@@ -32,6 +33,9 @@ function App() {
 
   const [blockchain, setBlockchain] = useState<BlockType[]>([]);
   const [memPool, setmemPool] = useState<TransactionType[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<string>('');
+  const [alertType, setAlertType] = useState<'success' | 'error' | 'warning' | 'info'>('info');
 
   useEffect(() => {
     axios.get(`http://localhost:3001/blockchain`)
@@ -50,9 +54,24 @@ function App() {
   return (
     <div>
       <Wallet/>
-      <CreatePayment setmemPool={setmemPool} memPool={memPool}/>
-      <MemPool memPool={memPool} setBlockchain={setBlockchain} blockchain={blockchain} setmemPool={setmemPool}/>
+      <CreatePayment 
+        setmemPool={setmemPool} 
+        memPool={memPool} 
+        setOpen={setOpen} 
+        setAlertMessage={setAlertMessage} 
+        setAlertType={setAlertType}
+      />
+      <MemPool 
+        memPool={memPool} 
+        setBlockchain={setBlockchain} 
+        blockchain={blockchain} 
+        setmemPool={setmemPool}
+        setOpen={setOpen} 
+        setAlertMessage={setAlertMessage} 
+        setAlertType={setAlertType}
+      />
       <Blockchain blockchain={blockchain}/>
+      <AlertBanner open={open} alertMessage={alertMessage} alertType={alertType} setOpen={setOpen}/>
     </div>
   );
 }
