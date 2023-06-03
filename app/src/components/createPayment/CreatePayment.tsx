@@ -52,7 +52,8 @@ export default function CreatePayment({memPool, setmemPool} :
           setmemPool(pendingTransactions)
         })
         .catch(err => {
-          console.error(err)
+          const errorMessage = err.response.data.error
+          console.error(errorMessage)
         })
       setFormData(blankFormValues)
     }

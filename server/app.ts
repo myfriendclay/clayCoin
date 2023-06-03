@@ -88,10 +88,15 @@ app.get(`/wallets/:publicAddress`, (req, res) => {
 app.post('/transactions', (req, res) => {
   const { fromAddress, toAddress, amount, memo, secretKey, fee } = req.body
   const newTransaction = new Transaction(fromAddress, toAddress, amount, memo, fee)
-  newTransaction.signTransaction(secretKey)
-  blockchain.addTransaction(newTransaction)
-  pubsub.broadcastTransaction(newTransaction)
-  res.json(blockchain.pendingTransactions)
+
+  try {
+    newTransaction.signTransaction(secretKey)
+    blockchain.addTransaction(newTransaction)
+    pubsub.broadcastTransaction(newTransaction)
+    res.json(blockchain.pendingTransactions)
+  } catch (error: any) {
+    res.status(400).json({ error: error.message })
+  }
 })
 
 app.listen(PORT, () => {
