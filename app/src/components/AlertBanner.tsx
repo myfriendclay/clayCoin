@@ -1,25 +1,24 @@
 import { useState } from 'react';
 import { Alert, Snackbar } from '@mui/material';
+import { AlertType } from '../App';
 
 interface AlertBannerProps {
-  open: boolean;
-  alertMessage: string;
-  alertType: 'success' | 'error' | 'warning' | 'info';
-  setOpen: (open: boolean) => void;
+  alertDetails: AlertType;
+  setAlertDetails: (alertDetails: AlertType) => void;
 }
 
-function AlertBanner({open, alertMessage, alertType, setOpen}: AlertBannerProps) {
+function AlertBanner({alertDetails, setAlertDetails }: AlertBannerProps) {
 
   const handleClose = (): void => {
-    setOpen(false)
+    setAlertDetails({ ...alertDetails, open: false })
   }
 
   return (
       <div>
         {
-        <Snackbar onClose={handleClose} open={open} autoHideDuration={6000}>
-          <Alert severity={alertType} sx={{ width: '100%' }}>
-          {alertMessage}
+        <Snackbar onClose={handleClose} open={alertDetails.open} autoHideDuration={6000}>
+          <Alert severity={alertDetails.alertType} sx={{ width: '100%' }}>
+          {alertDetails.alertMessage}
           </Alert>
         </Snackbar>
         }

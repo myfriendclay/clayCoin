@@ -1,7 +1,7 @@
 import { Box, Button, Container, TextField } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
-import { BlockType, TransactionType } from "../App";
+import { AlertType, BlockType, TransactionType } from "../App";
 
 interface FormData {
   miningAddress: string;
@@ -11,12 +11,11 @@ interface MineMemPoolProps {
   setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
   setmemPool: (mempool: TransactionType[]) => void;
-  setOpen: (open: boolean) => void;
-  setAlertMessage: (alertMessage: string) => void;
-  setAlertType: (alertType: 'success' | 'error' | 'warning' | 'info') => void;
+  alertDetails: AlertType;
+  setAlertDetails: (alertDetails: AlertType) => void;
 }
 
-function MineMemPool({setBlockchain, blockchain, setmemPool, setOpen, setAlertMessage, setAlertType}: MineMemPoolProps) {
+function MineMemPool({setBlockchain, blockchain, setmemPool, alertDetails, setAlertDetails}: MineMemPoolProps) {
 
   const blankFormValues = {
     miningAddress: '',
@@ -37,15 +36,19 @@ function MineMemPool({setBlockchain, blockchain, setmemPool, setOpen, setAlertMe
         const block = response.data
         setBlockchain([...blockchain, block])
         setmemPool([])
-        setOpen(true)
-        setAlertType('success')
-        setAlertMessage("You mined a block and it was added to blockchain!")
+        setAlertDetails({ 
+          open: true, 
+          alertMessage: "You mined a block and it was added to blockchain!", 
+          alertType: 'success'
+        })
       })
       .catch(err => {
         console.error(err)
-        setOpen(true)
-        setAlertType('error')
-        setAlertMessage(err.message)
+        setAlertDetails({ 
+          open: true, 
+          alertMessage: err.message, 
+          alertType: 'error'
+        })
       })
       .finally(() => {
         setFormData(blankFormValues)

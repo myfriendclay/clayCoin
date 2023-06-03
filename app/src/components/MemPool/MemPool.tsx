@@ -1,19 +1,18 @@
 import Transactions from "./Transactions";
 import { Container } from "@mui/system";
 import MineMemPool from "../MineMemPool";
-import { BlockType, TransactionType } from "../../App";
+import { AlertType, BlockType, TransactionType } from "../../App";
 
 interface MemPoolProps {
   memPool: TransactionType[];
   setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
   setmemPool: (mempool: TransactionType[]) => void;
-  setOpen: (open: boolean) => void;
-  setAlertMessage: (alertMessage: string) => void;
-  setAlertType: (alertType: 'success' | 'error' | 'warning' | 'info') => void;
+  alertDetails: AlertType;
+  setAlertDetails: (alertDetails: AlertType) => void;
 }
 
-export default function MemPool({memPool, setBlockchain, blockchain, setmemPool, setOpen, setAlertMessage, setAlertType} : 
+export default function MemPool({memPool, setBlockchain, blockchain, setmemPool, alertDetails, setAlertDetails} : 
   MemPoolProps) {
 
   return (
@@ -28,9 +27,8 @@ export default function MemPool({memPool, setBlockchain, blockchain, setmemPool,
         setBlockchain={setBlockchain} 
         blockchain={blockchain} 
         setmemPool={setmemPool}
-        setOpen={setOpen} 
-        setAlertMessage={setAlertMessage} 
-        setAlertType={setAlertType}
+        alertDetails={alertDetails} 
+        setAlertDetails={setAlertDetails}
       />
     </Container>
   )

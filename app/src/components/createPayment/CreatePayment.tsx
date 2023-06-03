@@ -5,7 +5,7 @@ import { Box, Container, FormControl, TextField } from "@mui/material";
 import Amount from './Amount'
 import Memo from './Memo'
 import SendPaymentButton from "./SendPaymentButton";
-import { TransactionType, BlockType } from "../../App";
+import { TransactionType, BlockType, AlertType } from "../../App";
 
 interface FormData {
   fromAddress: string;
@@ -19,12 +19,11 @@ interface FormData {
 interface MemPoolProps {
   memPool: TransactionType[];
   setmemPool: (mempool: TransactionType[]) => void;
-  setOpen: (open: boolean) => void;
-  setAlertMessage: (alertMessage: string) => void;
-  setAlertType: (alertType: 'success' | 'error' | 'warning' | 'info') => void;
+  alertDetails: AlertType;
+  setAlertDetails: (alertDetails: AlertType) => void;
 }
 
-export default function CreatePayment({memPool, setmemPool, setOpen, setAlertMessage, setAlertType} : 
+export default function CreatePayment({memPool, setmemPool, alertDetails, setAlertDetails} : 
   MemPoolProps) {
 
   const blankFormValues = {
@@ -53,16 +52,21 @@ export default function CreatePayment({memPool, setmemPool, setOpen, setAlertMes
         .then(response => {
           const pendingTransactions = response.data
           setmemPool(pendingTransactions)
-          setOpen(true)
-          setAlertMessage("You added a transaction to the mempool!")
-          setAlertType('success')
+          setAlertDetails({ 
+            open: true, 
+            alertMessage: "You added a transaction to the mempool!", 
+            alertType: 'success'
+          })
+
         })
         .catch(err => {
           const errorMessage = err.response.data.error
           console.error(errorMessage)
-          setOpen(true)
-          setAlertMessage(errorMessage)
-          setAlertType('error')
+          setAlertDetails({ 
+            open: true, 
+            alertMessage: errorMessage, 
+            alertType: 'error'
+          })
         })
       setFormData(blankFormValues)
     }
