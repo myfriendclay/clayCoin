@@ -17,10 +17,11 @@ export default function Transaction({transaction}) {
 
   return (
     <TableRow >
+      <TableCell>{new Date (transaction.timestamp).toLocaleString()}</TableCell>
       <TableCell>      
         <Tooltip title={transaction.fromAddress} arrow>
           <span>
-            {getTruncatedString(transaction.fromAddress, 4)}
+            {getTruncatedString(transaction.fromAddress, 6)}
           </span>
         </Tooltip>
       </TableCell>
@@ -28,20 +29,19 @@ export default function Transaction({transaction}) {
       <TableCell>
         <Tooltip title={transaction.toAddress} arrow>
           <span>
-            {getTruncatedString(transaction.toAddress, 4)}
+            {getTruncatedString(transaction.toAddress, 6)}
           </span>
         </Tooltip>
       </TableCell>
       <TableCell sx={{ color: 'success.main' }}>{transaction.amount} ₿</TableCell>
+      <TableCell>{transaction.fee} ₿</TableCell>
       <TableCell>
         <Tooltip title={transaction.memo} arrow>
           <span>
-            {getTruncatedString(transaction.memo, 15)}
+            {getTruncatedString(transaction.memo, 20)}
           </span>
         </Tooltip>
       </TableCell>
-      <TableCell>{transaction.fee} ₿</TableCell>
-      <TableCell>{new Date (transaction.timestamp).toLocaleString()}</TableCell>
     </TableRow>
   )
 }

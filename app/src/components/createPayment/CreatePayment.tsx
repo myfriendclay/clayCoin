@@ -80,34 +80,30 @@ export default function CreatePayment({setmemPool, setAlertDetails} :
       }}>
       <h1>Send Payment</h1>
       <Box>
-
         <TextField
           size="small"
-          sx={{minWidth: "100%"}}
+          sx={{minWidth: "100%", marginBottom: "10px"}}
           id="fromAddress"
           label="From address"
           type="text"
-          helperText='Your public key'
           value={formData.fromAddress}
           onChange={handleChange}
         />
         <TextField
           size="small"
-          sx={{minWidth: "100%"}}
+          sx={{minWidth: "100%", marginBottom: "10px"}}
           id="toAddress"
           label="Recipient address"
           type="text"
-          helperText='Their public key'
           value={formData.toAddress}
           onChange={handleChange}
         />
         <TextField
           size="small"
-          sx={{minWidth: "100%"}}
+          sx={{minWidth: "100%", marginBottom: "10px"}}
           id="secretKey"
           label="Private key"
           type="password"
-          helperText='Your secret key'
           value={formData.secretKey}
           onChange={handleChange}
         />
@@ -125,10 +121,7 @@ export default function CreatePayment({setmemPool, setAlertDetails} :
             </TextField>
           </FormControl>
           <Memo values={formData} handleChange={handleChange}/>
-          <SendPaymentButton
-            handleSubmit={handleSubmit} 
-          />
-
+          <SendPaymentButton handleSubmit={handleSubmit} />
       </Box>
     </Container>
   )

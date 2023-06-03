@@ -17,7 +17,7 @@ export function Wallet() {
     axios.get('http://localhost:3001/wallets/new')
       .then(response => {
         const walletKeyPair = response.data
-        setWallet({...wallet, 
+        setWallet({
           publicKey: walletKeyPair.publicKey, 
           privateKey: walletKeyPair.privateKey})
       })
@@ -28,6 +28,7 @@ export function Wallet() {
 
   return (
     <Container sx={{ display: 'flex', flexFlow: "column", alignItems: "center"}}>
+    <h1>Wallet</h1>
     <Button variant="contained" sx={{ 
       margin: 1, 
       backgroundColor: '#8656ef',
@@ -40,15 +41,13 @@ export function Wallet() {
       >
       Generate New Wallet
     </Button>
-      {wallet.publicKey ?
+      {
+      wallet.publicKey &&
       <div>
         <p>Public Key 🔓: {wallet.publicKey}</p>
         <p>Private Key 🔒: {wallet.privateKey}</p> 
       </div>
-      :
-      <div/>
-    }
-
+      }
     <WalletBalanceChecker/>
   </Container>
   

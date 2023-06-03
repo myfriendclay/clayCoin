@@ -64,7 +64,7 @@ function App() {
       <MemPool 
         memPool={memPool} 
         setmemPool={setmemPool}
-        setBlockchain={setBlockchain} 
+        setBlockchain={setBlockchain}
         blockchain={blockchain} 
         setAlertDetails={setAlertDetails}
       />

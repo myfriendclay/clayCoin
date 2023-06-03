@@ -14,7 +14,7 @@ function Block({block}: {block: BlockType}) {
   return (
     <>
     <TableRow>
-      <TableCell>
+      <TableCell width={10}>
         <IconButton
           aria-label="expand row"
           size="small"
@@ -23,42 +23,42 @@ function Block({block}: {block: BlockType}) {
           {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
         </IconButton>
       </TableCell>
-      <TableCell>{height}</TableCell>
-      <TableCell>{new Date (timestamp).toLocaleString()}</TableCell>
-      <TableCell>
+      <TableCell width={20}>{height}</TableCell>
+      <TableCell width={150}>{new Date (timestamp).toLocaleString()}</TableCell>
+      <TableCell width={20}>
         <Tooltip title={hash} arrow>
           <span>
             {getTruncatedString(hash, 4)}
           </span>
         </Tooltip>
       </TableCell>
-      <TableCell sx={{ color: 'success.main' }}>
+      <TableCell width={0} sx={{ color: 'success.main' }}>
         <Tooltip title={previousHash} arrow>
           <span>
             {getTruncatedString(previousHash, 4)}
           </span>
         </Tooltip>
       </TableCell>
-      <TableCell>{transactions.length}</TableCell>
+      <TableCell width={20}>{transactions.length}</TableCell>
       <TableCell>{difficulty}</TableCell>
       <TableCell>{nonce}</TableCell>
       <TableCell>{Math.ceil(miningDurationMs || 0 / 1000 / 60)}</TableCell>
     </TableRow>
 
     <TableRow>
-    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <Box sx={{ margin: 1 }}>
+      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <Box sx={{ margin: 1 }}>
 
-          {
-          transactions.length !== 0 
-          ? 
-          <Transactions transactions={transactions}/>
-          : <p>Strangely, there are no transactions found for this block.</p>
-          }
-        </Box>
-      </Collapse>
-    </TableCell>
+            {
+            transactions.length !== 0 
+            ? 
+            <Transactions transactions={transactions}/>
+            : <p>Strangely, there are no transactions found for this block.</p>
+            }
+          </Box>
+        </Collapse>
+      </TableCell>
     </TableRow>
     </>
     );

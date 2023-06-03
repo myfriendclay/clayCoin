@@ -2,7 +2,7 @@ import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody
 import { BlockType } from "../App";
 import Block from "./Block";
 
-const headers = [" ", "Height", "Timestamp ⏰", "Hash", "Previous Hash", "Transactions", "Difficulty", "Nonce", "Mining Time (min)"]
+const headers = [" ", "Height", "Time", "Hash", "Prev Hash", "Transactions", "Difficulty", "Nonce", "Mining Time (min)"]
 
 export function Blockchain({blockchain}: {blockchain: BlockType[]}) {
   return (
