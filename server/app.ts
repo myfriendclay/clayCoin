@@ -12,7 +12,7 @@ import Wallet from '../blockchain/Wallet/Wallet'
 
 require('dotenv').config();
 
-const DEFAULT_PORT: string = process.env.DEFAULT_PORT || "3000";
+const DEFAULT_PORT: number = parseInt(process.env.DEFAULT_PORT || '3000');
 
 const app = express()
 
@@ -34,6 +34,7 @@ const PORT = PEER_PORT || DEFAULT_PORT
 // parse application/json
 app.use(bodyParser.json())
 
+//setup the blockchain object/local node storage
 const blockchain = new Blockchain()
 const pubsub = new PubSub( { blockchain } )
 

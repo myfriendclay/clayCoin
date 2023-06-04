@@ -105,7 +105,7 @@ export default class Blockchain {
 
   static isChainValid(chain: Block[]) {
     // Check if the Genesis block hasn't been tampered with:
-    if (!chain[0].isValid()) {
+    if (!chain[0].isValidGenesisBlock()) {
       return false
     }
 

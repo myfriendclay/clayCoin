@@ -54,7 +54,7 @@ export default class Block {
   }
 
   hasOnlyOneCoinbaseTx(): boolean {
-    const count = this.transactions.filter(transaction => transaction instanceof CoinbaseTransaction).length;
+    const count = this.transactions.filter(transaction => transaction.isValidCoinbaseTx()).length;
     return count === 1
   }
   
@@ -74,16 +74,10 @@ export default class Block {
   isValid(): boolean {
     return this.hasValidTransactions() && this.hasProofOfWork() && this.hasOnlyOneCoinbaseTx()
   }
-}
 
-export class GenesisBlock extends Block {
-  constructor() {
-    super(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
-    this.mineBlock()
-  }
-
-  isValid(): boolean {
+  isValidGenesisBlock(): boolean { 
     const { difficulty, transactions, previousHash, height } = GENESIS_BLOCK_DATA
+
     return (
       this.hasProofOfWork() && 
       this.difficulty === difficulty && 
@@ -91,5 +85,13 @@ export class GenesisBlock extends Block {
       this.previousHash === previousHash && 
       this.height === height
       )
+  }
+
+}
+
+export class GenesisBlock extends Block {
+  constructor() {
+    super(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
+    this.mineBlock()
   }
 }

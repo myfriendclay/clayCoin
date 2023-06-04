@@ -52,7 +52,14 @@ export default class Transaction {
   }
 
   isValid(): boolean {
-    return this.hasRequiredFields() && this.hasValidSignature() && this.amount > 0
+    return (
+      this.isValidCoinbaseTx() ||
+      (this.hasRequiredFields() && this.hasValidSignature() && this.amount > 0)
+      )
+  }
+  isValidCoinbaseTx(): boolean {
+    const { fromAddress, memo } = COINBASE_TX
+    return this.fromAddress === fromAddress && this.memo === memo && this.amount > 0
   }
 }
 
@@ -61,8 +68,4 @@ export class CoinbaseTransaction extends Transaction {
     super(COINBASE_TX.fromAddress, miningRewardAddress, miningReward, COINBASE_TX.memo)
   }
 
-  isValid(): boolean {
-    const { fromAddress, memo } = COINBASE_TX
-    return this.fromAddress === fromAddress && this.memo === memo && this.amount > 0
-  }
 }
