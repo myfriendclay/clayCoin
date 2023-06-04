@@ -1,7 +1,6 @@
 import express from 'express'
 import Blockchain from '../blockchain/Blockchain/Blockchain'
 import Transaction from '../blockchain/Transaction/Transaction'
-import PubSub from '../pubsub'
 import bodyParser from 'body-parser'
 import 'reflect-metadata';
 import 'es6-shim';
@@ -9,6 +8,8 @@ import request from 'request'
 import { plainToClass } from 'class-transformer';
 import cors from 'cors'
 import Wallet from '../blockchain/Wallet/Wallet'
+import {blockchain, pubsub} from './api/blockchain'
+
 
 require('dotenv').config();
 
@@ -33,10 +34,6 @@ const PORT = PEER_PORT || DEFAULT_PORT
 
 // parse application/json
 app.use(bodyParser.json())
-
-//setup the blockchain object/local node storage
-const blockchain = new Blockchain()
-const pubsub = new PubSub( { blockchain } )
 
 const syncChains = () => {
   request({ url: `${ROOT_NODE_ADDRESS}/blockchain`}, (error: any, response: { statusCode: number }, body: string) => {
