@@ -48,7 +48,7 @@ describe('Constructor', () => {
     expect(testCoin.chain.length).toBe(1)
   });
   test('First block on chain is valid genesis block', () => {
-    expect(testCoin.chain[0].isValid()).toBe(true)
+    expect(testCoin.chain[0].isValidGenesisBlock()).toBe(true)
   });
 });
 
@@ -113,7 +113,7 @@ describe('isChainValid', () => {
 
   it('Returns false if genesis block is invalid', () => {
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
-    jest.spyOn(testCoin.chain[0], 'isValid').mockImplementation(() => false);
+    jest.spyOn(testCoin.chain[0], 'isValidGenesisBlock').mockImplementation(() => false);
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
 

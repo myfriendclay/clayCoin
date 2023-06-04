@@ -3,7 +3,7 @@ import { GenesisBlock } from './Block'
 import hexToBinary from "hex-to-binary"
 import { GENESIS_BLOCK_DATA } from "../../config"
 import * as getSHA256HashModule from "../utils/crypto-hash";
-import { CoinbaseTransaction } from '../Transaction/Transaction';
+import { CoinbaseTransaction, Transaction } from '../Transaction/Transaction';
 
 let newBlock
 let testTransactions
@@ -240,26 +240,28 @@ describe('hasProofOfWork', () => {
 
 describe('hasOnlyOneCoinbaseTx', () => {
   let coinbaseTx
+  let testBlock
+  
   beforeEach(() => {
-    coinbaseTx = Object.create(CoinbaseTransaction.prototype, {
-      miningRewardAddress: { value: 'mock-address' },
-      miningReward: { value: 10 },
-    });
-    newBlock.transactions.push(coinbaseTx)
+    testBlock = new Block([], 4, 'test_prev_hash', 23)
+    coinbaseTx = Object.create(CoinbaseTransaction.prototype, {});
+
+    jest.spyOn(coinbaseTx, 'isValidCoinbaseTx').mockImplementation(() => true);
+    testBlock.transactions.push(coinbaseTx)
   })
 
   it("returns true if block has one coinbase Tx", () => {
-    expect(newBlock.hasOnlyOneCoinbaseTx()).toBe(true)
+    expect(testBlock.hasOnlyOneCoinbaseTx()).toBe(true)
   })
 
   it("returns false if block has 0 coinbase Tx", () => {
-    newBlock.transactions.pop()
-    expect(newBlock.hasOnlyOneCoinbaseTx()).toBe(false)
+    testBlock.transactions.pop()
+    expect(testBlock.hasOnlyOneCoinbaseTx()).toBe(false)
   })
 
   it("returns false if block has 2 or more coinbase Txs", () => {
-    newBlock.transactions.push(coinbaseTx)
-    expect(newBlock.hasOnlyOneCoinbaseTx()).toBe(false)
+    testBlock.transactions.push(coinbaseTx)
+    expect(testBlock.hasOnlyOneCoinbaseTx()).toBe(false)
   })
 })
 
@@ -290,6 +292,35 @@ describe('isValid', () => {
     expect(newBlock.isValid()).toBe(false)
   })
 })
+
+describe('isValidGenesisBlock()', () => {
+
+  let genesisBlock
+  beforeEach(() => {
+    genesisBlock = new GenesisBlock()
+  })
+
+
+  it('Returns false if Genesis block has non zero height', () => {
+    genesisBlock.height = 1
+    expect(genesisBlock.isValidGenesisBlock()).toBe(false)
+  })
+
+  it('Returns false if Genesis block has previous hash thats not null', () => {
+    genesisBlock.previousHash = "someOtherHash"
+    expect(genesisBlock.isValidGenesisBlock()).toBe(false)
+  })
+
+  it('Returns false if doesnt have proof of work hash', () => {
+    jest.spyOn(genesisBlock, 'hasProofOfWork').mockImplementation(() => false);
+    expect(genesisBlock.isValidGenesisBlock()).toBe(false)
+  })
+
+  it('Returns true otherwise', () => {
+    expect(genesisBlock.isValidGenesisBlock()).toBe(true)
+  })
+
+});
 
 describe('GenesisBlock', () => {
 
@@ -325,27 +356,5 @@ describe('GenesisBlock', () => {
     });
   });
 
-  describe('isValid()', () => {
-
-    it('Returns false if Genesis block has non zero height', () => {
-      genesisBlock.height = 1
-      expect(genesisBlock.isValid()).toBe(false)
-    })
-  
-    it('Returns false if Genesis block has previous hash thats not null', () => {
-      genesisBlock.previousHash = "someOtherHash"
-      expect(genesisBlock.isValid()).toBe(false)
-    })
-
-    it('Returns false if doesnt have proof of work hash', () => {
-      jest.spyOn(genesisBlock, 'hasProofOfWork').mockImplementation(() => false);
-      expect(genesisBlock.isValid()).toBe(false)
-    })
-  
-    it('Returns true otherwise', () => {
-      expect(genesisBlock.isValid()).toBe(true)
-    })
-  
-  });
 });
 
