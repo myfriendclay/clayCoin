@@ -1,25 +1,26 @@
+import bodyParser from "body-parser";
+
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
-
-const restrict = require('./middleware/restricted.js');
-
-const authRouter = require('./auth/auth-router.js');
-const jokesRouter = require('./jokes/jokes-router.js');
 
 const server = express();
+const transactionsRouter = require('./transactions/transactions');
+const walletsRouter = require('./wallets/wallets');
+const blockchainRouter = require('./blockchain/blockchain');
+const mineBlockRouter = require('./blockchain/mine');
 
-server.use(helmet());
-// server.use(cors());
 server.use(cors({
     origin: '*',
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization']
   }));
 server.use(express.json());
+server.use(bodyParser.json())
 
-server.use('/api/auth', authRouter);
-server.use('/api/jokes', restrict, jokesRouter); // only logged-in users should have access!
+server.use('/transactions', transactionsRouter);
+server.use('/wallets', walletsRouter);
+server.use('/blockchain', blockchainRouter);
+server.use('/mine', mineBlockRouter);
 
 server.use((err, req, res, next) => { // eslint-disable-line
   res.status(err.status || 500).json({
