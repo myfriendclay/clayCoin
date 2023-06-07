@@ -14,7 +14,7 @@ router.get('/:publicAddress',  (req, res) => {
     res.json(wallet)
 });
 
-router.post('/', (req, res) => {
+router.post('/', (_req: any, res: { json: (arg0: { publicKey: string; privateKey: string; }) => void; }) => {
     const wallet = new Wallet()
     const response = {
       'publicKey': wallet.getPublicKey(),

@@ -41,8 +41,8 @@
   "scripts": {
     "test": "jest",
     "start": "ts-node-esm server/app.ts",
-    "dev": "npm run start-redis && npx nodemon server/app.ts",
-    "dev-peer": "cross-env GENERATE_PEER_PORT='true' nodemon server/app.js",
+    "dev": "npm run start-redis && npx nodemon server/index.ts",
+    "dev-peer": "cross-env GENERATE_PEER_PORT='true' nodemon server/index.ts",
     "start-redis": "redis-server --daemonize yes"
   },
   "jest": {

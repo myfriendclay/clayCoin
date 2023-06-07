@@ -3,21 +3,9 @@ import 'reflect-metadata';
 import 'es6-shim';
 import request from 'request'
 import { plainToClass } from 'class-transformer';
-import {blockchain, pubsub} from './api/blockchain'
-import server from './api/server'
-
-require('dotenv').config();
-
-const DEFAULT_PORT: number = parseInt(process.env.DEFAULT_PORT || '3000');
-
-//Multiple peer setup- setup
-let PEER_PORT
-const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`
-
-if (process.env.GENERATE_PEER_PORT === "true") {
-  PEER_PORT = DEFAULT_PORT + Math.ceil(Math.random() * 1000)
-}
-const PORT = PEER_PORT || DEFAULT_PORT
+import {blockchain } from './api/blockchain'
+import { PORT, DEFAULT_PORT, ROOT_NODE_ADDRESS } from './api/utils/ports';
+const server = require('./api/server');
 
 const syncChains = () => {
   request({ url: `${ROOT_NODE_ADDRESS}/blockchain`}, (error: any, response: { statusCode: number }, body: string) => {

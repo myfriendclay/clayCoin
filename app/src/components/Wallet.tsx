@@ -45,7 +45,7 @@ export function Wallet() {
       wallet.publicKey &&
       <div>
         <p>Public Key 🔓: {wallet.publicKey}</p>
-        <p>Private Key 🔒: {wallet.privateKey}</p> 
+        <p>Private Key 🔑: {wallet.privateKey}</p> 
       </div>
       }
     <WalletBalanceChecker/>

@@ -1,9 +1,9 @@
-import bodyParser from "body-parser";
-
 const express = require('express');
 const cors = require('cors');
 
 const server = express();
+const bodyParser = require('body-parser');
+
 const transactionsRouter = require('./transactions/transactions');
 const walletsRouter = require('./wallets/wallets');
 const blockchainRouter = require('./blockchain/blockchain');
@@ -14,6 +14,7 @@ server.use(cors({
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization']
   }));
+  
 server.use(express.json());
 server.use(bodyParser.json())
 
