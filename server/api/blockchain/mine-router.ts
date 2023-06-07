@@ -1,5 +1,5 @@
 const router = require('express').Router();
-import { blockchain, pubsub } from "../blockchain";
+import { blockchain, pubsub } from "../utils/database";
 
 //@ts-ignore
 router.post('/', (req, res) => {

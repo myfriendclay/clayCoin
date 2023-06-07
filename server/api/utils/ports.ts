@@ -2,7 +2,7 @@ require('dotenv').config();
 
 export const DEFAULT_PORT: number = parseInt(process.env.DEFAULT_PORT || '3000');
 
-//Multiple peer setup- setup
+//Multiple peer setup- allows you to mock multiple peers on the same machine
 let PEER_PORT
 export const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`
 

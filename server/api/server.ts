@@ -4,10 +4,10 @@ const cors = require('cors');
 const server = express();
 const bodyParser = require('body-parser');
 
-const transactionsRouter = require('./transactions/transactions');
-const walletsRouter = require('./wallets/wallets');
-const blockchainRouter = require('./blockchain/blockchain');
-const mineBlockRouter = require('./blockchain/mine');
+const transactionsRouter = require('./transactions/transactions-router');
+const walletsRouter = require('./wallets/wallet-router');
+const blockchainRouter = require('./blockchain/chain-router');
+const mineBlockRouter = require('./blockchain/mine-router');
 
 server.use(cors({
     origin: '*',
@@ -23,7 +23,8 @@ server.use('/wallets', walletsRouter);
 server.use('/blockchain', blockchainRouter);
 server.use('/mine', mineBlockRouter);
 
-server.use((err, req, res, next) => { // eslint-disable-line
+
+server.use((err, req, res, next) => { 
   res.status(err.status || 500).json({
     message: err.message,
     stack: err.stack,

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-import { blockchain } from "../blockchain";
+import { blockchain } from "../utils/database";
 import Wallet from "../../../blockchain/Wallet/Wallet";
 
 // @ts-ignore

@@ -1,6 +1,3 @@
-import 'reflect-metadata';
-import 'es6-shim';
-
 import { PORT, DEFAULT_PORT } from './api/utils/ports';
 import { syncChains } from './api/utils/syncChains';
 
