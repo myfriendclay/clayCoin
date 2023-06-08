@@ -6,7 +6,6 @@ import { blockchain, pubsub } from "../utils/database";
 router.post('/',  (req, res) => {
     const { fromAddress, toAddress, amount, memo, secretKey, fee } = req.body
     const newTransaction = new Transaction(fromAddress, toAddress, amount, memo, fee)
-  
     try {
       newTransaction.signTransaction(secretKey)
       blockchain.addTransaction(newTransaction)

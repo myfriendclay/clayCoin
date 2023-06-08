@@ -6,7 +6,7 @@ router.post('/', (req, res) => {
     const { miningAddress } = req.body
     const newBlock = blockchain.minePendingTransactions(miningAddress)
     pubsub.broadcastChain()
-    res.json(newBlock)
+    res.status(201).json(newBlock)
 });
 
 module.exports = router;
