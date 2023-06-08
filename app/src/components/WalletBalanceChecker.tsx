@@ -9,7 +9,7 @@ export function WalletBalanceChecker() {
 
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
     event.preventDefault();
-      axios.get(`http://localhost:3001/wallets/${walletAddress}`)
+      axios.get(`http://localhost:3001/api/wallets/${walletAddress}`)
         .then(response => {
           const balance = response.data.balance
           const transactions = response.data.transactions

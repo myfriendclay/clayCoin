@@ -41,7 +41,7 @@ function App() {
   const [alertDetails, setAlertDetails] = useState<AlertType>({open: false, alertMessage: '', alertType: 'info'});
 
   useEffect(() => {
-    axios.get(`http://localhost:3001/blockchain`)
+    axios.get(`http://localhost:3001/api/blockchain`)
       .then(response => {
         const { chain } = response.data.blockchain
         const {pendingTransactions} = response.data.blockchain

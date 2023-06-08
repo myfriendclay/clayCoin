@@ -18,10 +18,10 @@ server.use(cors({
 server.use(express.json());
 server.use(bodyParser.json())
 
-server.use('/transactions', transactionsRouter);
-server.use('/wallets', walletsRouter);
-server.use('/blockchain', blockchainRouter);
-server.use('/mine', mineBlockRouter);
+server.use('/api/transactions', transactionsRouter);
+server.use('/api/wallets', walletsRouter);
+server.use('/api/blockchain', blockchainRouter);
+server.use('/api/blocks/mine', mineBlockRouter);
 
 
 server.use((err, req, res, next) => { 

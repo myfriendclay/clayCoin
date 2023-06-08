@@ -7,7 +7,7 @@ describe('GET /blockchain', () => {
     let res
 
     beforeEach(async () => {
-        res = await request(server).get('/blockchain')
+        res = await request(server).get('/api/blockchain')
     })
 
     test('returns a 200 status code', async () => {
@@ -47,9 +47,9 @@ describe('GET /blockchain', () => {
 
 describe('POST /mine', () => {
   test('Returns a 200 and increases length of blockchain to 2', async () => {
-    const res = await request(server).post('/mine')
+    const res = await request(server).post('/api/blocks/mine')
     expect(res.status).toBe(200)
-    const blockchainRes = await request(server).get('/blockchain')
+    const blockchainRes = await request(server).get('/api/blockchain')
     expect(blockchainRes.body.length).toBe(2)
   })
 })
@@ -62,7 +62,7 @@ describe('GET /:publicAddress', () => {
 
 describe('POST /wallets', () => {
     test('Returns a 200 and wallet with public and private key', async () => {
-        const res = await request(server).post('/wallets')
+        const res = await request(server).post('/api/wallets')
         expect(res.status).toBe(200)
         expect(res.body).toHaveProperty('publicKey')
         expect(res.body).toHaveProperty('privateKey')

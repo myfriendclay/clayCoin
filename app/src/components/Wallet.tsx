@@ -14,7 +14,7 @@ export function Wallet() {
 
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
     event.preventDefault();
-    axios.post('http://localhost:3001/wallets/')
+    axios.post('http://localhost:3001/api/wallets/')
       .then(response => {
         const walletKeyPair = response.data
         setWallet({

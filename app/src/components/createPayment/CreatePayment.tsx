@@ -46,7 +46,7 @@ export default function CreatePayment({setmemPool, setAlertDetails} :
 
     const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
       event.preventDefault();
-      axios.post('http://localhost:3001/transactions', formData)
+      axios.post('http://localhost:3001/api/transactions', formData)
         .then(response => {
           const pendingTransactions = response.data
           setmemPool(pendingTransactions)

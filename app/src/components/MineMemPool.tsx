@@ -30,7 +30,7 @@ function MineMemPool({setBlockchain, blockchain, setmemPool, setAlertDetails}: M
 
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
     event.preventDefault();
-    axios.post('http://localhost:3001/mine', formData)
+    axios.post('http://localhost:3001/api/blocks/mine', formData)
       .then(response => {
         const block = response.data
         setBlockchain([...blockchain, block])
