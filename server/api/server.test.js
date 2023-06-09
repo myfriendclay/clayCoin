@@ -47,22 +47,26 @@ describe('GET /blockchain', () => {
 })
 
 describe('POST /blocks/mine', () => {
+    let res, mockBroadcastChain
+    beforeAll(async () => {
+        mockBroadcastChain = jest.spyOn(pubsub, 'broadcastChain')
+        const minerInfo = {
+            miningAddress: "04ab3939b5ddc445946f645e1ad497e42f11e76474819a07da0b5cc4c79bf3ffbdc397d0e7cffacc960cfe636e456fb43fdb6e93cab1fa2533675938fe9f9cfcff",
+        }
+        res = await request(server).post('/api/blocks/mine').send(minerInfo)
+    })
+    
   test('Returns a 201', async () => {
-    const minerInfo = {
-        miningAddress: "04ab3939b5ddc445946f645e1ad497e42f11e76474819a07da0b5cc4c79bf3ffbdc397d0e7cffacc960cfe636e456fb43fdb6e93cab1fa2533675938fe9f9cfcff",
-    }
-    const res = await request(server).post('/api/blocks/mine').send(minerInfo)
     expect(res.status).toBe(201)
-    const blockchainRes = await request(server).get('/api/blockchain')
-    expect(blockchainRes.body.length).toBe(2)
   })
 
   test('Increases length of blockchain to 2', async () => {
-    const blockchainRes = await request(server).get('/api/blockchain')
-    expect(blockchainRes.body.length).toBe(2)
     expect(blockchainPOJO.chain).toHaveLength(2)
   })
 
+  it('Broadcasts block to pubsub', async () => {
+    expect(mockBroadcastChain).toHaveBeenCalled()
+  })
 })
 
 describe('GET /:publicAddress', () => {
