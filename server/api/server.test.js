@@ -4,38 +4,36 @@ const request = require('supertest')
 import { BLOCK_SUBSIDY, INITIAL_DIFFICULTY } from "../../config"
 import {blockchain as blockchainPOJO, pubsub} from "./utils/database"
 
-describe('GET /blockchain', () => {
-    let res
-    
-    beforeEach(async () => {
+describe('GET api/blockchain', () => {
+    let res, blockchain
+
+    beforeAll(async () => {
         res = await request(server).get('/api/blockchain')
+        blockchain = res.body.blockchain
     })
 
-    test('returns a 200 status code', async () => {
+    test('returns a 200 status code', () => {
         expect(res.status).toBe(200)
-      })
+    })
 
-    test('returns the blockchain with length 1, isChainValid true', async () => {
+    test('returns the blockchain with length 1, isChainValid true', () => {
         const { length, isChainValid } = res.body
         expect(length).toBe(1)
         expect(isChainValid).toBe(true)
     })
 
     test('Blockchain has blocksubsidy, initial difficulty, empty pending transactions, and chain', () => {
-        const { blockchain } = res.body
         expect(blockchain.blockSubsidy).toBe(BLOCK_SUBSIDY)
-        expect(blockchain.pendingTransactions).toHaveLength(0)
         expect(blockchain.difficulty).toBe(INITIAL_DIFFICULTY)
+        expect(blockchain.pendingTransactions).toHaveLength(0)
         expect(blockchain).toHaveProperty("chain")
     })
 
     test('Returns the original Pojo', () => {
-        const { blockchain } = res.body
-        expect()
+        expect(blockchain).toEqual(blockchainPOJO)
     })
 
     test('Genesis block has nonce, hash, miningDurationMs, timestamp, height, prevHash', () => {
-        const { blockchain } = res.body
         const genesisBlock = blockchain.chain[0]
         expect(genesisBlock).toHaveProperty("nonce")
         expect(genesisBlock).toHaveProperty("hash")
@@ -47,12 +45,15 @@ describe('GET /blockchain', () => {
 })
 
 describe('POST /blocks/mine', () => {
-    let res, mockBroadcastChain
+    let res, mockBroadcastChain, mockMinePendingTxs, mockBlock
+
+    const minerInfo = {
+        miningAddress: "04ab3939b5ddc445946f645e1ad497e42f11e76474819a07da0b5cc4c79bf3ffbdc397d0e7cffacc960cfe636e456fb43fdb6e93cab1fa2533675938fe9f9cfcff",
+    }
+
     beforeAll(async () => {
         mockBroadcastChain = jest.spyOn(pubsub, 'broadcastChain')
-        const minerInfo = {
-            miningAddress: "04ab3939b5ddc445946f645e1ad497e42f11e76474819a07da0b5cc4c79bf3ffbdc397d0e7cffacc960cfe636e456fb43fdb6e93cab1fa2533675938fe9f9cfcff",
-        }
+        mockMinePendingTxs = jest.spyOn(blockchainPOJO, 'minePendingTransactions')
         res = await request(server).post('/api/blocks/mine').send(minerInfo)
     })
     
@@ -66,6 +67,17 @@ describe('POST /blocks/mine', () => {
 
   it('Broadcasts block to pubsub', async () => {
     expect(mockBroadcastChain).toHaveBeenCalled()
+  })
+
+  it('Calls blockchain.minePendingTransactions method', async () => {
+    expect(mockMinePendingTxs).toHaveBeenCalled()
+  })
+
+  it('Returns the results of blockchain.minePendingTransactions method', async () => {
+    mockBlock = "test blockchain.minePendingTransactions return value"
+    jest.spyOn(blockchainPOJO, 'minePendingTransactions').mockReturnValueOnce(mockBlock)
+    const response2 = await request(server).post('/api/blocks/mine').send(minerInfo)
+    expect(response2.body).toBe(mockBlock)
   })
 })
 
@@ -186,3 +198,6 @@ describe('POST /transactions', () => {
     })
   
 })
+
+todo.test("/api/block/:id/isValid")
+todo.test("/api/transactions/:id/isValid")

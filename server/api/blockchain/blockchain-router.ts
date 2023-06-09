@@ -2,8 +2,7 @@ const router = require('express').Router();
 import { blockchain } from "../utils/database";
 import Blockchain from "../../../blockchain/Blockchain/Blockchain";
 
-//@ts-ignore
-router.get('/', (req, res) => {
+router.get('/', (req: any, res: any) => {
     const response = {
         'blockchain': blockchain,
         'length': blockchain.chain.length,
