@@ -2,7 +2,7 @@ const server = require('./server')
 const request = require('supertest')
 
 import { BLOCK_SUBSIDY, INITIAL_DIFFICULTY } from "../../config"
-import {blockchain as blockchainPOJO} from "./utils/database"
+import {blockchain as blockchainPOJO, pubsub} from "./utils/database"
 
 describe('GET /blockchain', () => {
     let res
@@ -140,9 +140,12 @@ describe('POST /transactions', () => {
     })
 
     describe("When wallet has sufficient funds and valid key", () => {
-        let res, transaction
+        
+        let res, transaction, mockBroadcastTx
         beforeAll(async () => {
+
             blockchainPOJO.minePendingTransactions("043a9d7e34eb6dfd8cf11ec05a774528a4dd899626e78c65655f0152d5c419f335f6c1198bd7bca70049e3bcc2da0b354b32ef9122df1ddae26628b69adc4c7354")
+            mockBroadcastTx = jest.spyOn(pubsub, 'broadcastTransaction')
             transaction = {
                 "fromAddress": "043a9d7e34eb6dfd8cf11ec05a774528a4dd899626e78c65655f0152d5c419f335f6c1198bd7bca70049e3bcc2da0b354b32ef9122df1ddae26628b69adc4c7354",
                 "toAddress": "testToAddress",
@@ -174,7 +177,7 @@ describe('POST /transactions', () => {
         })
 
         it('Broadcasts transaction to pubsub', async () => {
-
+            expect(mockBroadcastTx).toHaveBeenCalled()
         })
     })
   
