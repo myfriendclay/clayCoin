@@ -31,7 +31,7 @@ export default class Transaction {
   signTransaction(secretKey: string): void {
     const signingKey = ec.keyFromPrivate(secretKey, 'hex')
     if (signingKey.getPublic('hex') !== this.fromAddress) {
-      throw new Error("you can't sign transactions for other wallets")
+      throw new Error("Unauthorized: Your private key is invalid or doesn't match your public address")
     }
 
     const transactionHash = this.calculateHash()

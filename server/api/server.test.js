@@ -86,30 +86,96 @@ describe('POST /wallets', () => {
 })
 
 describe('POST /transactions', () => {
-    test('Returns a 400 and error msg if wallet doesnt have sufficient funds', async () => {
-        const transaction = {
-            "fromAddress": "043a9d7e34eb6dfd8cf11ec05a774528a4dd899626e78c65655f0152d5c419f335f6c1198bd7bca70049e3bcc2da0b354b32ef9122df1ddae26628b69adc4c7354",
-            "toAddress": "testToAddress",
-            "amount": 5,
-            "memo": "test payment memo",
-            "fee": 1,
-            "secretKey": "684adfb19c37e7ca67aaf69d6d96c7b21fc205aa20b8adc0de73397161d139b4"
-        }
-        const res = await request(server).post('/api/transactions').send(transaction)
-        expect(res.status).toBe(400)
-        expect(res.body.error).toBe('not enough funds for transactions in mempool or this transaction itself')
+    describe("When wallet doesn't have sufficient funds", () => {
+        let res
+        beforeAll(async () => {
+            const transaction = {
+                "fromAddress": "043a9d7e34eb6dfd8cf11ec05a774528a4dd899626e78c65655f0152d5c419f335f6c1198bd7bca70049e3bcc2da0b354b32ef9122df1ddae26628b69adc4c7354",
+                "toAddress": "testToAddress",
+                "amount": 5,
+                "memo": "test payment memo",
+                "fee": 1,
+                "secretKey": "684adfb19c37e7ca67aaf69d6d96c7b21fc205aa20b8adc0de73397161d139b4"
+            }
+            res = await request(server).post('/api/transactions').send(transaction)
+        })
+
+        it('Returns a 400 status code', () => {
+            expect(res.status).toBe(400)
+        })
+
+        it('Returns the correct error msg', () => {
+            expect(res.body.error).toBe('not enough funds for transactions in mempool or this transaction itself')
+        })
+
+        it('Does not add transaction to mempool', async () => {
+            expect(blockchainPOJO.pendingTransactions).toHaveLength(0)
+        })
     })
-    test('Returns a 400 and error msg if wallet has invalid private key ', async () => {
-        const transaction = {
-            "fromAddress": "04ab3939b5ddc445946f645e1ad497e42f11e76474819a07da0b5cc4c79bf3ffbdc397d0e7cffacc960cfe636e456fb43fdb6e93cab1fa2533675938fe9f9cfcff",
-            "toAddress": "testToAddress",
-            "amount": 5,
-            "memo": "test payment memo",
-            "fee": 1,
-            "secretKey": "bogusKey"
-        }
-        const res = await request(server).post('/api/transactions').send(transaction)
-        expect(res.status).toBe(400)
-        expect(res.body.error).toBe("you can't sign transactions for other wallets")
+
+    describe("When wallet has invalid private key", () => {
+        let res
+        beforeAll(async () => {
+            const transaction = {
+                "fromAddress": "043a9d7e34eb6dfd8cf11ec05a774528a4dd899626e78c65655f0152d5c419f335f6c1198bd7bca70049e3bcc2da0b354b32ef9122df1ddae26628b69adc4c7354",
+                "toAddress": "testToAddress",
+                "amount": 5,
+                "memo": "test payment memo",
+                "fee": 1,
+                "secretKey": "boguskey"
+            }
+            res = await request(server).post('/api/transactions').send(transaction)
+        })
+        it('Returns a 400 status code', () => {
+            expect(res.status).toBe(400)
+        })
+
+        it('Returns the correct error msg', () => {
+            expect(res.body.error).toBe("Unauthorized: Your private key is invalid or doesn't match your public address")
+        })
+
+        it('Does not add transaction to mempool', async () => {
+            expect(blockchainPOJO.pendingTransactions).toHaveLength(0)
+        })
     })
+
+    describe("When wallet has sufficient funds and valid key", () => {
+        let res, transaction
+        beforeAll(async () => {
+            blockchainPOJO.minePendingTransactions("043a9d7e34eb6dfd8cf11ec05a774528a4dd899626e78c65655f0152d5c419f335f6c1198bd7bca70049e3bcc2da0b354b32ef9122df1ddae26628b69adc4c7354")
+            transaction = {
+                "fromAddress": "043a9d7e34eb6dfd8cf11ec05a774528a4dd899626e78c65655f0152d5c419f335f6c1198bd7bca70049e3bcc2da0b354b32ef9122df1ddae26628b69adc4c7354",
+                "toAddress": "testToAddress",
+                "amount": 5,
+                "memo": "test payment memo",
+                "fee": 1,
+                "secretKey": "684adfb19c37e7ca67aaf69d6d96c7b21fc205aa20b8adc0de73397161d139b4"
+            }
+            res = await request(server).post('/api/transactions').send(transaction)
+        })
+        it('Returns a 201 status code', () => {
+            expect(res.status).toBe(201)
+        })
+
+        it('Returns pending transactions in response', async () => {
+            expect(res.body).toEqual(blockchainPOJO.pendingTransactions)
+        })
+
+        it('Adds transaction to blockchain POJO mempool and has same properties', async () => {
+            const addedTx = blockchainPOJO.pendingTransactions[blockchainPOJO.pendingTransactions.length - 1]
+            expect(addedTx.fromAddress).toBe(transaction.fromAddress)
+            expect(addedTx.toAddress).toBe(transaction.toAddress)
+            expect(addedTx.amount).toBe(transaction.amount)
+            expect(addedTx.memo).toBe(transaction.memo)
+            expect(addedTx.fee).toBe(transaction.fee)
+            expect(addedTx).toHaveProperty("signature")
+            expect(addedTx).toHaveProperty("uuid")
+            expect(addedTx).toHaveProperty("timestamp")
+        })
+
+        it('Broadcasts transaction to pubsub', async () => {
+
+        })
+    })
+  
 })

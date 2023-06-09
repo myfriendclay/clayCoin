@@ -10,7 +10,7 @@ router.post('/',  (req, res) => {
       newTransaction.signTransaction(secretKey)
       blockchain.addTransaction(newTransaction)
       pubsub.broadcastTransaction(newTransaction)
-      res.json(blockchain.pendingTransactions)
+      res.status(201).json(blockchain.pendingTransactions)
     } catch (error: any) {
       res.status(400).json({ error: error.message })
     }
