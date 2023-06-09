@@ -199,5 +199,5 @@ describe('POST /transactions', () => {
   
 })
 
-todo.test("/api/block/:id/isValid")
-todo.test("/api/transactions/:id/isValid")
+test.todo("/api/block/:id/isValid")
+test.todo("/api/transactions/:id/isValid")
