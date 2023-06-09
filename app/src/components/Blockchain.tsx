@@ -1,7 +1,9 @@
-import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Container } from "@mui/material";
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Container, Tooltip } from "@mui/material";
 import { BlockType } from "../App";
 import Block from "./Block";
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
+import DangerousOutlinedIcon from '@mui/icons-material/DangerousOutlined';
+
 const headers = [" ", "Height", "Time", "Hash", "Prev Hash", "Transactions", "Difficulty", "Nonce", "Mining Time (min)"]
 
 export function Blockchain({blockchain, isChainValid}: {blockchain: BlockType[], isChainValid: boolean}) {
@@ -15,7 +17,15 @@ export function Blockchain({blockchain, isChainValid}: {blockchain: BlockType[],
       borderBottom: '1px grey dotted'
     }}>
     <h1>Blockchain</h1>
-    {isChainValid && <AssuredWorkloadIcon style={{ color: 'green' }}/>}
+    {isChainValid ? 
+      <Tooltip title="Blockchain has been validated. Every block has valid proof of work and each block is validly connected to the previous block.">
+          <AssuredWorkloadIcon style={{ color: 'green' }}/> 
+      </Tooltip>
+      :
+      <Tooltip title="Blockchain is invalid! One block does not have valid proof of work and/or two or more blocks are not validly connected.">
+            <DangerousOutlinedIcon style={{ color: 'red' }}/> 
+      </Tooltip>
+    }
     <TableContainer component={Paper}>
       <Table aria-label="payments table">
         <TableHead>
