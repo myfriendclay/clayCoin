@@ -39,14 +39,15 @@ function App() {
   const [blockchain, setBlockchain] = useState<BlockType[]>([]);
   const [memPool, setmemPool] = useState<TransactionType[]>([]);
   const [alertDetails, setAlertDetails] = useState<AlertType>({open: false, alertMessage: '', alertType: 'info'});
+  const [isChainValid, setIsChainValid] = useState<boolean>(false);
 
   useEffect(() => {
     axios.get(`http://localhost:3001/api/blockchain`)
       .then(response => {
-        const { chain } = response.data.blockchain
-        const {pendingTransactions} = response.data.blockchain
+        const { chain, pendingTransactions } = response.data.blockchain
         setBlockchain(chain)
         setmemPool(pendingTransactions)
+        setIsChainValid(response.data.isChainValid)
       })
       .catch(err => {
         console.error(err)
@@ -68,7 +69,7 @@ function App() {
         blockchain={blockchain} 
         setAlertDetails={setAlertDetails}
       />
-      <Blockchain blockchain={blockchain}/>
+      <Blockchain blockchain={blockchain} isChainValid={isChainValid}/>
       <AlertBanner alertDetails={alertDetails} setAlertDetails={setAlertDetails}/>
     </div>
   );

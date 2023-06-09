@@ -1,10 +1,10 @@
 import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Container } from "@mui/material";
 import { BlockType } from "../App";
 import Block from "./Block";
-
+import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 const headers = [" ", "Height", "Time", "Hash", "Prev Hash", "Transactions", "Difficulty", "Nonce", "Mining Time (min)"]
 
-export function Blockchain({blockchain}: {blockchain: BlockType[]}) {
+export function Blockchain({blockchain, isChainValid}: {blockchain: BlockType[], isChainValid: boolean}) {
   return (
     <Container sx={{ 
       margin: "0px auto 30px auto",  
@@ -15,6 +15,7 @@ export function Blockchain({blockchain}: {blockchain: BlockType[]}) {
       borderBottom: '1px grey dotted'
     }}>
     <h1>Blockchain</h1>
+    {isChainValid && <AssuredWorkloadIcon style={{ color: 'green' }}/>}
     <TableContainer component={Paper}>
       <Table aria-label="payments table">
         <TableHead>
