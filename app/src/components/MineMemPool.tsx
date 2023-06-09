@@ -37,7 +37,7 @@ function MineMemPool({setBlockchain, blockchain, setmemPool, setAlertDetails}: M
         setmemPool([])
         setAlertDetails({ 
           open: true, 
-          alertMessage: `You mined block #${block.height}!`, 
+          alertMessage: `You mined block #${block.height} in ${block.miningDurationMs / 1000} seconds!`,
           alertType: 'success'
         })
       })
