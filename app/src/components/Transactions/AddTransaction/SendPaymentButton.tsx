@@ -1,9 +1,7 @@
 
 import { Button } from "@mui/material";
 
-export default function SendPaymentButton(props) {
-
-  const { handleSubmit, values } = props
+export default function SendPaymentButton({ handleSubmit, values }: any) {
 
   return (
     <Button variant="contained" sx={{ 

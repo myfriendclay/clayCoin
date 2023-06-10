@@ -1,6 +1,6 @@
-import Transactions from "./Transactions";
+import Transactions from "../Transactions/Transactions";
 import { Container } from "@mui/system";
-import MineMemPool from "../MineMemPool";
+import MineMemPool from "./MineMemPool";
 import { AlertType, BlockType, TransactionType } from "../../App";
 
 interface MemPoolProps {

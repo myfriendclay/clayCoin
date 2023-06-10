@@ -1,5 +1,5 @@
 import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Container, Tooltip } from "@mui/material";
-import { BlockType } from "../App";
+import { BlockType } from "../../App";
 import Block from "./Block";
 import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import DangerousOutlinedIcon from '@mui/icons-material/DangerousOutlined';

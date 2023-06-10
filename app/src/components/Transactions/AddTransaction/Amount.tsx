@@ -1,9 +1,7 @@
 import { FormControl, TextField} from "@mui/material";
 
-export default function Amount(props) {
+export default function Amount({values, handleChange}: any) {
   
-  const { values, handleChange } = props
-
   return (
     <FormControl sx={{ margin: 1, width: 110 }}>
       <TextField

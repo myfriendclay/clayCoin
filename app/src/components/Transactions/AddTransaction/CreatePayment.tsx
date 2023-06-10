@@ -5,7 +5,7 @@ import { Box, Container, FormControl, TextField } from "@mui/material";
 import Amount from './Amount'
 import Memo from './Memo'
 import SendPaymentButton from "./SendPaymentButton";
-import { TransactionType, AlertType } from "../../App";
+import { TransactionType, AlertType } from "../../../App";
 
 interface FormData {
   fromAddress: string;

@@ -1,7 +1,7 @@
 import { Box, Button, Container, TextField } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
-import { AlertType, BlockType, TransactionType } from "../App";
+import { AlertType, BlockType, TransactionType } from "../../App";
 
 interface FormData {
   miningAddress: string;

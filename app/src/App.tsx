@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios'
-import './App.css';
 import MemPool from './components/MemPool/MemPool';
-import CreatePayment from './components/createPayment/CreatePayment';
-import { Blockchain } from './components/Blockchain';
-import { Wallet } from './components/Wallet';
+import CreatePayment from './components/Transactions/AddTransaction/CreatePayment';
+import { Blockchain } from './components//Blockchain/Blockchain';
+import { Wallet } from './components/Wallets/Wallet';
 import AlertBanner from './components/AlertBanner';
 
 export interface BlockType {

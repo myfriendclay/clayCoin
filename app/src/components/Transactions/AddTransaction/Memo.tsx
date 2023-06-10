@@ -1,9 +1,7 @@
 
 import { Box, TextField } from "@mui/material";
 
-export default function Memo(props) {
-
-  const { values, handleChange } = props
+export default function Memo({ values, handleChange }: any) {
 
   return (
     <Box sx={{ minWidth: "80%", margin: 1 }}>
