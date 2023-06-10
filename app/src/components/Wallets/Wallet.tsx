@@ -1,4 +1,4 @@
-import { Button, Container } from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
 import { WalletBalanceChecker } from "./WalletBalanceChecker";
@@ -43,10 +43,17 @@ export function Wallet() {
     </Button>
       {
       wallet.publicKey &&
-      <div>
-        <p>Public Key 🔓: {wallet.publicKey}</p>
-        <p>Private Key 🔑: {wallet.privateKey}</p> 
-      </div>
+      <Box
+        sx={{
+          }}
+      >
+        <Typography variant="body2" component="p">
+          Public Key 🔓: {wallet.publicKey}
+        </Typography>
+        <Typography variant="body2" component="p">
+          Private Key 🔑: {wallet.privateKey}
+        </Typography>
+      </Box>
       }
     <WalletBalanceChecker/>
   </Container>

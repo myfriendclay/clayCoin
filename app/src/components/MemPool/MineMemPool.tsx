@@ -62,7 +62,6 @@ function MineMemPool({setBlockchain, blockchain, setmemPool, setAlertDetails}: M
         flexDirection: 'column',
         alignItems: 'center',
         paddingBottom: '40px',
-        borderBottom: '1px grey dotted'
       }}>
       <Box>
         <TextField

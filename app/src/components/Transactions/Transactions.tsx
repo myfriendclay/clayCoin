@@ -11,11 +11,8 @@ export default function Transactions({transactions}: {transactions: TransactionT
       <Typography variant="h5" gutterBottom component="div" sx={{ textAlign: "center", marginTop: "10px"}}>
         Transactions
       </Typography>
-      <Table aria-label="payments table">
+      <Table aria-label="transactions table">
         <TableHead>
-          <TableRow sx={{ textAlign: 'center'}}>
-  
-          </TableRow>
           <TableRow>
             {headers.map(header => 
               <TableCell 
@@ -26,12 +23,15 @@ export default function Transactions({transactions}: {transactions: TransactionT
           </TableRow>
         </TableHead>
         <TableBody>
-          { 
-            transactions
-            .map((transaction: TransactionType) => 
+          { transactions.length ?
+            transactions.map((transaction: TransactionType) => 
               <Transaction 
                 transaction={transaction}
                 key={transaction.uuid}/>)
+            :
+            <Typography variant="body1" component="p">
+              No transactions found. Sad!
+            </Typography>
           }
         </TableBody>
       </Table>

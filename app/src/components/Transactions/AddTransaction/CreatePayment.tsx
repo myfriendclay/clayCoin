@@ -56,6 +56,7 @@ export default function CreatePayment({setmemPool, setAlertDetails} :
             alertMessage: "You added a transaction to the mempool!", 
             alertType: 'success'
           })
+          setFormData(blankFormValues)
 
         })
         .catch(err => {
@@ -67,7 +68,7 @@ export default function CreatePayment({setmemPool, setAlertDetails} :
             alertType: 'error'
           })
         })
-      setFormData(blankFormValues)
+      
     }
 
   return (
@@ -77,7 +78,6 @@ export default function CreatePayment({setmemPool, setAlertDetails} :
       flexDirection: 'column',
       alignItems: 'center',
       paddingBottom: '40px',
-      borderBottom: '1px grey dotted'
       }}>
       <h1>Send Payment</h1>
       <Box>

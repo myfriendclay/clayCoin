@@ -15,13 +15,9 @@ export default function MemPool({memPool, setBlockchain, blockchain, setmemPool,
   MemPoolProps) {
 
   return (
-    <Container sx={{ display: 'flex', flexFlow: "column", alignItems: "center"}}>
+    <Container sx={{ display: 'flex', flexFlow: "column", alignItems: "center", borderBottom: '1px grey dotted', borderTop: '1px grey dotted'}} >
       <h1>Mempool</h1>
-      {
-        memPool.length ?
-        <Transactions transactions={memPool}/> :
-        "No transactions currently in memPool. Sad!"
-      }
+      <Transactions transactions={memPool}/>
       <MineMemPool 
         setBlockchain={setBlockchain} 
         blockchain={blockchain} 
