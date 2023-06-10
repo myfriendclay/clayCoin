@@ -2,6 +2,7 @@ import Transactions from "../Transactions/Transactions";
 import { Container } from "@mui/system";
 import MineMemPool from "./MineMemPool";
 import { AlertType, BlockType, TransactionType } from "../../App";
+import CreatePayment from "../Transactions/AddTransaction/CreatePayment";
 
 interface MemPoolProps {
   memPool: TransactionType[];
@@ -17,6 +18,10 @@ export default function MemPool({memPool, setBlockchain, blockchain, setmemPool,
   return (
     <Container sx={{ display: 'flex', flexFlow: "column", alignItems: "center", borderBottom: '1px grey dotted', borderTop: '1px grey dotted'}} >
       <h1>Mempool</h1>
+      <CreatePayment 
+        setmemPool={setmemPool} 
+        setAlertDetails={setAlertDetails}
+      />
       <Transactions transactions={memPool}/>
       <MineMemPool 
         setBlockchain={setBlockchain} 

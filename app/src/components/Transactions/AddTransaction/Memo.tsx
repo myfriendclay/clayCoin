@@ -4,9 +4,10 @@ import { Box, TextField } from "@mui/material";
 export default function Memo({ values, handleChange }: any) {
 
   return (
-    <Box sx={{ minWidth: "80%", margin: 1 }}>
+    <Box >
       <TextField
         size="small"
+        margin="dense"
         sx={{minWidth: "100%"}}
         id="memo"
         label="Memo (optional)"

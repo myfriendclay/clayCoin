@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios'
 import MemPool from './components/MemPool/MemPool';
-import CreatePayment from './components/Transactions/AddTransaction/CreatePayment';
 import { Blockchain } from './components//Blockchain/Blockchain';
 import { Wallet } from './components/Wallets/Wallet';
 import AlertBanner from './components/AlertBanner';
@@ -57,10 +56,6 @@ function App() {
   return (
     <div>
       <Wallet/>
-      <CreatePayment 
-        setmemPool={setmemPool} 
-        setAlertDetails={setAlertDetails}
-      />
       <MemPool 
         memPool={memPool} 
         setmemPool={setmemPool}
