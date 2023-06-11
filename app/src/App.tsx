@@ -4,6 +4,7 @@ import MemPool from "./components/MemPool/MemPool";
 import { Blockchain } from "./components//Blockchain/Blockchain";
 import { Wallet } from "./components/Wallets/Wallet";
 import AlertBanner from "./components/AlertBanner";
+import { Container } from "@mui/material";
 
 export interface BlockType {
   timestamp: number;
@@ -57,7 +58,7 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <Container maxWidth="xl">
       <Wallet />
       <MemPool
         memPool={memPool}
@@ -71,7 +72,7 @@ function App() {
         alertDetails={alertDetails}
         setAlertDetails={setAlertDetails}
       />
-    </div>
+  </Container>
   );
 }
 

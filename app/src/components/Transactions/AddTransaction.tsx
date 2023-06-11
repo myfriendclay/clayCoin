@@ -25,7 +25,7 @@ interface MemPoolProps {
   setAlertDetails: (alertDetails: AlertType) => void;
 }
 
-export default function CreatePayment({
+export default function AddTransaction({
   setmemPool,
   setAlertDetails,
 }: MemPoolProps) {
@@ -134,8 +134,7 @@ export default function CreatePayment({
         <DialogTitle>Add Transaction</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To add payment transaction to mempool, enter the following
-            information:
+            This will add the transaction to the mempool.
           </DialogContentText>
 
           {formFields.map((field) => (
@@ -155,8 +154,8 @@ export default function CreatePayment({
           ))}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Send Payment</Button>
+            <Button onClick={handleClose} color="error">Cancel</Button>
+            <Button onClick={handleSubmit}>Send Payment</Button>
         </DialogActions>
       </Dialog>
     </div>

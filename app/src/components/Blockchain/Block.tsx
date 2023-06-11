@@ -28,7 +28,7 @@ function Block({ block }: { block: BlockType }) {
   } = block;
   return (
     <>
-      <TableRow>
+      <TableRow sx={{ backgroundColor: open ? "#f1f8e9" : "transparent" }}>
         <TableCell width={10}>
           <IconButton
             aria-label="expand row"
@@ -59,7 +59,7 @@ function Block({ block }: { block: BlockType }) {
       </TableRow>
 
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9} sx={{ margin: 1, backgroundColor: open ? "#e3f2fd" : "transparent" }}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               {transactions.length !== 0 ? (
