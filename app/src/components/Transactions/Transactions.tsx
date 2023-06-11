@@ -29,7 +29,7 @@ export default function Transactions({transactions}: {transactions: TransactionT
                 transaction={transaction}
                 key={transaction.uuid}/>)
             :
-            <Typography variant="body1" component="p">
+            <Typography variant="body1" component="p" padding={"20px"}>
               No transactions found. Sad!
             </Typography>
           }

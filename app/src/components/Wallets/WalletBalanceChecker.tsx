@@ -40,14 +40,7 @@ export function WalletBalanceChecker() {
           onChange={handleChange}
         />
         <Button
-          variant="contained"
-          sx={{
-            margin: 1,
-            backgroundColor: "#8656ef",
-            "&:hover": {
-              backgroundColor: "#8656ef",
-            },
-          }}
+          variant="outlined"
           size="large"
           onClick={handleSubmit}
         >

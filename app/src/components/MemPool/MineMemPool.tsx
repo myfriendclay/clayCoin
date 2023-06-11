@@ -28,6 +28,7 @@ function MineMemPool({
   const [mining, setMining] = useState<boolean>(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    console.log(blockchain)
     let { name, value, id } = event.target;
     setFormData({ ...formData, [id || name]: value });
   };
@@ -93,7 +94,7 @@ function MineMemPool({
         size="large"
         onClick={handleSubmit}
       >
-        Mine Block
+        Mine Block #{blockchain.length}
       </Button>
       {mining && <CircularProgress color="success" />}
     </Container>

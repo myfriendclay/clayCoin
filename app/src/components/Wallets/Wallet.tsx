@@ -29,14 +29,10 @@ export function Wallet() {
   return (
     <Container sx={{ display: 'flex', flexFlow: "column", alignItems: "center"}}>
     <h1>Wallet</h1>
-    <Button variant="contained" sx={{ 
+    <Button variant="text" sx={{ 
       margin: 1, 
-      backgroundColor: '#8656ef',
-      '&:hover': {
-        backgroundColor: '#8656ef',
-      } 
       }} 
-      size="large"
+
       onClick={handleSubmit}
       >
       Generate New Wallet

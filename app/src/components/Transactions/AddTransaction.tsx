@@ -127,7 +127,17 @@ export default function AddTransaction({
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen} sx={{ m: 2 }}>
+      <Button
+        variant="contained"
+        size="large"
+        sx={{
+          backgroundColor: "#8656ef",
+          "&:hover": {
+            backgroundColor: "#8656ef",
+          },
+        }}
+        onClick={handleClickOpen}
+      >
         Add Transaction
       </Button>
       <Dialog open={open} onClose={handleClose}>
@@ -154,8 +164,10 @@ export default function AddTransaction({
           ))}
         </DialogContent>
         <DialogActions>
-            <Button onClick={handleClose} color="error">Cancel</Button>
-            <Button onClick={handleSubmit}>Send Payment</Button>
+          <Button onClick={handleClose} color="error">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit}>Send Payment</Button>
         </DialogActions>
       </Dialog>
     </div>
