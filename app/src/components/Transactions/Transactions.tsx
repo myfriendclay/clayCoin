@@ -7,8 +7,8 @@ export default function Transactions({transactions}: {transactions: TransactionT
   const headers = ["Time", "Sender", "", "Receiver", "Amount", "Fee", "Memo" ]
 
   return (
-    <TableContainer component={Paper} sx={{ minWidth: "1100px", border: "1px black dashed"  }}>
-      <Typography variant="h5" gutterBottom component="div" sx={{ textAlign: "center", marginTop: "10px"}}>
+    <TableContainer component={Paper} sx={{ minWidth: "1100px", paddingTop: "15px"  }} elevation={2}>
+      <Typography variant="h5" gutterBottom component="div" sx={{ textAlign: "center", }}>
         Transactions
       </Typography>
       <Table aria-label="transactions table">

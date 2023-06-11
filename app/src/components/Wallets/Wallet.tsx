@@ -43,6 +43,7 @@ export function Wallet() {
     </Button>
       {
       wallet.publicKey &&
+
       <Box
         sx={{
           }}

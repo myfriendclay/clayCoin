@@ -2,7 +2,7 @@ import Transactions from "../Transactions/Transactions";
 import { Container } from "@mui/system";
 import MineMemPool from "./MineMemPool";
 import { AlertType, BlockType, TransactionType } from "../../App";
-import CreatePayment from "../Transactions/AddTransaction/CreatePayment";
+import CreatePayment from "../Transactions/AddTransaction";
 
 interface MemPoolProps {
   memPool: TransactionType[];
