@@ -1,3 +1,4 @@
+import PaymentIcon from '@mui/icons-material/Payment';
 import { useState } from "react";
 import axios from "axios";
 import {
@@ -131,13 +132,8 @@ export default function AddTransaction({
       <Button
         variant="contained"
         size="large"
-        sx={{
-          backgroundColor: "#8656ef",
-          "&:hover": {
-            backgroundColor: "#8656ef",
-          },
-        }}
         onClick={handleClickOpen}
+        endIcon={<PaymentIcon />}
       >
         Add Transaction
       </Button>

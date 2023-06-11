@@ -1,7 +1,9 @@
+import ConstructionIcon from '@mui/icons-material/Construction';
 import { Button, CircularProgress, Container, TextField } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
 import { AlertType, BlockType, TransactionType } from "../../App";
+import LoadingButton from '@mui/lab/LoadingButton';
 
 interface FormData {
   miningAddress: string;
@@ -81,22 +83,20 @@ function MineMemPool({
         onChange={handleChange}
         margin="normal"
       />
-      <Button
+      
+      <LoadingButton
         variant="contained"
         disabled={mining}
+        loading={mining}
         sx={{
-          margin: 1,
-          backgroundColor: "#8656ef",
-          "&:hover": {
-            backgroundColor: "#8656ef",
-          },
+          margin: 1
         }}
         size="large"
         onClick={handleSubmit}
+        endIcon={<ConstructionIcon />}
       >
         Mine Block #{blockchain.length}
-      </Button>
-      {mining && <CircularProgress color="success" />}
+      </LoadingButton>
     </Container>
   );
 }

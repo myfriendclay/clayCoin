@@ -1,4 +1,4 @@
-import { Box, Button, Container, TextField } from "@mui/material";
+import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
 import { getTruncatedString } from "../Transactions/Transaction";
@@ -27,32 +27,32 @@ export function WalletBalanceChecker() {
   };
 
   return (
-    <Container sx={{ marginTop: "20px" }}>
-        <TextField
-          size="small"
-          sx={{ minWidth: "50%" }}
-          id="walletAddress"
-          label="Wallet address (public key)"
-          type="text"
-          value={walletAddress}
-          onChange={handleChange}
-        />
-        
-        <Button
-          variant="outlined"
-          size="large"
-          onClick={handleSubmit}
-          sx={{ minWidth: "30%", marginLeft: "10px", marginBottom: "10px" }}
+    <Container sx={{ display: "flex", marginTop: "15px" }}>
+      <TextField
+        size="small"
+        sx={{ minWidth: "40%" }}
+        id="walletAddress"
+        label="Wallet public key"
+        type="text"
+        value={walletAddress}
+        onChange={handleChange}
+      />
+      <Button
+        variant="outlined"
+        size="large"
+        onClick={handleSubmit}
+        sx={{ minWidth: "30%", marginLeft: "10px", marginBottom: "10px" }}
+      >
+        Check Balance
+      </Button>
+      {walletBalance != null && (
+        <Typography
+          variant="h6"
+          sx={{ marginLeft: "10px", marginTop: "5px", color: "success.main" }}
         >
-          Check Balance
-        </Button>
-        {walletBalance !== null ? (
-          <div>
-            <p>Wallet {getTruncatedString(walletAddress, 6)} balance: {walletBalance}</p>
-          </div>
-        ) : (
-          <div />
-        )}
+          {walletBalance} ₿
+        </Typography>
+      )}
     </Container>
   );
 }

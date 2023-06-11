@@ -33,7 +33,7 @@ export function Wallet() {
   };
 
   return (
-    <Container sx={{ display: "flex", flexFlow: "column", padding: "10px" }}>
+    <Container sx={{ display: "flex", flexFlow: "column", padding: "10px", borderBottom: "1px black dotted" }}>
       <Button
         variant="text"
         sx={{
