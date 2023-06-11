@@ -199,5 +199,10 @@ describe('POST /transactions', () => {
   
 })
 
+<<<<<<< HEAD
 test.todo("/api/block/:id/isValid")
 test.todo("/api/transactions/:id/isValid")
+=======
+todo.test("/api/block/:id/isValid")
+todo.test("/api/transactions/:id/isValid")
+>>>>>>> 8f5078d (More server test cleanup)
