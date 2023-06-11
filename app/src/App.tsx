@@ -59,7 +59,6 @@ function App() {
 
   return (
     <Container maxWidth="xl">
-      <Wallet />
       <MemPool
         memPool={memPool}
         setmemPool={setmemPool}

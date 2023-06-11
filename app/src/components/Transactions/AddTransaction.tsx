@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 import { TransactionType, AlertType } from "../../App";
+import { Wallet } from "../Wallets/Wallet";
 
 interface FormData {
   fromAddress: string;
@@ -141,6 +142,7 @@ export default function AddTransaction({
         Add Transaction
       </Button>
       <Dialog open={open} onClose={handleClose}>
+        <Wallet />
         <DialogTitle>Add Transaction</DialogTitle>
         <DialogContent>
           <DialogContentText>

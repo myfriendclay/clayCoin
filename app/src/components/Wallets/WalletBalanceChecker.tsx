@@ -1,6 +1,7 @@
 import { Box, Button, Container, TextField } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
+import { getTruncatedString } from "../Transactions/Transaction";
 
 export function WalletBalanceChecker() {
   const [walletAddress, setWalletAddress] = useState("");
@@ -26,34 +27,32 @@ export function WalletBalanceChecker() {
   };
 
   return (
-    <Container
-      sx={{ display: "flex", flexFlow: "column", alignItems: "center" }}
-    >
-      <Box>
+    <Container sx={{ marginTop: "20px" }}>
         <TextField
           size="small"
-          sx={{ minWidth: "100%" }}
+          sx={{ minWidth: "50%" }}
           id="walletAddress"
-          label="Wallet address"
+          label="Wallet address (public key)"
           type="text"
           value={walletAddress}
           onChange={handleChange}
         />
+        
         <Button
           variant="outlined"
           size="large"
           onClick={handleSubmit}
+          sx={{ minWidth: "30%", marginLeft: "10px", marginBottom: "10px" }}
         >
-          Check Wallet Balance
+          Check Balance
         </Button>
         {walletBalance !== null ? (
           <div>
-            <p>Wallet balance: {walletBalance}</p>
+            <p>Wallet {getTruncatedString(walletAddress, 6)} balance: {walletBalance}</p>
           </div>
         ) : (
           <div />
         )}
-      </Box>
     </Container>
   );
 }

@@ -1,59 +1,77 @@
-import { Box, Button, Container, Typography } from "@mui/material";
+import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
 import { WalletBalanceChecker } from "./WalletBalanceChecker";
+import { getTruncatedString } from "../Transactions/Transaction";
+import CachedIcon from '@mui/icons-material/Cached';
 
 export function Wallet() {
-
   const emptyWallet = {
-    publicKey: '',
-    privateKey: ''
-  }
+    publicKey: "",
+    privateKey: "",
+  };
+  const handleCopyClick = (value: string) => {
+    navigator.clipboard.writeText(value);
+  };
 
-  const [wallet, setWallet] = useState(emptyWallet)
+  const [wallet, setWallet] = useState(emptyWallet);
 
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
     event.preventDefault();
-    axios.post('http://localhost:3001/api/wallets/')
-      .then(response => {
-        const walletKeyPair = response.data
+    axios
+      .post("http://localhost:3001/api/wallets/")
+      .then((response) => {
+        const walletKeyPair = response.data;
         setWallet({
-          publicKey: walletKeyPair.publicKey, 
-          privateKey: walletKeyPair.privateKey})
+          publicKey: walletKeyPair.publicKey,
+          privateKey: walletKeyPair.privateKey,
+        });
       })
-      .catch(err => {
-        console.error(err)
-      })
-  }
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   return (
-    <Container sx={{ display: 'flex', flexFlow: "column", alignItems: "center"}}>
-    <h1>Wallet</h1>
-    <Button variant="text" sx={{ 
-      margin: 1, 
-      }} 
-
-      onClick={handleSubmit}
-      >
-      Generate New Wallet
-    </Button>
-      {
-      wallet.publicKey &&
-
-      <Box
+    <Container sx={{ display: "flex", flexFlow: "column", padding: "10px" }}>
+      <Button
+        variant="text"
         sx={{
-          }}
+          margin: 1,
+        }}
+        onClick={handleSubmit}
+        endIcon={<CachedIcon />}
       >
-        <Typography variant="body2" component="p">
-          Public Key 🔓: {wallet.publicKey}
-        </Typography>
-        <Typography variant="body2" component="p">
-          Private Key 🔑: {wallet.privateKey}
-        </Typography>
-      </Box>
-      }
-    <WalletBalanceChecker/>
-  </Container>
-  
-  )
-} 
+        Generate New Wallet
+      </Button>
+      {wallet.publicKey && (
+        <Box sx={{ display: "flex" }}>
+          <Box>
+            <TextField
+              label="Public Key 🔓"
+              size="small"
+              sx={{ minWidth: "70%" }}
+              value={getTruncatedString(wallet.publicKey, 8)}
+            />
+            <Button onClick={() => handleCopyClick(wallet.publicKey)}>
+              Copy Public Key 🔓
+            </Button>
+          </Box>
+          <Box>
+            <TextField
+              label="Private Key 🔑"
+              type="password"
+              size="small"
+              value={wallet.privateKey}
+              sx={{ minWidth: "70%" }}
+            />
+            <Button onClick={() => handleCopyClick(wallet.privateKey)}>
+              Copy Private Key 🔑
+            </Button>
+          </Box>
+        </Box>
+      )}
+      <WalletBalanceChecker />
+    </Container>
+  );
+}
