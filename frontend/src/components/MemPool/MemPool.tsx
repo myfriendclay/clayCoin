@@ -1,5 +1,5 @@
 import Transactions from "../Transactions/Transactions";
-import { Container } from "@mui/system";
+import { Container } from "@mui/material";
 import MineMemPool from "./MineMemPool";
 import { AlertType, BlockType, TransactionType } from "../../App";
 import AddTransaction from "../Transactions/AddTransaction";

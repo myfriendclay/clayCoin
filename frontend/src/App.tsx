@@ -55,7 +55,7 @@ function App() {
       .catch((err) => {
         console.error(err);
       });
-  }, []);
+  }, [REACT_APP_API_URL]);
 
   return (
     <Container maxWidth="xl">
