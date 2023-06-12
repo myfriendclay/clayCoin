@@ -18,7 +18,7 @@ Make sure you have [Docker](https://www.docker.com/) installed on your machine b
 
 ### Backend
 
-1. Navigate to `/backend` directory. Temporary annoying thing: You will want to add a `.env` file to the root directory and include `DEFAULT_PORT=3001` so that everything is hooked up properly (currently working on getting this to be less janky :)). 
+1. Navigate to `/backend` directory 
 
 2. Build the Docker image for the backend:
 ```
