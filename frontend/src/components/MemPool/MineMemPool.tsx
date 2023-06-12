@@ -26,6 +26,7 @@ function MineMemPool({
     miningAddress: "",
   };
 
+  const { REACT_APP_API_URL } = process.env;
   const [formData, setFormData] = useState<FormData>(blankFormValues);
   const [mining, setMining] = useState<boolean>(false);
 
@@ -40,7 +41,7 @@ function MineMemPool({
     setFormData(blankFormValues);
     setMining(true);
     axios
-      .post("http://localhost:3001/api/blocks/mine", formData)
+      .post(`${REACT_APP_API_URL}/api/blocks/mine`, formData)
       .then((response) => {
         const block = response.data;
         setBlockchain([...blockchain, block]);

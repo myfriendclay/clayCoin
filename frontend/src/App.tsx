@@ -33,6 +33,7 @@ export interface AlertType {
 }
 
 function App() {
+  const { REACT_APP_API_URL } = process.env;
   const [blockchain, setBlockchain] = useState<BlockType[]>([]);
   const [memPool, setmemPool] = useState<TransactionType[]>([]);
   const [alertDetails, setAlertDetails] = useState<AlertType>({
@@ -44,7 +45,7 @@ function App() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/api/blockchain`)
+      .get(`${REACT_APP_API_URL}/api/blockchain`)
       .then((response) => {
         const { chain, pendingTransactions } = response.data.blockchain;
         setBlockchain(chain);

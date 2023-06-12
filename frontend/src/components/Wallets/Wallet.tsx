@@ -6,6 +6,7 @@ import { getTruncatedString } from "../Transactions/Transaction";
 import CachedIcon from '@mui/icons-material/Cached';
 
 export function Wallet() {
+  const { REACT_APP_API_URL } = process.env;
   const emptyWallet = {
     publicKey: "",
     privateKey: "",
@@ -19,7 +20,7 @@ export function Wallet() {
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
     event.preventDefault();
     axios
-      .post("http://localhost:3001/api/wallets/")
+      .post(`${REACT_APP_API_URL}/api/wallets/`)
       .then((response) => {
         const walletKeyPair = response.data;
         setWallet({

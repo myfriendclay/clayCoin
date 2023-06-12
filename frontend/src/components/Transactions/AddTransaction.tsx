@@ -40,6 +40,7 @@ export default function AddTransaction({
     secretKey: "",
   };
 
+  const { REACT_APP_API_URL } = process.env;
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>(blankFormValues);
 
@@ -64,7 +65,7 @@ export default function AddTransaction({
     event.preventDefault();
     console.log(formData);
     axios
-      .post("http://localhost:3001/api/transactions", formData)
+      .post(`${REACT_APP_API_URL}/api/transactions`, formData)
       .then((response) => {
         const pendingTransactions = response.data;
         setmemPool(pendingTransactions);
