@@ -2,36 +2,60 @@
 
 ## Description
 
-This is a blockchain with a frontend webapp that allows you to create new public/private key wallets, send payment from one wallet to another using elliptic curve cryptography. To mine a block, put your public key in the Mining Address field to receive the mining block reward, and hit `Mine Block` to find the right nonce. All mined blocks on the blockchain show up in the Blockchain section at the bottom. 
+This is a blockchain backend + frontend webapp that allows you to:
 
-Note things like target difficulty are set in the `config.ts` file and defaulted to very low numbers like 100 milliseconds so that the app runs quickly. The app will automatically adjust the difficulty level based on the mining time of the previous mining time.
+- Create new public/private key wallets
+- Add transactions to memPool (only if you have sufficient funds on the blockchain and a valid public/private key pair) 
+- Mine a block and receive a mining reward for your generous compute power donation
 
-## Installation and Setup Instructions
+Note: things like target difficulty are set in the `backend/config.ts` file and defaulted to very low numbers like 100 milliseconds so that the app runs quickly. The app will automatically adjust the difficulty level based on the mining time of the previous block.
 
-1. `git clone <url>` down this repository onto your local machine. Note you will need `node`, `redis`, and `npm` installed globally on your machine. Assuming you have homebrew installed, you can install each by running: `brew install <name>` e.g. `brew install redis`
+## Prerequisites
 
-2. To install project dependencies run:
+Make sure you have [Docker](https://www.docker.com/) installed on your machine before proceeding. You will then `git clone <repository-url>` this repository onto your local machine.
 
-`npm install`
+## Getting Started
 
-3. To run a node on the blockchain, from the root directory `/` run:
+### Backend
 
-`npm run dev`
+1. Navigate to `/backend` directory. Temporary annoying thing: You will want to add a `.env` file to the root directory and include `DEFAULT_PORT=3001` so that everything is hooked up properly (currently working on getting this to be less janky :)). 
 
-4. (Optional) To run a peer node, i.e. imitate the experience of a peer on the network, in a separate terminal tab run:
+2. Build the Docker image for the backend:
+```
+docker build -t backend-image .
+```
 
-`npm run dev-peer`
+3. Run the Docker container for the backend:
+```
+docker run -p 3001:3001 backend-image
+```
 
-5. You will want to add a `.env` file to the root directory and include `DEFAULT_PORT=3001` so that everything is hooked up properly (currently working on getting this to be less janky :)). 
+4. The backend application should now be running on `http://localhost:3001`
 
-6. To run the front end webapp, navigate to `/app` directory run:
+### Frontend
 
-`npm install` followed by `npm start`
+1. Navigate to `/frontend` directory
 
-7. You can then visit the app and play around with it at:
+2. Build the Docker image for the frontend:
+```
+docker build -t frontend-image .
+```
 
-`localhost:3000`
+3. Run the Docker container for the frontend:
+```
+docker run -p 3000:3000 frontend-image
+```
 
-8. (Optional) To run unit test suite:  
+4. The frontend application should now be accessible on `http://localhost:3000`.
 
-`npm test`
+## Optional Stuff
+
+1. To run a peer node, i.e. imitate the experience of a peer on the network, in a separate terminal tab from `/backend` directory run:
+```
+npm run dev-peer
+```
+
+2. To run unit test suite:  
+```
+npm test
+```
