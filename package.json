@@ -3,6 +3,7 @@
     "axios": "^1.2.2",
     "body-parser": "^1.20.1",
     "class-transformer": "^0.5.1",
+    "concurrently": "^8.2.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.1.3",
@@ -45,7 +46,8 @@
     "start": "ts-node-esm server/index.ts",
     "dev": "npm run start-redis && npx nodemon server/index.ts",
     "dev-peer": "cross-env GENERATE_PEER_PORT='true' nodemon server/index.ts",
-    "start-redis": "redis-server --daemonize yes"
+    "start-redis": "redis-server --daemonize yes",
+    "start-full-app": "concurrently \"cd ./app && npm start\" \"npm run dev\""
   },
   "jest": {
     "transform": {
