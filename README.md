@@ -8,9 +8,9 @@ Note things like target difficulty are set in the `config.ts` file and defaulted
 
 ## Installation and Setup Instructions
 
-1. Clone down this repository onto your local machine. Note you will need `node` and `npm` installed globally on your machine.  
+1. `git clone <url>` down this repository onto your local machine. Note you will need `node`, `redis`, and `npm` installed globally on your machine. Assuming you have homebrew installed, you can install each by running: `brew install <name>` e.g. `brew install redis`
 
-2. To install dependencies run:
+2. To install project dependencies run:
 
 `npm install`
 
@@ -22,9 +22,11 @@ Note things like target difficulty are set in the `config.ts` file and defaulted
 
 `npm run dev-peer`
 
-6. To run the front end webapp, navigate to `/app` directory and run:
+5. You will want to add a `.env` file to the root directory and include `DEFAULT_PORT=3001` so that everything is hooked up properly (currently working on getting this to be less janky :)). 
 
-`npm start`
+6. To run the front end webapp, navigate to `/app` directory run:
+
+`npm install` followed by `npm start`
 
 7. You can then visit the app and play around with it at:
 
