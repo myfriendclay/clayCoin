@@ -5,6 +5,7 @@ import {
   TableCell,
   TableRow,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -65,9 +66,11 @@ function Block({ block }: { block: BlockType }) {
               {transactions.length !== 0 ? (
                 <Transactions transactions={transactions} />
               ) : (
-                <p>
-                  Strangely, there are no transactions found for this block.
-                </p>
+                <TableRow>
+                <TableCell>
+                  <Typography>Strangely, there are no transactions found for this block.</Typography>
+                </TableCell>
+              </TableRow>
               )}
             </Box>
           </Collapse>

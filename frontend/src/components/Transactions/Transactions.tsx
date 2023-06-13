@@ -43,6 +43,7 @@ export default function Transactions({
           </TableRow>
         </TableHead>
         <TableBody>
+
           {transactions.length ? (
             transactions.map((transaction: TransactionType) => (
               <Transaction transaction={transaction} key={transaction.uuid} />
@@ -54,6 +55,7 @@ export default function Transactions({
               </TableCell>
             </TableRow>
           )}
+
         </TableBody>
       </Table>
     </TableContainer>

@@ -1,6 +1,7 @@
 
 import { TableRow, TableCell, Tooltip } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { TransactionType } from '../../App';
 
 export const getTruncatedString = (string: String | null | undefined, limit: number) => {
   if (!string) {
@@ -12,11 +13,11 @@ export const getTruncatedString = (string: String | null | undefined, limit: num
   return `${string.slice(0, limit)}...${string.slice(string.length - limit, string.length)}`;
 };
 
-//@ts-ignore
-export default function Transaction({transaction}) {
+
+export default function Transaction({ transaction }: { transaction: TransactionType } ) {
 
   return (
-    <TableRow >
+    <TableRow>
       <TableCell>{new Date (transaction.timestamp).toLocaleString()}</TableCell>
       <TableCell>      
         <Tooltip title={transaction.fromAddress} arrow>
