@@ -24,6 +24,7 @@ const headers = [
   "Difficulty",
   "Nonce",
   "Mining Time (min)",
+  "Valid"
 ];
 
 export function Blockchain({

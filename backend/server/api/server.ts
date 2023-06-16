@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const transactionsRouter = require('./transactions/transactions-router');
 const walletsRouter = require('./wallets/wallet-router');
 const blockchainRouter = require('./blockchain/blockchain-router');
-const mineBlockRouter = require('./blocks/mine-router');
+const blocksRouter = require('./blocks/blocks-router');
 
 server.use(cors({
     origin: '*',
@@ -21,7 +21,7 @@ server.use(bodyParser.json())
 server.use('/api/transactions', transactionsRouter);
 server.use('/api/wallets', walletsRouter);
 server.use('/api/blockchain', blockchainRouter);
-server.use('/api/blocks/mine', mineBlockRouter);
+server.use('/api/blocks', blocksRouter);
 
 
 server.use((err: any, req: any, res: any, next: any) => { 
