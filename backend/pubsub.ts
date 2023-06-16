@@ -41,7 +41,6 @@ export default class PubSub {
       case CHANNELS.TRANSACTIONS:
         let transactionInstance = plainToInstance(Transaction, parsedMessage);
         this.blockchain.addTransaction(transactionInstance)
-        console.log(this.blockchain)
         break;
     }
   }

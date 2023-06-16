@@ -63,7 +63,6 @@ export default function AddTransaction({
 
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
     event.preventDefault();
-    console.log(formData);
     axios
       .post(`${REACT_APP_API_URL}/api/transactions`, formData)
       .then((response) => {
