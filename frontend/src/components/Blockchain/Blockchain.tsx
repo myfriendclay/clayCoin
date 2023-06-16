@@ -41,6 +41,7 @@ export function Blockchain({
         flexDirection: "column",
         alignItems: "center",
         paddingBottom: "40px",
+        minWidth: "85%",
       }}
     >
       <h1>Blockchain</h1>
