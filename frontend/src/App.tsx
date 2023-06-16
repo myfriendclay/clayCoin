@@ -4,6 +4,7 @@ import MemPool from "./components/MemPool/MemPool";
 import { Blockchain } from "./components//Blockchain/Blockchain";
 import AlertBanner from "./components/AlertBanner";
 import { Container } from "@mui/material";
+import CircleLogo from "./components/Logo";
 
 export interface BlockType {
   timestamp: number;
@@ -59,6 +60,7 @@ function App() {
 
   return (
     <Container maxWidth="xl">
+      <CircleLogo />
       <MemPool
         memPool={memPool}
         setmemPool={setmemPool}
