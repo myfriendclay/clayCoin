@@ -1,5 +1,5 @@
 # Base image for backend
-FROM node:14 AS backend
+FROM node:lts-bullseye-slim AS backend
 
 # Set working directory for backend
 WORKDIR /backend

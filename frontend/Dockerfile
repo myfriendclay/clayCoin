@@ -1,5 +1,5 @@
 # Base image for frontend
-FROM node:14 AS frontend
+FROM node:lts-bullseye-slim AS frontend
 
 # Set working directory for frontend
 WORKDIR /frontend
