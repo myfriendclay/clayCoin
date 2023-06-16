@@ -16,6 +16,8 @@ Make sure you have [Docker](https://docs.docker.com/engine/install/) installed o
 
 ## Getting Started
 
+Note: I know it's atypical to have `.env` file included in git, but since there is no sensitive data and it just makes it easier to get the project up and running, I'm including it for now.
+
 ### Backend
 
 1. Navigate to `/backend` directory 
