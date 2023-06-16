@@ -12,7 +12,7 @@ Note: things like target difficulty are set in the `backend/config.ts` file and 
 
 ## Prerequisites
 
-Make sure you have [Docker](https://www.docker.com/) installed on your machine before proceeding. You will then `git clone <repository-url>` this repository onto your local machine.
+Make sure you have [Docker](https://docs.docker.com/engine/install/) installed on your machine before proceeding. Then `git clone <repository-url>` this repository onto your local machine.
 
 ## Getting Started
 
@@ -20,33 +20,21 @@ Make sure you have [Docker](https://www.docker.com/) installed on your machine b
 
 1. Navigate to `/backend` directory 
 
-2. Build the Docker image for the backend:
+2. Build the Docker image and run the container for the backend:
 ```
-docker build -t backend-image .
+docker build -t backend-image . && docker run -p 3001:3001 backend-image
 ```
-
-3. Run the Docker container for the backend:
-```
-docker run -p 3001:3001 backend-image
-```
-
-4. The backend application should now be running on `http://localhost:3001`
+3. The backend application should now be running on `http://localhost:3001`
 
 ### Frontend
 
 1. Navigate to `/frontend` directory
 
-2. Build the Docker image for the frontend:
+2. Build the Docker image and run the container for the frontend:
 ```
-docker build -t frontend-image .
+docker build -t frontend-image . && docker run -p 3000:3000 frontend-image
 ```
-
-3. Run the Docker container for the frontend:
-```
-docker run -p 3000:3000 frontend-image
-```
-
-4. The frontend application should now be accessible on `http://localhost:3000`.
+3. The frontend application should now be accessible on `http://localhost:3000`.
 
 ## Optional Stuff
 
