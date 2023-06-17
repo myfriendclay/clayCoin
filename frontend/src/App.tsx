@@ -68,7 +68,7 @@ function App() {
         blockchain={blockchain}
         setAlertDetails={setAlertDetails}
       />
-      <Blockchain blockchain={blockchain} isChainValid={isChainValid} />
+      <Blockchain blockchain={blockchain} isChainValid={isChainValid} setBlockchain={setBlockchain} setAlertDetails={setAlertDetails} />
       <AlertBanner
         alertDetails={alertDetails}
         setAlertDetails={setAlertDetails}

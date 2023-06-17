@@ -9,10 +9,12 @@ import {
   Container,
   Tooltip,
 } from "@mui/material";
-import { BlockType } from "../../App";
+import { AlertType, BlockType } from "../../App";
 import Block from "./Block";
 import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
 import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
+import io from 'socket.io-client';
+import { useEffect } from "react";
 
 const headers = [
   " ",
@@ -30,10 +32,31 @@ const headers = [
 export function Blockchain({
   blockchain,
   isChainValid,
+  setBlockchain,
+  setAlertDetails
 }: {
   blockchain: BlockType[];
   isChainValid: boolean;
+  setBlockchain: (blockchain: BlockType[]) => void;
+  setAlertDetails: (alertDetails: AlertType) => void;
 }) {
+  const { REACT_APP_WEBSOCKET_URL } = process.env;
+
+  useEffect(() => {
+    const socket = io(`${REACT_APP_WEBSOCKET_URL}`);
+    
+    socket.on('updateBlockchain', (blockchain) => {
+      setBlockchain(blockchain.chain);
+      setAlertDetails({
+        open: true,
+        alertMessage: `Blockchain updated with a longer chain of length ${blockchain.chain.length} found on the network!`,
+        alertType: "info",
+      })
+    });
+
+  }, [REACT_APP_WEBSOCKET_URL]);
+
+
   return (
     <Container
       sx={{

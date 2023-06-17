@@ -9,14 +9,15 @@ const CHANNELS = {
   TRANSACTIONS: "TRANSACTIONS"
 }
 
-
 export default class PubSub {
   blockchain: Blockchain
   publisher: any
-  subscriber: any
+  subscriber: any;
+  io: any;
 
-  constructor( { blockchain } ) {
+  constructor( { blockchain }, io ) {
     this.blockchain = blockchain
+    this.io = io
 
     this.publisher = redis.createClient()
     this.subscriber = redis.createClient()
@@ -37,6 +38,7 @@ export default class PubSub {
       case CHANNELS.BLOCKCHAIN:
         let blockchainInstance = plainToInstance(Blockchain, parsedMessage);
         this.blockchain.replaceChain(blockchainInstance)
+        this.io.emit('updateBlockchain', blockchainInstance)
         break;
       case CHANNELS.TRANSACTIONS:
         let transactionInstance = plainToInstance(Transaction, parsedMessage);

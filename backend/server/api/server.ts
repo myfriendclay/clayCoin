@@ -9,20 +9,15 @@ const walletsRouter = require('./wallets/wallet-router');
 const blockchainRouter = require('./blockchain/blockchain-router');
 const blocksRouter = require('./blocks/blocks-router');
 
+//Middleware setup:
 server.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }));
-  
+  origin: '*',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 server.use(express.json());
 server.use(bodyParser.json())
-
-server.use('/api/transactions', transactionsRouter);
-server.use('/api/wallets', walletsRouter);
-server.use('/api/blockchain', blockchainRouter);
-server.use('/api/blocks', blocksRouter);
-
 
 server.use((err: any, req: any, res: any, next: any) => { 
   res.status(err.status || 500).json({
@@ -30,5 +25,12 @@ server.use((err: any, req: any, res: any, next: any) => {
     stack: err.stack,
   });
 });
+//End of middleware setup
+
+//Routers setup:
+server.use('/api/transactions', transactionsRouter);
+server.use('/api/wallets', walletsRouter);
+server.use('/api/blockchain', blockchainRouter);
+server.use('/api/blocks', blocksRouter);
 
 module.exports = server;
