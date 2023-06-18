@@ -53,12 +53,15 @@ export default function AddTransaction({
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, id } = event.target;
+    const { value, id } = event.target;
     let numValue;
     if (!isNaN(Number(value))) {
       numValue = Number(value);
+      if (numValue < 0) {
+        return
+      }
     }
-    setFormData({ ...formData, [id || name]: numValue || value });
+    setFormData({ ...formData, [id]: numValue || value });
   };
 
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
@@ -144,22 +147,21 @@ export default function AddTransaction({
           <DialogContentText>
             This will add the transaction to the mempool.
           </DialogContentText>
-
-          {formFields.map((field) => (
-            <TextField
-              key={field.id}
-              size="small"
-              margin="dense"
-              sx={{ minWidth: "100%" }}
-              id={field.id}
-              label={field.label}
-              type={field.type}
-              value={field.value}
-              onChange={handleChange}
-              helperText={field.helperText}
-              required={field.id === "amount" || field.id === "fee"}
-            />
-          ))}
+            {formFields.map((field) => (
+              <TextField
+                key={field.id}
+                size="small"
+                margin="dense"
+                sx={{ minWidth: "100%" }}
+                id={field.id}
+                label={field.label}
+                type={field.type}
+                value={field.value}
+                onChange={handleChange}
+                helperText={field.helperText}
+                required={field.id === "amount" || field.id === "fee"}
+              />
+            ))}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="error">
