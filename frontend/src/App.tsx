@@ -11,7 +11,7 @@ export interface BlockType {
   hash: string | undefined;
   height: number;
   nonce: number;
-  miningDurationMs: number | undefined;
+  miningDurationMs: number;
   previousHash: string | null;
   transactions: TransactionType[];
   difficulty: number;

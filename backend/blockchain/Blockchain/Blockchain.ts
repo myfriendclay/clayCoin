@@ -97,8 +97,16 @@ export default class Blockchain {
   }
 
   static areBlocksValidlyConnected(block1: Block, block2: Block): boolean {
+    const timestampDifference = block2.timestamp - block1.timestamp
+    //Allow 10 min of buffer in case one node publishes block with newer timestamp first and older block gets added after
+    const timeCushion = -1000 * 60 * 10
     const difficultyJump = block2.difficulty - block1.difficulty
-    return block2.previousHash === block1.hash && difficultyJump >= -1
+
+    return (
+      block2.previousHash === block1.hash &&
+      difficultyJump >= -1 &&
+      timestampDifference > timeCushion
+    );
   }
 
   static isChainValid(chain: Block[]) {

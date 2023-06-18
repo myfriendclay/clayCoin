@@ -37,7 +37,6 @@ function MineMemPool({
 
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
     event.preventDefault();
-    setFormData(blankFormValues);
     setMining(true);
     axios
       .post(`${REACT_APP_API_URL}/api/blocks/mine`, formData)
@@ -62,6 +61,7 @@ function MineMemPool({
         });
       })
       .finally(() => {
+        setFormData(blankFormValues);
         setMining(false);
       });
   };
@@ -82,6 +82,7 @@ function MineMemPool({
         value={formData.miningAddress}
         onChange={handleChange}
         margin="normal"
+        disabled={mining}
       />
       
       <LoadingButton

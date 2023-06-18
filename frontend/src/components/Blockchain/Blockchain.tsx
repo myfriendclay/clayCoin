@@ -25,7 +25,7 @@ const headers = [
   "Transactions",
   "Difficulty",
   "Nonce",
-  "Mining Time (min)",
+  "Mining Time (sec)",
   "Valid"
 ];
 
