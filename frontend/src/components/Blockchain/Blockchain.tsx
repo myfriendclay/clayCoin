@@ -54,7 +54,7 @@ export function Blockchain({
       })
     });
 
-  }, [REACT_APP_WEBSOCKET_URL]);
+  }, [REACT_APP_WEBSOCKET_URL, setBlockchain, setAlertDetails]);
 
 
   return (
