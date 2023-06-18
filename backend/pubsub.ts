@@ -37,12 +37,17 @@ export default class PubSub {
     switch (channel) {
       case CHANNELS.BLOCKCHAIN:
         let blockchainInstance = plainToInstance(Blockchain, parsedMessage);
-        this.blockchain.replaceChain(blockchainInstance)
-        this.io.emit('updateBlockchain', blockchainInstance)
+        const chainWasReplaced = this.blockchain.replaceChain(blockchainInstance)
+        if (chainWasReplaced) {
+          this.blockchain.resetMempool()
+          this.io.emit('updateBlockchain', blockchainInstance)
+          this.io.emit('clearMempool')
+        }
         break;
       case CHANNELS.TRANSACTIONS:
         let transactionInstance = plainToInstance(Transaction, parsedMessage);
         this.blockchain.addTransaction(transactionInstance)
+        this.io.emit('updateMempool', transactionInstance)
         break;
     }
   }

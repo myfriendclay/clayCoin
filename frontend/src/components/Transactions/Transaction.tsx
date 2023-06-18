@@ -2,17 +2,7 @@
 import { TableRow, TableCell, Tooltip } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { TransactionType } from '../../App';
-
-export const getTruncatedString = (string: String | null | undefined, limit: number) => {
-  if (!string) {
-    return "N/A"
-  }
-  if (string.length <= limit * 2) {
-    return string;
-  }
-  return `${string.slice(0, limit)}...${string.slice(string.length - limit, string.length)}`;
-};
-
+import { getTruncatedString } from '../../utils/getTruncatedString'
 
 export default function Transaction({ transaction }: { transaction: TransactionType } ) {
 

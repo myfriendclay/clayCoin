@@ -10,7 +10,7 @@ import {
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { BlockType } from "../../App";
-import { getTruncatedString } from "../Transactions/Transaction";
+import { getTruncatedString } from '../../utils/getTruncatedString'
 import { useEffect, useState } from "react";
 import Transactions from "../Transactions/Transactions";
 import axios from "axios";

@@ -86,6 +86,7 @@ export default class Blockchain {
   replaceChain(newBlockchain: Blockchain): undefined | boolean {
     if (newBlockchain.chain.length > this.chain.length && Blockchain.isChainValid(newBlockchain.chain)) {
       this.chain = newBlockchain.chain
+      return true
     } else {
       return false
     }
@@ -95,9 +96,6 @@ export default class Blockchain {
     this.pendingTransactions = []
   }
 
-  replaceMempool() {
-
-  }
   static areBlocksValidlyConnected(block1: Block, block2: Block): boolean {
     const difficultyJump = block2.difficulty - block1.difficulty
     return block2.previousHash === block1.hash && difficultyJump >= -1

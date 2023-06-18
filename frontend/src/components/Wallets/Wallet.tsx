@@ -2,7 +2,7 @@ import { Box, Button, Container, TextField } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
 import { WalletBalanceChecker } from "./WalletBalanceChecker";
-import { getTruncatedString } from "../Transactions/Transaction";
+import { getTruncatedString } from '../../utils/getTruncatedString'
 import CachedIcon from '@mui/icons-material/Cached';
 
 export function Wallet() {
