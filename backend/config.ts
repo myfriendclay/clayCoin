@@ -1,5 +1,5 @@
 //Note for test suite needs to be 100, 3, and 100 respectively to run in reasonable time:
-export const MINE_RATE_MS: number = 100;
+export const TARGET_MINE_RATE_MS: number = 100;
 export const INITIAL_DIFFICULTY: number = 3;
 export const BLOCK_SUBSIDY: number = 100;
 

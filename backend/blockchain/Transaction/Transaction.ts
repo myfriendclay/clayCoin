@@ -57,6 +57,9 @@ export default class Transaction {
       (this.hasRequiredFields() && this.hasValidSignature() && this.amount > 0 && this.fee >= 0)
       )
   }
+
+  //TODO: These transactions should be signed with private key so harder to fake. Right now very easy. 
+  // Also figure out how to get API to verify the subclass so that this can be back to being an override method of the subclass...
   isValidCoinbaseTx(): boolean {
     const { fromAddress, memo } = COINBASE_TX
     return this.fromAddress === fromAddress && this.memo === memo && this.amount > 0

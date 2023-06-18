@@ -15,7 +15,7 @@ export default class Block {
   nonce: number;
   timestamp: number;
   miningDurationMs!: number;
-  hash: string | undefined;
+  hash!: string;
 
   constructor(transactions: Transaction[], difficulty: number, previousHash: string | null = '', height: number) {
     this.transactions = transactions
@@ -71,14 +71,14 @@ export default class Block {
     return this.hasValidHash() && this.firstDCharsAreZero()
   }
 
-  hasPlausibleTimeStamp(): boolean {
+  timestampIsInPast(): boolean {
     if (!this.timestamp) return false
     //Allow up to 5 minutes in the future, in case of discrepancies between nodes
     return this.timestamp < (Date.now() + 1000 * 5)
   }
   
   isValid(): boolean {
-    return this.hasValidTransactions() && this.hasProofOfWork() && this.hasOnlyOneCoinbaseTx() && this.hasPlausibleTimeStamp()
+    return this.hasValidTransactions() && this.hasProofOfWork() && this.hasOnlyOneCoinbaseTx() && this.timestampIsInPast()
   }
 
   isValidGenesisBlock(): boolean { 

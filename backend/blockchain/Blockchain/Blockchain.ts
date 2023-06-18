@@ -2,7 +2,7 @@ import Block, { GenesisBlock } from '../Block/Block'
 import Transaction from '../Transaction/Transaction'
 import Wallet from '../Wallet/Wallet'
 import { CoinbaseTransaction } from '../Transaction/Transaction'
-import { MINE_RATE_MS, INITIAL_DIFFICULTY, BLOCK_SUBSIDY } from "../../config"
+import { TARGET_MINE_RATE_MS, INITIAL_DIFFICULTY, BLOCK_SUBSIDY } from "../../config"
 import { Type } from 'class-transformer';
 import 'reflect-metadata';
 
@@ -58,10 +58,12 @@ export default class Blockchain {
   }
 
   getNewMiningDifficulty(): number {
-    const lastMiningTime = this.getLatestBlock().miningDurationMs || MINE_RATE_MS
+    //More secure would be to use a moving average of the last difference in timestamps of last 10 blocks or so. But requires enough nodes so there are constantly new blocks being mined back to back
+    const lastMiningTime = this.getLatestBlock().miningDurationMs || TARGET_MINE_RATE_MS
+    
     let difficulty = this.difficulty
 
-    if (lastMiningTime < MINE_RATE_MS) {
+    if (lastMiningTime < TARGET_MINE_RATE_MS) {
       difficulty++
     } else if (this.difficulty > 1){
       difficulty--
@@ -97,17 +99,48 @@ export default class Blockchain {
   }
 
   static areBlocksValidlyConnected(block1: Block, block2: Block): boolean {
+    return (
+      this.blocksHashesAreConnected(block1, block2) &&
+      this.block2ComesAfterBlock1(block1, block2) &&
+      this.difficultyJumpIsValid(block1, block2) &&
+      this.block1HasPlausibleMiningDuration(block1, block2)
+    );
+  }
+
+  static blocksHashesAreConnected(block1: Block, block2: Block): boolean {
+    return block2.previousHash === block1.hash
+  }
+
+  static block2ComesAfterBlock1(block1: Block, block2: Block): boolean {
     const timestampDifference = block2.timestamp - block1.timestamp
     //Allow 10 min of buffer in case one node publishes block with newer timestamp first and older block gets added after
     const timeCushion = -1000 * 60 * 10
-    const difficultyJump = block2.difficulty - block1.difficulty
-
-    return (
-      block2.previousHash === block1.hash &&
-      difficultyJump >= -1 &&
-      timestampDifference > timeCushion
-    );
+    return timestampDifference > timeCushion
   }
+
+  static difficultyJumpIsValid(block1: Block, block2: Block): boolean {
+    const difficultyJump = block2.difficulty - block1.difficulty;
+    //Difficulty should never jump down more than one level
+    if (difficultyJump < -1) {
+      return false;
+    }
+
+    //Difficulty increases by at least 1 when below target mine rate
+    //Ultimately for a truly secure blockchain network since miningDurationMs can be faked by bad actor, this should be calculated based on average difference between timestamps of last X blocks. Only works when you have a large enough network of nodes that there is constant block mining one after the other.
+    if (block1.miningDurationMs < TARGET_MINE_RATE_MS) {
+      return block2.difficulty >= block1.difficulty + 1
+    }
+    return false;
+  }
+
+    static block1HasPlausibleMiningDuration(block1: Block, block2: Block): boolean { 
+        if (!block1.miningDurationMs || !block2.miningDurationMs) return false
+        //Allow up to 2 minutes cushion, in case of discrepancies between nodes
+        const timeCushionMs = 1000 * 60 * 2
+
+        const timeBetweenBlocks = block2.timestamp - block1.timestamp
+        return block1.miningDurationMs < timeBetweenBlocks + timeCushionMs
+    }
 
   static isChainValid(chain: Block[]) {
     // Check if the Genesis block hasn't been tampered with:

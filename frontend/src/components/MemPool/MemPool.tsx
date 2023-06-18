@@ -48,13 +48,13 @@ export default function MemPool({memPool, setBlockchain, blockchain, setmemPool,
     <Container sx={{ display: 'flex', flexFlow: "column", alignItems: "center", borderBottom: '1px grey dotted', borderTop: '1px grey dotted'}} >
       <h1>Mempool</h1>
       <AddTransaction 
-        setmemPool={setmemPool} 
+        setmemPool={setmemPool}
         setAlertDetails={setAlertDetails}
       />
       <Transactions transactions={memPool}/>
       <MineMemPool 
-        setBlockchain={setBlockchain} 
-        blockchain={blockchain} 
+        setBlockchain={setBlockchain}
+        blockchain={blockchain}
         setmemPool={setmemPool}
         setAlertDetails={setAlertDetails}
       />

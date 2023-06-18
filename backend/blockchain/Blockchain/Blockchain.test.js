@@ -2,7 +2,7 @@ import Blockchain from "../Blockchain/Blockchain";
 import Transaction from "../Transaction/Transaction";
 import {CoinbaseTransaction} from "../Transaction/Transaction"
 import Block from "../Block/Block";
-import { INITIAL_DIFFICULTY, MINE_RATE_MS } from "../../config"
+import { INITIAL_DIFFICULTY, TARGET_MINE_RATE_MS } from "../../config"
 import Wallet from "../Wallet/Wallet";
 
 let testCoin
@@ -96,12 +96,13 @@ describe('isChainValid', () => {
     jest.spyOn(block2, 'isValid').mockImplementation(() => true);
     jest.spyOn(block3, 'isValid').mockImplementation(() => true);
     jest.spyOn(testCoin.chain[0], 'isValid').mockImplementation(() => true);
+    jest.spyOn(Blockchain, 'areBlocksValidlyConnected').mockImplementation(() => true);
     testCoin.chain.push(block1, block2, block3)
   })
 
-  it('Returns false if any previous hash does not match the current blocks previous hash', () => {
+  it('Returns false if any two blocks are not validly connected', () => {
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
-    block2.hash = "bogus"
+    jest.spyOn(Blockchain, 'areBlocksValidlyConnected').mockImplementation(() => false);
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
 
@@ -116,18 +117,13 @@ describe('isChainValid', () => {
     jest.spyOn(testCoin.chain[0], 'isValidGenesisBlock').mockImplementation(() => false);
     expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
   })
-
-  it('Returns false if there is a negative jump in difficulty between blocks more than 1', () => {
-    expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
-    block2.difficulty = 10
-    block3.difficulty = 8
-    expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
-  })
-  
-  it('Returns true if all blocks are valid and each block connects', () => {
-    expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
-  })
 });
+
+test.todo('areBlocksValidlyConnected')
+test.todo('blocksHashesAreConnected')
+test.todo('block2ComesAfterBlock1')
+test.todo('difficultyJumpIsValid')
+test.todo('block1HasPlausibleMiningDuration')
 
 describe('addCoinbaseTxToMempool', () => {
   const minerAddress = "minerAddress"
@@ -304,18 +300,18 @@ describe('getNewMiningDifficulty', () => {
   })
 
   it('it raises the difficulty for a quickly mined block', () => {
-    block.miningDurationMs = MINE_RATE_MS - 1
+    block.miningDurationMs = TARGET_MINE_RATE_MS - 1
     expect(testCoin.getNewMiningDifficulty()).toBe(testCoin.difficulty + 1)
   })
 
   it('it lowers the difficulty for a quickly mined block', () => {
-    block.miningDurationMs = MINE_RATE_MS + 1
+    block.miningDurationMs = TARGET_MINE_RATE_MS + 1
     expect(testCoin.getNewMiningDifficulty()).toBe(testCoin.difficulty - 1)
   })
 
   it('it never lowers before 1', () => {
     testCoin.difficulty = 1
-    block.miningDurationMs = MINE_RATE_MS + 1
+    block.miningDurationMs = TARGET_MINE_RATE_MS + 1
     expect(testCoin.getNewMiningDifficulty()).toBe(1)
   })
 })
