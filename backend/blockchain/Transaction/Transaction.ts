@@ -54,7 +54,7 @@ export default class Transaction {
   isValid(): boolean {
     return (
       this.isValidCoinbaseTx() ||
-      (this.hasRequiredFields() && this.hasValidSignature() && this.amount > 0)
+      (this.hasRequiredFields() && this.hasValidSignature() && this.amount > 0 && this.fee >= 0)
       )
   }
   isValidCoinbaseTx(): boolean {
