@@ -47,6 +47,7 @@ export function Blockchain({
     
     socket.on('updateBlockchain', (blockchain) => {
       setBlockchain(blockchain.chain);
+      
       setAlertDetails({
         open: true,
         alertMessage: `Blockchain updated with a longer chain of length ${blockchain.chain.length} found on the network!`,

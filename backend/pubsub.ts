@@ -1,10 +1,15 @@
-import redis from 'redis'
+const PubNub = require('pubnub')
 import Blockchain from './blockchain/Blockchain/Blockchain'
 import Transaction from './blockchain/Transaction/Transaction';
 import { plainToInstance } from 'class-transformer';
 
+const credentials = {
+  publishKey: 'pub-c-48b0bafe-494a-4048-a5cf-e3645661414b',
+  subscribeKey: 'sub-c-504dc069-0369-4dee-881b-78d1c660f673',
+  secretKey: 'sec-c-YjcyZjA1NGItYjgzOS00YWVjLWFkYjgtOWQzMzJhNDQxMjk4'
+};
+
 const CHANNELS = {
-  TEST: "TEST",
   BLOCKCHAIN: "BLOCKCHAIN",
   TRANSACTIONS: "TRANSACTIONS"
 }
@@ -14,19 +19,15 @@ export default class PubSub {
   publisher: any
   subscriber: any;
   io: any;
+  pubnub: any;
 
   constructor( { blockchain }, io ) {
     this.blockchain = blockchain
     this.io = io
 
-    this.publisher = redis.createClient()
-    this.subscriber = redis.createClient()
-
-    this.subscribeToChannels()
-    this.subscriber.on(
-      'message',
-      (channel, message) => this.handleMessage(channel, message)
-    )
+    this.pubnub = new PubNub(credentials);
+    this.pubnub.subscribe({ channels: Object.values(CHANNELS) });
+    this.pubnub.addListener(this.listener());
   }
 
   handleMessage(channel, message) {
@@ -52,20 +53,18 @@ export default class PubSub {
     }
   }
 
-  subscribeToChannels() {
-    Object.values(CHANNELS).forEach(channel => {
-      this.subscriber.subscribe(channel)
-    })
+  listener() { 
+    return {
+      message: messageObject => {
+        const { channel, message } = messageObject
+
+        this.handleMessage(channel, message)
+      }
+    }
   }
 
   publish({ channel, message }) {
-    //Want to first unsubscribe, then publish, then resubscribe. This prevents each node from receiving its own message
-    this.subscriber.unsubscribe(channel, () => {
-      this.publisher.publish(channel, message, () => {
-        this.subscriber.subscribe(channel)
-      })
-
-    })
+    this.pubnub.publish({ channel, message })
   }
 
   broadcastChain() {
@@ -82,4 +81,3 @@ export default class PubSub {
     })
   }
  }
-

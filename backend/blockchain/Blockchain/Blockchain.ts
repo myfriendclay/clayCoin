@@ -59,10 +59,9 @@ export default class Blockchain {
 
   getNewMiningDifficulty(): number {
     //More secure would be to use a moving average of the last difference in timestamps of last 10 blocks or so. But requires enough nodes so there are constantly new blocks being mined back to back
-    const lastMiningTime = this.getLatestBlock().miningDurationMs || TARGET_MINE_RATE_MS
+    const lastMiningTime = this.getLatestBlock().miningDurationMs
     
     let difficulty = this.difficulty
-
     if (lastMiningTime < TARGET_MINE_RATE_MS) {
       difficulty++
     } else if (this.difficulty > 1){
@@ -129,15 +128,14 @@ export default class Blockchain {
     //Ultimately for a truly secure blockchain network since miningDurationMs can be faked by bad actor, this should be calculated based on average difference between timestamps of last X blocks. Only works when you have a large enough network of nodes that there is constant block mining one after the other.
     if (block1.miningDurationMs < TARGET_MINE_RATE_MS) {
       return block2.difficulty >= block1.difficulty + 1
-    }
-    return false;
+    } 
+    return true;
+    
   }
 
     static block1HasPlausibleMiningDuration(block1: Block, block2: Block): boolean { 
-        if (!block1.miningDurationMs || !block2.miningDurationMs) return false
         //Allow up to 2 minutes cushion, in case of discrepancies between nodes
         const timeCushionMs = 1000 * 60 * 2
-
         const timeBetweenBlocks = block2.timestamp - block1.timestamp
         return block1.miningDurationMs < timeBetweenBlocks + timeCushionMs
     }

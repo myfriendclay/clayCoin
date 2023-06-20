@@ -8,9 +8,6 @@ WORKDIR /backend
 COPY package*.json ./
 RUN npm install
 
-# Install Redis
-RUN apt-get update && apt-get install -y redis-server
-
 # Copy the rest of the backend code
 COPY . .
 

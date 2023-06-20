@@ -19,30 +19,23 @@ export default function MemPool({memPool, setBlockchain, blockchain, setmemPool,
 
     const { REACT_APP_WEBSOCKET_URL } = process.env;
 
-    const socket = io(`${REACT_APP_WEBSOCKET_URL}`);
-      
-    socket.on('updateMempool', (transaction) => {
-      setmemPool([...memPool, transaction]);
-      setAlertDetails({
-        open: true,
-        alertMessage: `Mempool updated with more transactions found on network!`,
-        alertType: "info",
-      })
-    });
-
-    socket.on('clearMempool', () => {
-      setmemPool([]);
-      setAlertDetails({
-        open: true,
-        alertMessage: `Mempool cleared because block was mined!`,
-        alertType: "info",
-      })
-    });
-
     useEffect(() => {
-
+      const socket = io(`${REACT_APP_WEBSOCKET_URL}`);
+      
+      socket.on('updateMempool', (transaction) => {
+        setmemPool([...memPool, transaction]);
+        setAlertDetails({
+          open: true,
+          alertMessage: `Mempool updated with more transactions found on network!`,
+          alertType: "info",
+        })
+      });
   
-    }, [REACT_APP_WEBSOCKET_URL, memPool]);
+      socket.on('clearMempool', () => {
+        setmemPool([]);
+      });
+  
+    }, [REACT_APP_WEBSOCKET_URL, memPool, setAlertDetails, setmemPool]);
 
   return (
     <Container sx={{ display: 'flex', flexFlow: "column", alignItems: "center", borderBottom: '1px grey dotted', borderTop: '1px grey dotted'}} >

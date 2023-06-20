@@ -12,7 +12,7 @@
     "express": "^4.18.2",
     "hex-to-binary": "^1.0.1",
     "nodemon": "^2.0.22",
-    "redis": "^2.8.0",
+    "pubnub": "^4.21.6",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.2",
     "socket.io": "^4.6.2",
@@ -46,10 +46,8 @@
   "scripts": {
     "test": "jest",
     "start": "ts-node-esm server/index.ts",
-    "dev": "npm run start-redis && npx nodemon server/index.ts",
-    "dev-peer": "cross-env GENERATE_PEER_PORT='true' nodemon server/index.ts",
-    "start-redis": "redis-server --daemonize yes",
-    "start-full-app": "concurrently \"cd ../frontend && npm start\" \"npm run dev\""
+    "dev": "npx nodemon server/index.ts",
+    "dev-peer": "cross-env GENERATE_PEER_PORT='true' nodemon server/index.ts"
   },
   "jest": {
     "transform": {
