@@ -1,0 +1,6 @@
+  frontend:
+    docker:
+      web: frontend/Dockerfile
+  backend:
+    docker:
+      web: backend/Dockerfile
