@@ -14,6 +14,7 @@ COPY . .
 # Expose necessary ports for backend
 EXPOSE 3001
 EXPOSE 3000
+EXPOSE 3010
 
 # Start backend
 CMD npm run dev

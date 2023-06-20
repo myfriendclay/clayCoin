@@ -11,5 +11,7 @@ RUN npm install
 # Copy the rest of the frontend code
 COPY . .
 
+EXPOSE 3010
+
 # Start frontend
 CMD npm run start
