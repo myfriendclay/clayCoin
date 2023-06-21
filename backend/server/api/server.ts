@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 
-const server = express();
+const app = express();
 const bodyParser = require('body-parser');
 
 const transactionsRouter = require('./transactions/transactions-router');
@@ -10,16 +10,16 @@ const blockchainRouter = require('./blockchain/blockchain-router');
 const blocksRouter = require('./blocks/blocks-router');
 
 //Middleware setup:
-server.use(cors({
+app.use(cors({
   origin: '*',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-server.use(express.json());
-server.use(bodyParser.json())
+app.use(express.json());
+app.use(bodyParser.json())
 
-server.use((err: any, req: any, res: any, next: any) => { 
+app.use((err: any, req: any, res: any, next: any) => { 
   res.status(err.status || 500).json({
     message: err.message,
     stack: err.stack,
@@ -28,9 +28,9 @@ server.use((err: any, req: any, res: any, next: any) => {
 //End of middleware setup
 
 //Routers setup:
-server.use('/api/transactions', transactionsRouter);
-server.use('/api/wallets', walletsRouter);
-server.use('/api/blockchain', blockchainRouter);
-server.use('/api/blocks', blocksRouter);
+app.use('/api/transactions', transactionsRouter);
+app.use('/api/wallets', walletsRouter);
+app.use('/api/blockchain', blockchainRouter);
+app.use('/api/blocks', blocksRouter);
 
-module.exports = server;
+module.exports = app;
