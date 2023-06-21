@@ -32,6 +32,10 @@ export default class Blockchain {
     if (!Wallet.walletHasSufficientFunds(transaction.fromAddress, transaction, this.chain, this.pendingTransactions)) {
       throw new Error("not enough funds for transactions in mempool or this transaction itself")
     }
+
+    if (this.pendingTransactions.some(tx => tx.signature === transaction.signature)) {
+      throw new Error("Transaction already in mempool")
+    }
     
     this.pendingTransactions.push(transaction)
   }
