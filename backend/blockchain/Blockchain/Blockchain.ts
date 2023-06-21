@@ -91,6 +91,7 @@ export default class Blockchain {
   replaceChain(newBlockchain: Blockchain): undefined | boolean {
     if (newBlockchain.chain.length > this.chain.length && Blockchain.isChainValid(newBlockchain.chain)) {
       this.chain = newBlockchain.chain
+      this.difficulty = newBlockchain.difficulty
       return true
     } else {
       return false
