@@ -2,7 +2,7 @@ import ConstructionIcon from '@mui/icons-material/Construction';
 import { Container, TextField } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
-import { AlertType, BlockType, TransactionType } from "../../App";
+import { AlertType, BlockType, TransactionType } from '../../types';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 interface FormData {

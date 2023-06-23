@@ -9,7 +9,7 @@ import {
   Container,
   Tooltip,
 } from "@mui/material";
-import { AlertType, BlockType } from "../../App";
+import { AlertType, BlockType } from "../../types";
 import Block from "./Block";
 import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
 import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";

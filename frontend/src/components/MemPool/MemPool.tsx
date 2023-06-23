@@ -1,7 +1,7 @@
 import Transactions from "../Transactions/Transactions";
 import { Container } from "@mui/material";
 import MineMemPool from "./MineMemPool";
-import { AlertType, BlockType, TransactionType } from "../../App";
+import { AlertType, BlockType, TransactionType } from "../../types";
 import AddTransaction from "../Transactions/AddTransaction";
 import { useEffect } from "react";
 import io from 'socket.io-client';

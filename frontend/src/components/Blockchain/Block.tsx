@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { BlockType } from "../../App";
+import { BlockType } from "../../types";
 import { getTruncatedString } from '../../utils/getTruncatedString'
 import { useEffect, useState } from "react";
 import Transactions from "../Transactions/Transactions";

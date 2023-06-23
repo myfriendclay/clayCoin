@@ -1,7 +1,7 @@
 
 import { TableRow, TableCell, Tooltip } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { TransactionType } from '../../App';
+import { TransactionType } from '../../types';
 import { getTruncatedString } from '../../utils/getTruncatedString'
 
 export default function Transaction({ transaction }: { transaction: TransactionType } ) {

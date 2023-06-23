@@ -8,7 +8,7 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import { TransactionType } from "../../App";
+import { TransactionType } from "../../types";
 import Transaction from "./Transaction";
 
 export default function Transactions({

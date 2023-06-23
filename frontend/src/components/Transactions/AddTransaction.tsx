@@ -10,7 +10,7 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { TransactionType, AlertType } from "../../App";
+import { TransactionType, AlertType } from '../../types';
 import { Wallet } from "../Wallets/Wallet";
 
 interface FormData {

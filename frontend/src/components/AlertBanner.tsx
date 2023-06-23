@@ -1,5 +1,5 @@
 import { Alert, Snackbar } from '@mui/material';
-import { AlertType } from '../App';
+import { AlertType } from '../types';
 
 interface AlertBannerProps {
   alertDetails: AlertType;
