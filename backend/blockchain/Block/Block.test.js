@@ -245,7 +245,7 @@ describe('hasOnlyOneCoinbaseTx', () => {
     testBlock = new Block([], 4, 'test_prev_hash', 23)
     coinbaseTx = Object.create(CoinbaseTransaction.prototype, {});
 
-    jest.spyOn(coinbaseTx, 'isValidCoinbaseTx').mockImplementation(() => true);
+    jest.spyOn(coinbaseTx, 'isValid').mockImplementation(() => true);
     testBlock.transactions.push(coinbaseTx)
   })
 

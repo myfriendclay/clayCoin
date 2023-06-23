@@ -7,7 +7,15 @@ import 'reflect-metadata';
 import getSHA256Hash from "../utils/crypto-hash";
 
 export default class Block {
-  @Type(() => Transaction)
+  @Type(() => Transaction, {
+    discriminator: {
+      property: "type",
+      subTypes: [
+        { value: Transaction, name: 'default' },
+        { value: CoinbaseTransaction, name: 'coinbaseTx' }
+      ]
+     }
+  })
   transactions: Transaction[];
   previousHash: string | null;
   height: number;
@@ -54,7 +62,7 @@ export default class Block {
   }
 
   hasOnlyOneCoinbaseTx(): boolean {
-    const count = this.transactions.filter(transaction => transaction.isValidCoinbaseTx()).length;
+    const count = this.transactions.filter(transaction => transaction instanceof CoinbaseTransaction).length;
     return count === 1
   }
   
