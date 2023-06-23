@@ -1,6 +1,6 @@
 const router = require('express').Router();
 import Transaction from "../../../blockchain/Transaction/Transaction";
-import { blockchain, pubsub } from "../utils/database";
+import { blockchain, pubsub } from "../../index"
 
 //@ts-ignore
 router.post('/',  (req, res) => {
@@ -15,6 +15,5 @@ router.post('/',  (req, res) => {
       res.status(400).json({ error: error.message })
     }
 });
-
 
 module.exports = router;

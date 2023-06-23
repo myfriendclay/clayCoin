@@ -17,10 +17,10 @@ interface MemPoolProps {
 export default function MemPool({memPool, setBlockchain, blockchain, setmemPool, setAlertDetails} : 
   MemPoolProps) {
 
-    const { REACT_APP_WEBSOCKET_URL } = process.env;
+    const { REACT_APP_API_URL } = process.env;
 
     useEffect(() => {
-      const socket = io(`${REACT_APP_WEBSOCKET_URL}`);
+      const socket = io(`${REACT_APP_API_URL}`);
       
       socket.on('updateMempool', (transaction) => {
         setmemPool([...memPool, transaction]);
@@ -35,7 +35,7 @@ export default function MemPool({memPool, setBlockchain, blockchain, setmemPool,
         setmemPool([]);
       });
   
-    }, [REACT_APP_WEBSOCKET_URL, memPool, setAlertDetails, setmemPool]);
+    }, [REACT_APP_API_URL, memPool, setAlertDetails, setmemPool]);
 
   return (
     <Container sx={{ display: 'flex', flexFlow: "column", alignItems: "center", borderBottom: '1px grey dotted', borderTop: '1px grey dotted'}} >

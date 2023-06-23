@@ -1,9 +1,8 @@
 import request from 'request'
 import { plainToClass } from 'class-transformer';
 
-import { blockchain } from './database';
+import { blockchain } from "../../index"
 import Blockchain from '../../../blockchain/Blockchain/Blockchain';
-
 import { ROOT_NODE_ADDRESS } from './ports';
 
 export const syncChains = () => {

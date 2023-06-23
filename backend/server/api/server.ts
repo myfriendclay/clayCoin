@@ -1,13 +1,14 @@
 const express = require('express');
 const cors = require('cors');
-
-const app = express();
 const bodyParser = require('body-parser');
 
 const transactionsRouter = require('./transactions/transactions-router');
 const walletsRouter = require('./wallets/wallet-router');
 const blockchainRouter = require('./blockchain/blockchain-router');
 const blocksRouter = require('./blocks/blocks-router');
+
+//App creation:
+const app = express();
 
 //Middleware setup:
 app.use(cors({
@@ -25,7 +26,6 @@ app.use((err: any, req: any, res: any, next: any) => {
     stack: err.stack,
   });
 });
-//End of middleware setup
 
 //Routers setup:
 app.use('/api/transactions', transactionsRouter);

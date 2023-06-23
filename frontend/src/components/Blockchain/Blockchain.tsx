@@ -40,10 +40,10 @@ export function Blockchain({
   setBlockchain: (blockchain: BlockType[]) => void;
   setAlertDetails: (alertDetails: AlertType) => void;
 }) {
-  const { REACT_APP_WEBSOCKET_URL } = process.env;
+  const { REACT_APP_API_URL } = process.env;
 
   useEffect(() => {
-    const socket = io(`${REACT_APP_WEBSOCKET_URL}`);
+    const socket = io(`${REACT_APP_API_URL}`);
     
     socket.on('updateBlockchain', (blockchain) => {
       setBlockchain(blockchain.chain);
@@ -55,7 +55,7 @@ export function Blockchain({
       })
     });
 
-  }, [REACT_APP_WEBSOCKET_URL, setBlockchain, setAlertDetails]);
+  }, [REACT_APP_API_URL, setBlockchain, setAlertDetails]);
 
 
   return (
