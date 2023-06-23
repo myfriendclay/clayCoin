@@ -9,7 +9,7 @@ const app = require('./api/server');
 //Create websocker server:
 const server = createServer(app);
 
-const io = new Server(server, {
+export const io = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
@@ -27,5 +27,3 @@ server.listen(PORT, () => {
 //Database setup (note, keep this here (vs separate file) otherwise the websocket updates fail):
 export const blockchain = new Blockchain()
 export const pubsub = new PubSub( { blockchain }, io )
-
-module.exports = io 

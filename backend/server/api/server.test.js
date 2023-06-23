@@ -2,7 +2,7 @@ const server = require('./server')
 const request = require('supertest')
 
 import { BLOCK_SUBSIDY, INITIAL_DIFFICULTY } from "../../config"
-import {blockchain as blockchainPOJO, pubsub} from "./utils/database"
+import {blockchain as blockchainPOJO, pubsub} from "../index"
 
 describe('GET api/blockchain', () => {
     let res, blockchain
