@@ -5,6 +5,8 @@ import {
   Box,
   Collapse,
   IconButton,
+  Table,
+  TableBody,
   TableCell,
   TableRow,
   Tooltip,
@@ -15,7 +17,7 @@ import DangerousIcon from "@mui/icons-material/Dangerous";
 import axios from "axios";
 
 import { BlockType } from "../../types";
-import getTruncatedString from '../../utils/getTruncatedString'
+import getTruncatedString from "../../utils/getTruncatedString";
 import Transactions from "../Transactions/Transactions";
 
 function Block({ block }: { block: BlockType }) {
@@ -74,7 +76,7 @@ function Block({ block }: { block: BlockType }) {
         <TableCell width={20}>{transactions.length}</TableCell>
         <TableCell>{difficulty}</TableCell>
         <TableCell>{nonce}</TableCell>
-        <TableCell>{Math.ceil((miningDurationMs) / 1000 )}</TableCell>
+        <TableCell>{Math.ceil(miningDurationMs / 1000)}</TableCell>
         <TableCell>
           {isValidBlock ? (
             <Tooltip title="Block has valid proof of work hash and only valid transactions.">
@@ -99,13 +101,18 @@ function Block({ block }: { block: BlockType }) {
               {transactions.length !== 0 ? (
                 <Transactions transactions={transactions} />
               ) : (
-                <TableRow>
-                  <TableCell>
-                    <Typography>
-                      Strangely, there are no transactions found for this block.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
+                <Table>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>
+                        <Typography>
+                          Strangely, there are no transactions found for this
+                          block.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
               )}
             </Box>
           </Collapse>
