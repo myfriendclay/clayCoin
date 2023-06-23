@@ -11,7 +11,7 @@ import {
 import { TransactionType } from "../../types";
 import Transaction from "./Transaction";
 
-export default function Transactions({
+function Transactions({
   transactions,
 }: {
   transactions: TransactionType[];
@@ -61,3 +61,5 @@ export default function Transactions({
     </TableContainer>
   );
 }
+
+export default Transactions;

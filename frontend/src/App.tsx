@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import MemPool from "./components/MemPool/MemPool";
-import { Blockchain } from "./components//Blockchain/Blockchain";
-import AlertBanner from "./components/AlertBanner";
 import { Container } from "@mui/material";
-import CircleLogo from "./components/Logo";
 import { BlockType, TransactionType, AlertType } from "./types";
-
+import MemPool from "./components/MemPool/MemPool";
+import Blockchain from "./components//Blockchain/Blockchain";
+import AlertBanner from "./components/AlertBanner";
+import Logo from "./components/Logo";
 
 function App() {
   const { REACT_APP_API_URL } = process.env;
@@ -35,7 +34,7 @@ function App() {
 
   return (
     <Container maxWidth="xl">
-      <CircleLogo />
+      <Logo />
       <MemPool
         memPool={memPool}
         setmemPool={setmemPool}
@@ -43,12 +42,17 @@ function App() {
         blockchain={blockchain}
         setAlertDetails={setAlertDetails}
       />
-      <Blockchain blockchain={blockchain} isChainValid={isChainValid} setBlockchain={setBlockchain} setAlertDetails={setAlertDetails} />
+      <Blockchain
+        blockchain={blockchain}
+        isChainValid={isChainValid}
+        setBlockchain={setBlockchain}
+        setAlertDetails={setAlertDetails}
+      />
       <AlertBanner
         alertDetails={alertDetails}
         setAlertDetails={setAlertDetails}
       />
-  </Container>
+    </Container>
   );
 }
 

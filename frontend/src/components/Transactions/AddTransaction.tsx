@@ -1,4 +1,4 @@
-import PaymentIcon from '@mui/icons-material/Payment';
+import PaymentIcon from "@mui/icons-material/Payment";
 import { useState } from "react";
 import axios from "axios";
 import {
@@ -10,8 +10,8 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { TransactionType, AlertType } from '../../types';
-import { Wallet } from "../Wallets/Wallet";
+import { TransactionType, AlertType } from "../../types";
+import Wallet from "../Wallets/Wallet";
 
 interface FormData {
   fromAddress: string;
@@ -58,7 +58,7 @@ export default function AddTransaction({
     if (!isNaN(Number(value))) {
       numValue = Number(value);
       if (numValue < 0) {
-        return
+        return;
       }
     }
     setFormData({ ...formData, [id]: numValue || value });
@@ -147,21 +147,21 @@ export default function AddTransaction({
           <DialogContentText>
             This will add the transaction to the mempool.
           </DialogContentText>
-            {formFields.map((field) => (
-              <TextField
-                key={field.id}
-                size="small"
-                margin="dense"
-                sx={{ minWidth: "100%" }}
-                id={field.id}
-                label={field.label}
-                type={field.type}
-                value={field.value}
-                onChange={handleChange}
-                helperText={field.helperText}
-                required={field.id === "amount" || field.id === "fee"}
-              />
-            ))}
+          {formFields.map((field) => (
+            <TextField
+              key={field.id}
+              size="small"
+              margin="dense"
+              sx={{ minWidth: "100%" }}
+              id={field.id}
+              label={field.label}
+              type={field.type}
+              value={field.value}
+              onChange={handleChange}
+              helperText={field.helperText}
+              required={field.id === "amount" || field.id === "fee"}
+            />
+          ))}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="error">

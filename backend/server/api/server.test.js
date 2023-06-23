@@ -1,6 +1,7 @@
-const server = require('./server')
-const request = require('supertest')
 
+
+import request from 'supertest'
+import app from "./server"
 import { BLOCK_SUBSIDY, INITIAL_DIFFICULTY } from "../../blockchain/utils/config"
 import { pubsub} from "../index"
 import { blockchain as blockchainPOJO } from "../../database/database"
@@ -9,7 +10,7 @@ describe('GET api/blockchain', () => {
     let res, blockchain
 
     beforeAll(async () => {
-        res = await request(server).get('/api/blockchain')
+        res = await request(app).get('/api/blockchain')
         blockchain = res.body.blockchain
     })
 
@@ -55,7 +56,7 @@ describe('POST /blocks/mine', () => {
     beforeAll(async () => {
         mockBroadcastChain = jest.spyOn(pubsub, 'broadcastChain')
         mockMinePendingTxs = jest.spyOn(blockchainPOJO, 'minePendingTransactions')
-        res = await request(server).post('/api/blocks/mine').send(minerInfo)
+        res = await request(app).post('/api/blocks/mine').send(minerInfo)
     })
     
   test('Returns a 201', async () => {
@@ -77,14 +78,14 @@ describe('POST /blocks/mine', () => {
   it('Returns the results of blockchain.minePendingTransactions method', async () => {
     mockBlock = "test blockchain.minePendingTransactions return value"
     jest.spyOn(blockchainPOJO, 'minePendingTransactions').mockReturnValueOnce(mockBlock)
-    const response2 = await request(server).post('/api/blocks/mine').send(minerInfo)
+    const response2 = await request(app).post('/api/blocks/mine').send(minerInfo)
     expect(response2.body).toBe(mockBlock)
   })
 })
 
 describe('GET /:publicAddress', () => {
     test('Returns the balance and transactions of wallet', async () => {
-        const res = await request(server).get('/api/wallets/:04761ecbe8d05ea5c2e25450b3f444bf0e0013e0e00c4f4f7a76135fc7a572471efe88598bae3ad0af0fe00c1b24a0b17c1011b77d7e81e58bb55f79bbc4e79853')
+        const res = await request(app).get('/api/wallets/:04761ecbe8d05ea5c2e25450b3f444bf0e0013e0e00c4f4f7a76135fc7a572471efe88598bae3ad0af0fe00c1b24a0b17c1011b77d7e81e58bb55f79bbc4e79853')
         const wallet = res.body
         expect(wallet).toHaveProperty('balance')
         expect(wallet).toHaveProperty('transactions')
@@ -95,7 +96,7 @@ describe('GET /:publicAddress', () => {
 
 describe('POST /wallets', () => {
     test('Returns a 200 and wallet with public and private key', async () => {
-        const res = await request(server).post('/api/wallets')
+        const res = await request(app).post('/api/wallets')
         expect(res.status).toBe(200)
         expect(res.body).toHaveProperty('publicKey')
         expect(res.body).toHaveProperty('privateKey')
@@ -114,7 +115,7 @@ describe('POST /transactions', () => {
                 "fee": 1,
                 "secretKey": "684adfb19c37e7ca67aaf69d6d96c7b21fc205aa20b8adc0de73397161d139b4"
             }
-            res = await request(server).post('/api/transactions').send(transaction)
+            res = await request(app).post('/api/transactions').send(transaction)
         })
 
         it('Returns a 400 status code', () => {
@@ -141,7 +142,7 @@ describe('POST /transactions', () => {
                 "fee": 1,
                 "secretKey": "boguskey"
             }
-            res = await request(server).post('/api/transactions').send(transaction)
+            res = await request(app).post('/api/transactions').send(transaction)
         })
         it('Returns a 400 status code', () => {
             expect(res.status).toBe(400)
@@ -171,7 +172,7 @@ describe('POST /transactions', () => {
                 "fee": 1,
                 "secretKey": "684adfb19c37e7ca67aaf69d6d96c7b21fc205aa20b8adc0de73397161d139b4"
             }
-            res = await request(server).post('/api/transactions').send(transaction)
+            res = await request(app).post('/api/transactions').send(transaction)
         })
         it('Returns a 201 status code', () => {
             expect(res.status).toBe(201)

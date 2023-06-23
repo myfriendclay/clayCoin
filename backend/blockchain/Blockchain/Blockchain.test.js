@@ -2,7 +2,7 @@ import Blockchain from "../Blockchain/Blockchain";
 import Transaction from "../Transaction/Transaction";
 import {CoinbaseTransaction} from "../Transaction/Transaction"
 import Block from "../Block/Block";
-import { INITIAL_DIFFICULTY, TARGET_MINE_RATE_MS } from "../../config"
+import { INITIAL_DIFFICULTY, TARGET_MINE_RATE_MS } from '../utils/config';
 import Wallet from "../Wallet/Wallet";
 
 let testCoin

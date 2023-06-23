@@ -1,5 +1,5 @@
 import Transaction, { CoinbaseTransaction } from "./Transaction";
-import { COINBASE_TX } from "../../config";
+import { COINBASE_TX } from '../utils/config';
 import * as getSHA256HashModule from "../utils/crypto-hash";
 
 let transaction

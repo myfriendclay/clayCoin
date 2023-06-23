@@ -1,3 +1,4 @@
+import io from 'socket.io-client';
 import {
   TableContainer,
   Paper,
@@ -9,12 +10,11 @@ import {
   Container,
   Tooltip,
 } from "@mui/material";
-import { AlertType, BlockType } from "../../types";
-import Block from "./Block";
 import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
 import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
-import io from 'socket.io-client';
 import { useEffect } from "react";
+import { AlertType, BlockType } from "../../types";
+import Block from "./Block";
 
 const headers = [
   " ",
@@ -29,7 +29,7 @@ const headers = [
   "Valid"
 ];
 
-export function Blockchain({
+function Blockchain({
   blockchain,
   isChainValid,
   setBlockchain,
@@ -102,3 +102,5 @@ export function Blockchain({
     </Container>
   );
 }
+
+export default Blockchain;

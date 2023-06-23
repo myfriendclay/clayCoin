@@ -1,4 +1,4 @@
-export const getTruncatedString = (string: String | null | undefined, totalCharLimit: number) => {
+const getTruncatedString = (string: String | null | undefined, totalCharLimit: number) => {
     if (!string) {
       return "N/A"
     }
@@ -10,3 +10,4 @@ export const getTruncatedString = (string: String | null | undefined, totalCharL
     return `${string.slice(0, frontEndIndex)}...${string.slice(rearStartIndex, string.length)}`;
   };
   
+  export default getTruncatedString;

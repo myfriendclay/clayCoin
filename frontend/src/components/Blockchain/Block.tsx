@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import {
   Box,
   Collapse,
@@ -7,15 +10,13 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { BlockType } from "../../types";
-import { getTruncatedString } from '../../utils/getTruncatedString'
-import { useEffect, useState } from "react";
-import Transactions from "../Transactions/Transactions";
-import axios from "axios";
 import LockIcon from "@mui/icons-material/Lock";
 import DangerousIcon from "@mui/icons-material/Dangerous";
+import axios from "axios";
+
+import { BlockType } from "../../types";
+import getTruncatedString from '../../utils/getTruncatedString'
+import Transactions from "../Transactions/Transactions";
 
 function Block({ block }: { block: BlockType }) {
   const { REACT_APP_API_URL } = process.env;

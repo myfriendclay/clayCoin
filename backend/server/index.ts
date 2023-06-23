@@ -4,7 +4,7 @@ import { PORT, DEFAULT_PORT } from './api/utils/ports';
 import { syncChains } from './api/utils/syncChains';
 import PubSub from '../pubsub';
 import { blockchain } from '../database/database';
-const app = require('./api/server');
+import app from './api/server';
 
 //Create websocker server:
 const server = createServer(app);

@@ -1,10 +1,10 @@
-import Transactions from "../Transactions/Transactions";
-import { Container } from "@mui/material";
-import MineMemPool from "./MineMemPool";
-import { AlertType, BlockType, TransactionType } from "../../types";
-import AddTransaction from "../Transactions/AddTransaction";
-import { useEffect } from "react";
 import io from 'socket.io-client';
+import { Container } from "@mui/material";
+import { AlertType, BlockType, TransactionType } from "../../types";
+import { useEffect } from "react";
+import Transactions from "../Transactions/Transactions";
+import MineMemPool from "./MineMemPool";
+import AddTransaction from "../Transactions/AddTransaction";
 
 interface MemPoolProps {
   memPool: TransactionType[];
@@ -14,7 +14,7 @@ interface MemPoolProps {
   setAlertDetails: (alertDetails: AlertType) => void;
 }
 
-export default function MemPool({memPool, setBlockchain, blockchain, setmemPool, setAlertDetails} : 
+function MemPool({memPool, setBlockchain, blockchain, setmemPool, setAlertDetails} : 
   MemPoolProps) {
 
     const { REACT_APP_API_URL } = process.env;
@@ -54,3 +54,5 @@ export default function MemPool({memPool, setBlockchain, blockchain, setmemPool,
     </Container>
   )
 }
+
+export default MemPool;
