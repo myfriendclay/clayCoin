@@ -2,7 +2,7 @@ import EC from "elliptic"
 const ec = new EC.ec('secp256k1')
 import { v4 as uuidv4 } from 'uuid';
 import getSHA256Hash from '../utils/crypto-hash'
-import { COINBASE_TX } from "../../config";
+import { COINBASE_TX } from "../utils/config";
 
 export default class Transaction {
   fromAddress: string

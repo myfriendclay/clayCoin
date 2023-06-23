@@ -1,6 +1,6 @@
 //@ts-ignore
 import hexToBinary from "hex-to-binary"
-import { GENESIS_BLOCK_DATA } from "../../config"
+import { GENESIS_BLOCK_DATA } from "../utils/config"
 import Transaction, { CoinbaseTransaction } from "../Transaction/Transaction";
 import { Type } from 'class-transformer';
 import 'reflect-metadata';

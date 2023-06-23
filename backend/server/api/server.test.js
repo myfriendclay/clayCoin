@@ -1,7 +1,7 @@
 const server = require('./server')
 const request = require('supertest')
 
-import { BLOCK_SUBSIDY, INITIAL_DIFFICULTY } from "../../config"
+import { BLOCK_SUBSIDY, INITIAL_DIFFICULTY } from "../../blockchain/utils/config"
 import { pubsub} from "../index"
 import { blockchain as blockchainPOJO } from "../../database/database"
 

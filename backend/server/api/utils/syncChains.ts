@@ -11,7 +11,7 @@ export const syncChains = () => {
       if (!error && response.statusCode === 200) {
         const rootChain = JSON.parse(body)
         let blockchainInstance = plainToClass(Blockchain, rootChain.blockchain);
-        console.log('replace chain on a sync with', blockchainInstance)
+        console.log('Replace chain on a sync with', blockchainInstance.chain.length)
         blockchain.replaceChain(blockchainInstance)
       }
     })

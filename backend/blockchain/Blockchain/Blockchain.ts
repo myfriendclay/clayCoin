@@ -2,7 +2,7 @@ import Block, { GenesisBlock } from '../Block/Block'
 import Transaction from '../Transaction/Transaction'
 import Wallet from '../Wallet/Wallet'
 import { CoinbaseTransaction } from '../Transaction/Transaction'
-import { TARGET_MINE_RATE_MS, INITIAL_DIFFICULTY, BLOCK_SUBSIDY } from "../../config"
+import { TARGET_MINE_RATE_MS, INITIAL_DIFFICULTY, BLOCK_SUBSIDY } from "../utils/config"
 import { Type } from 'class-transformer';
 import 'reflect-metadata';
 
