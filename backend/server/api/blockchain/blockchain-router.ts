@@ -1,5 +1,5 @@
 const router = require('express').Router();
-import { blockchain } from "../../index"
+import {blockchain} from "../../../database/database";
 import Blockchain from "../../../blockchain/Blockchain/Blockchain";
 
 router.get('/', (req: any, res: any) => {

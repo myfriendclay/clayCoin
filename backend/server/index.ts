@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 import { PORT, DEFAULT_PORT } from './api/utils/ports';
 import { syncChains } from './api/utils/syncChains';
 import PubSub from '../pubsub';
-import Blockchain from '../blockchain/Blockchain/Blockchain';
+import { blockchain } from '../database/database';
 const app = require('./api/server');
 
 //Create websocker server:
@@ -25,5 +25,5 @@ server.listen(PORT, () => {
 })
 
 //Database setup (note, keep this here (vs separate file) otherwise the websocket updates fail):
-export const blockchain = new Blockchain()
+
 export const pubsub = new PubSub( { blockchain }, io )

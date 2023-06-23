@@ -1,7 +1,8 @@
 import request from 'request'
 import { plainToClass } from 'class-transformer';
 
-import { blockchain } from "../../index"
+import {blockchain} from "../../../database/database";
+
 import Blockchain from '../../../blockchain/Blockchain/Blockchain';
 import { ROOT_NODE_ADDRESS } from './ports';
 
