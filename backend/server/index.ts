@@ -24,6 +24,5 @@ server.listen(PORT, () => {
   }
 })
 
-//Database setup (note, keep this here (vs separate file) otherwise the websocket updates fail):
-
+//Pubsub setup
 export const pubsub = new PubSub( { blockchain }, io )

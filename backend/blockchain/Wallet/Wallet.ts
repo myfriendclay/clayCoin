@@ -1,5 +1,6 @@
 import EC from "elliptic"
-import { BlockType, TransactionType } from "../../app/src/App";
+import { BlockType } from "../../types";
+
 const ec = new EC.ec('secp256k1')
 
 export default class Wallet {

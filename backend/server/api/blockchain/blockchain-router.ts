@@ -1,7 +1,5 @@
 import { blockchain } from "../../../database/database";
-import Blockchain from "../../../blockchain/Blockchain/Blockchain";
 import { Router } from "express";
-import { plainToInstance } from "class-transformer";
 const router = Router();
 
 router.get("/", (req: any, res: any) => {
