@@ -7,7 +7,15 @@ import { Type } from 'class-transformer';
 import 'reflect-metadata';
 
 export default class Blockchain {
-  @Type(() => Block)
+  @Type(() => Block, {
+    discriminator: {
+      property: 'type',
+      subTypes: [
+        { value: Block, name: 'default' },
+        { value: GenesisBlock, name: 'genesisBlock'}
+      ]
+    }
+  })
   chain: Block[]
   difficulty: number
   pendingTransactions: Transaction[]
@@ -147,7 +155,7 @@ export default class Blockchain {
 
   static isChainValid(chain: Block[]) {
     // Check if the Genesis block hasn't been tampered with:
-    if (!chain[0].isValidGenesisBlock()) {
+    if (!chain[0].isValid()) {
       return false
     }
 

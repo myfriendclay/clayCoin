@@ -24,6 +24,7 @@ export default class Block {
   timestamp: number;
   miningDurationMs!: number;
   hash!: string;
+  type: 'default' | 'genesisBlock'
 
   constructor(transactions: Transaction[], difficulty: number, previousHash: string | null = '', height: number) {
     this.transactions = transactions
@@ -32,6 +33,7 @@ export default class Block {
     this.difficulty = difficulty
     this.nonce = 0
     this.timestamp = Date.now()
+    this.type = 'default'
   }
 
   calculateHash(): string {
@@ -88,24 +90,25 @@ export default class Block {
   isValid(): boolean {
     return this.hasValidTransactions() && this.hasProofOfWork() && this.hasOnlyOneCoinbaseTx() && this.timestampIsInPast()
   }
-
-  isValidGenesisBlock(): boolean { 
-    const { difficulty, transactions, previousHash, height } = GENESIS_BLOCK_DATA
-
-    return (
-      this.hasProofOfWork() && 
-      this.difficulty === difficulty && 
-      this.transactions.length === transactions.length && 
-      this.previousHash === previousHash && 
-      this.height === height
-      )
-  }
-
 }
 
 export class GenesisBlock extends Block {
   constructor() {
     super(GENESIS_BLOCK_DATA.transactions, GENESIS_BLOCK_DATA.difficulty, GENESIS_BLOCK_DATA.previousHash, GENESIS_BLOCK_DATA.height)
+    this.type = 'genesisBlock'
     this.mineBlock()
+  }
+
+  isValid(): boolean {
+    const { difficulty, transactions, previousHash, height } = GENESIS_BLOCK_DATA
+
+    return (
+      this.hasProofOfWork() && 
+      this.timestampIsInPast() &&
+      this.difficulty === difficulty && 
+      this.transactions.length === transactions.length && 
+      this.previousHash === previousHash && 
+      this.height === height
+      )
   }
 }

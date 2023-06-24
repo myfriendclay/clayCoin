@@ -302,21 +302,21 @@ describe('isValidGenesisBlock()', () => {
 
   it('Returns false if Genesis block has non zero height', () => {
     genesisBlock.height = 1
-    expect(genesisBlock.isValidGenesisBlock()).toBe(false)
+    expect(genesisBlock.isValid()).toBe(false)
   })
 
   it('Returns false if Genesis block has previous hash thats not null', () => {
     genesisBlock.previousHash = "someOtherHash"
-    expect(genesisBlock.isValidGenesisBlock()).toBe(false)
+    expect(genesisBlock.isValid()).toBe(false)
   })
 
   it('Returns false if doesnt have proof of work hash', () => {
     jest.spyOn(genesisBlock, 'hasProofOfWork').mockImplementation(() => false);
-    expect(genesisBlock.isValidGenesisBlock()).toBe(false)
+    expect(genesisBlock.isValid()).toBe(false)
   })
 
   it('Returns true otherwise', () => {
-    expect(genesisBlock.isValidGenesisBlock()).toBe(true)
+    expect(genesisBlock.isValid()).toBe(true)
   })
 
 });

@@ -18,10 +18,7 @@ router.get("/:hash/isBlockValid", (req, res) => {
     res.status(404).json({ error: "Block not found" });
     return;
   }
-  let isValidBlock =
-    blockchain.chain[0].hash === hash
-      ? block.isValidGenesisBlock()
-      : block.isValid();
+  let isValidBlock = block.isValid()
   res.status(200).json({ isValidBlock });
 });
 

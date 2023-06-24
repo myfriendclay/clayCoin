@@ -13,7 +13,7 @@ export default class Transaction {
   uuid: string;
   timestamp: number;
   signature: string | undefined;
-  type: string;
+  type: 'default' | 'coinbaseTx'
 
   constructor(
     fromAddress: string,
