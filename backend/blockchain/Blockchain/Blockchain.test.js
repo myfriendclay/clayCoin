@@ -101,21 +101,21 @@ describe('isChainValid', () => {
   })
 
   it('Returns false if any two blocks are not validly connected', () => {
-    expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
+    expect(testCoin.isChainValid(testCoin.chain)).toBe(true)
     jest.spyOn(Blockchain, 'areBlocksValidlyConnected').mockImplementation(() => false);
-    expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
+    expect(testCoin.isChainValid(testCoin.chain)).toBe(false)
   })
 
   it('Returns false if any block is invalid', () => {
-    expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
+    expect(testCoin.isChainValid(testCoin.chain)).toBe(true)
     jest.spyOn(block2, 'isValid').mockImplementation(() => false);
-    expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
+    expect(testCoin.isChainValid(testCoin.chain)).toBe(false)
   })
 
   it('Returns false if genesis block is invalid', () => {
-    expect(Blockchain.isChainValid(testCoin.chain)).toBe(true)
+    expect(testCoin.isChainValid(testCoin.chain)).toBe(true)
     jest.spyOn(testCoin.chain[0], 'isValid').mockImplementation(() => false);
-    expect(Blockchain.isChainValid(testCoin.chain)).toBe(false)
+    expect(testCoin.isChainValid(testCoin.chain)).toBe(false)
   })
 });
 
@@ -268,14 +268,14 @@ describe('replaceChain', () => {
       });
 
       it('returns false', () => {
-        jest.spyOn(Blockchain, 'isChainValid').mockImplementation(() => false);
+        jest.spyOn(newBlockchain, 'isChainValid').mockImplementation(() => false);
         testCoin.replaceChain(newBlockchain)
         expect(testCoin.replaceChain(newBlockchain)).toBe(false)
       })
 
       it('does not replace chain', () => {
         const originalChain = testCoin.chain
-        jest.spyOn(Blockchain, 'isChainValid').mockImplementation(() => false);
+        jest.spyOn(newBlockchain, 'isChainValid').mockImplementation(() => false);
         testCoin.replaceChain(newBlockchain)
         expect(testCoin.chain).toBe(originalChain)
       })
@@ -284,7 +284,7 @@ describe('replaceChain', () => {
     describe('and the chain is valid', () => {
       it('replaces the chain', () => {
         newBlockchain.chain.push("block")
-        jest.spyOn(Blockchain, 'isChainValid').mockImplementation(() => true);
+        jest.spyOn(newBlockchain, 'isChainValid').mockImplementation(() => true);
         testCoin.replaceChain(newBlockchain)
         expect(testCoin.chain).toBe(newBlockchain.chain)
       })
