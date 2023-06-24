@@ -12,7 +12,7 @@ class Transaction {
   uuid: string;
   timestamp: number;
   signature: string | undefined;
-  type: 'default' | 'coinbaseTx'
+  __type: 'default' | 'CoinbaseTransaction'
 
   constructor(
     fromAddress: string,
@@ -28,7 +28,7 @@ class Transaction {
     this.fee = fee;
     this.uuid = uuidv4();
     this.timestamp = Date.now();
-    this.type = "default";
+    this.__type = "default";
   }
 
   calculateHash(): string {

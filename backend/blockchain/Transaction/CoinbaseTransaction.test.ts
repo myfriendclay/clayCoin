@@ -45,6 +45,10 @@ describe("Constructor", () => {
     expect(coinbaseTx.timestamp).toBeLessThanOrEqual(maxTime);
   });
 
+  it("Sets __type to 'coinbaseTx' ", () => {
+    expect(coinbaseTx.__type).toBe("CoinbaseTransaction");
+  });
+
   it("Has a valid signature", () => {
     expect(coinbaseTx.hasValidSignature()).toBe(true);
   });

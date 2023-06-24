@@ -10,10 +10,10 @@ import getSHA256Hash from "../utils/crypto-hash";
 export default class Block {
   @Type(() => Transaction, {
     discriminator: {
-      property: "type",
+      property: "__type",
       subTypes: [
         { value: Transaction, name: 'default' },
-        { value: CoinbaseTransaction, name: 'coinbaseTx' }
+        { value: CoinbaseTransaction, name: 'CoinbaseTransaction' }
       ]
      }
   })

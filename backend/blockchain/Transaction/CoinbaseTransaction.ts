@@ -9,7 +9,7 @@ class CoinbaseTransaction extends Transaction {
       miningReward,
       COINBASE_TX.memo
     );
-    this.type = "coinbaseTx";
+    this.__type = "CoinbaseTransaction";
     this.signTransaction(COINBASE_TX.secretKey);
   }
 
