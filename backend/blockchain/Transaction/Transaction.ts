@@ -2,9 +2,8 @@ import EC from "elliptic";
 const ec = new EC.ec("secp256k1");
 import { v4 as uuidv4 } from "uuid";
 import getSHA256Hash from "../utils/crypto-hash";
-import { COINBASE_TX } from "../utils/config";
 
-export default class Transaction {
+class Transaction {
   fromAddress: string;
   toAddress: string;
   amount: number;
@@ -79,25 +78,4 @@ export default class Transaction {
   }
 }
 
-export class CoinbaseTransaction extends Transaction {
-  constructor(miningRewardAddress: string, miningReward: number) {
-    super(
-      COINBASE_TX.fromAddress,
-      miningRewardAddress,
-      miningReward,
-      COINBASE_TX.memo
-    );
-    this.type = "coinbaseTx";
-    this.signTransaction(COINBASE_TX.secretKey);
-  }
-
-  isValid(): boolean {
-    const { fromAddress, memo } = COINBASE_TX;
-    return (
-      this.fromAddress === fromAddress &&
-      this.memo === memo &&
-      this.amount > 0 &&
-      this.hasValidSignature()
-    );
-  }
-}
+export default Transaction;

@@ -1,7 +1,8 @@
 //@ts-ignore
 import hexToBinary from "hex-to-binary"
 import { GENESIS_BLOCK_DATA } from "../utils/config"
-import Transaction, { CoinbaseTransaction } from "../Transaction/Transaction";
+import Transaction from "../Transaction/Transaction";
+import CoinbaseTransaction from "../Transaction/CoinbaseTransaction";
 import { Type } from 'class-transformer';
 import 'reflect-metadata';
 import getSHA256Hash from "../utils/crypto-hash";

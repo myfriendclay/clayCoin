@@ -1,7 +1,8 @@
 import Block, { GenesisBlock } from "../Block/Block";
 import Transaction from "../Transaction/Transaction";
 import Wallet from "../Wallet/Wallet";
-import { CoinbaseTransaction } from "../Transaction/Transaction";
+import CoinbaseTransaction from "../Transaction/CoinbaseTransaction";
+
 import {
   TARGET_MINE_RATE_MS,
   INITIAL_DIFFICULTY,
