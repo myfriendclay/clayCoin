@@ -1,4 +1,5 @@
-import Block, { GenesisBlock } from "../Block/Block";
+import Block from "../Block/Block";
+import GenesisBlock from "../Block/GenesisBlock";
 import Transaction from "../Transaction/Transaction";
 import Wallet from "../Wallet/Wallet";
 import CoinbaseTransaction from "../Transaction/CoinbaseTransaction";
