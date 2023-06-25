@@ -5,7 +5,7 @@
 This is a blockchain backend + frontend webapp that allows you to:
 
 - Create new public/private key wallets
-- Add transactions to memPool (only if you have sufficient funds on the blockchain and a valid public/private key pair) 
+- Add transactions to mempool (only if you have sufficient funds on the blockchain and a valid public/private key pair) 
 - Mine a block and receive a mining reward for your generous compute power donation
 - Broadcast and receive messages to/from other nodes on the network and sync your blockchain with the longest valid chain
 

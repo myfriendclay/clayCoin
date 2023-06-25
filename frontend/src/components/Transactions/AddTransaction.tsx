@@ -23,12 +23,12 @@ interface FormData {
 }
 
 interface MemPoolProps {
-  setmemPool: (mempool: TransactionType[]) => void;
+  setmempool: (mempool: TransactionType[]) => void;
   setAlertDetails: (alertDetails: AlertType) => void;
 }
 
 export default function AddTransaction({
-  setmemPool,
+  setmempool,
   setAlertDetails,
 }: MemPoolProps) {
   const blankFormValues = {
@@ -70,7 +70,7 @@ export default function AddTransaction({
       .post(`${REACT_APP_API_URL}/api/transactions`, formData)
       .then((response) => {
         const pendingTransactions = response.data;
-        setmemPool(pendingTransactions);
+        setmempool(pendingTransactions);
         setAlertDetails({
           open: true,
           alertMessage: "You added a transaction to the mempool!",

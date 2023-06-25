@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 import { PORT, DEFAULT_PORT } from './api/utils/ports';
 import { syncChains } from './api/utils/syncChains';
 import PubSub from '../pubsub';
-import { blockchain } from '../database/database';
+import { blockchain, mempool } from '../database/database';
 import app from './api/server';
 
 //Create websocker server:
@@ -25,4 +25,4 @@ server.listen(PORT, () => {
 })
 
 //Pubsub setup
-export const pubsub = new PubSub( { blockchain }, io )
+export const pubsub = new PubSub( { blockchain, mempool }, io )

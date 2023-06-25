@@ -15,8 +15,8 @@ describe("Blockchain", () => {
 
 describe("Mempool", () => {
   test('Renders Mempool header', () => {
-    const memPoolHeader = screen.getByText("Mempool");
-    expect(memPoolHeader).toBeInTheDocument();
+    const mempoolHeader = screen.getByText("Mempool");
+    expect(mempoolHeader).toBeInTheDocument();
   });
 })
 

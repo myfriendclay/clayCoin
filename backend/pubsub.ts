@@ -1,5 +1,6 @@
 const PubNub = require('pubnub')
 import Blockchain from './blockchain/Blockchain/Blockchain'
+import Mempool from './blockchain/Mempool/Mempool';
 import Transaction from './blockchain/Transaction/Transaction';
 import { plainToInstance } from 'class-transformer';
 
@@ -16,13 +17,15 @@ const CHANNELS = {
 
 export default class PubSub {
   blockchain: Blockchain
+  mempool: Mempool
   publisher: any
   subscriber: any;
   io: any;
   pubnub: any;
-
-  constructor( { blockchain }, io ) {
+  
+  constructor( { blockchain, mempool }, io ) {
     this.blockchain = blockchain
+    this.mempool = mempool
     this.io = io
 
     this.pubnub = new PubNub(credentials);
@@ -40,14 +43,14 @@ export default class PubSub {
         let blockchainInstance = plainToInstance(Blockchain, parsedMessage);
         const chainWasReplaced = this.blockchain.replaceChain(blockchainInstance)
         if (chainWasReplaced) {
-          this.blockchain.resetMempool()
+          this.mempool.resetMempool()
           this.io.emit('updateBlockchain', blockchainInstance)
           this.io.emit('clearMempool')
         }
         break;
       case CHANNELS.TRANSACTIONS:
         let transactionInstance = plainToInstance(Transaction, parsedMessage);
-        this.blockchain.addTransaction(transactionInstance)
+        this.mempool.addTransaction(transactionInstance)
         this.io.emit('updateMempool', transactionInstance)
         break;
     }

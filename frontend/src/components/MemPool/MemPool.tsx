@@ -7,14 +7,14 @@ import MineMemPool from "./MineMemPool";
 import AddTransaction from "../Transactions/AddTransaction";
 
 interface MemPoolProps {
-  memPool: TransactionType[];
+  mempool: TransactionType[];
   setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
-  setmemPool: (mempool: TransactionType[]) => void;
+  setmempool: (mempool: TransactionType[]) => void;
   setAlertDetails: (alertDetails: AlertType) => void;
 }
 
-function MemPool({memPool, setBlockchain, blockchain, setmemPool, setAlertDetails} : 
+function MemPool({mempool, setBlockchain, blockchain, setmempool, setAlertDetails} : 
   MemPoolProps) {
 
     const { REACT_APP_API_URL } = process.env;
@@ -23,7 +23,7 @@ function MemPool({memPool, setBlockchain, blockchain, setmemPool, setAlertDetail
       const socket = io(`${REACT_APP_API_URL}`);
       
       socket.on('updateMempool', (transaction) => {
-        setmemPool([...memPool, transaction]);
+        setmempool([...mempool, transaction]);
         setAlertDetails({
           open: true,
           alertMessage: `Mempool updated with more transactions found on network!`,
@@ -32,23 +32,24 @@ function MemPool({memPool, setBlockchain, blockchain, setmemPool, setAlertDetail
       });
   
       socket.on('clearMempool', () => {
-        setmemPool([]);
+        setmempool([]);
       });
   
-    }, [REACT_APP_API_URL, memPool, setAlertDetails, setmemPool]);
+    }, [REACT_APP_API_URL, mempool, setAlertDetails, setmempool]);
+
 
   return (
     <Container sx={{ display: 'flex', flexFlow: "column", alignItems: "center", borderBottom: '1px grey dotted', borderTop: '1px grey dotted'}} >
       <h1>Mempool</h1>
       <AddTransaction 
-        setmemPool={setmemPool}
+        setmempool={setmempool}
         setAlertDetails={setAlertDetails}
       />
-      <Transactions transactions={memPool}/>
+      <Transactions transactions={mempool}/>
       <MineMemPool 
         setBlockchain={setBlockchain}
         blockchain={blockchain}
-        setmemPool={setmemPool}
+        setmempool={setmempool}
         setAlertDetails={setAlertDetails}
       />
     </Container>

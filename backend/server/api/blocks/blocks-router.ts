@@ -1,12 +1,12 @@
 import { pubsub } from "../../index";
-import { blockchain } from "../../../database/database";
+import { blockchain, mempool } from "../../../database/database";
 import { Router } from "express";
 const router = Router();
 
 //@ts-ignore
 router.post("/mine", (req, res) => {
   const { miningAddress } = req.body;
-  const newBlock = blockchain.minePendingTransactions(miningAddress);
+  const newBlock = mempool.minePendingTransactions(miningAddress);
   pubsub.broadcastChain();
   res.status(201).json(newBlock);
 });

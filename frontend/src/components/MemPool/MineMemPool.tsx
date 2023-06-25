@@ -12,14 +12,14 @@ interface FormData {
 interface MineMemPoolProps {
   setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
-  setmemPool: (mempool: TransactionType[]) => void;
+  setmempool: (mempool: TransactionType[]) => void;
   setAlertDetails: (alertDetails: AlertType) => void;
 }
 
 function MineMemPool({
   setBlockchain,
   blockchain,
-  setmemPool,
+  setmempool,
   setAlertDetails,
 }: MineMemPoolProps) {
   const blankFormValues = {
@@ -43,7 +43,7 @@ function MineMemPool({
       .then((response) => {
         const block = response.data;
         setBlockchain([...blockchain, block]);
-        setmemPool([]);
+        setmempool([]);
         setAlertDetails({
           open: true,
           alertMessage: `You mined block #${block.height} in ${

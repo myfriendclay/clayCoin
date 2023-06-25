@@ -5,7 +5,7 @@ import {
   INITIAL_DIFFICULTY,
 } from "../../blockchain/utils/config";
 import { pubsub } from "../index";
-import { blockchain as blockchainPOJO } from "../../database/database";
+import { blockchain as blockchainPOJO, mempool as mempoolPOJO } from "../../database/database";
 
 describe("GET api/blockchain", () => {
   let res, blockchain;
@@ -28,7 +28,6 @@ describe("GET api/blockchain", () => {
   test("Blockchain has blocksubsidy, initial difficulty, empty pending transactions, and chain", () => {
     expect(blockchain.blockSubsidy).toBe(BLOCK_SUBSIDY);
     expect(blockchain.difficulty).toBe(INITIAL_DIFFICULTY);
-    expect(blockchain.pendingTransactions).toHaveLength(0);
     expect(blockchain).toHaveProperty("chain");
   });
 
@@ -57,7 +56,7 @@ describe("POST /blocks/mine", () => {
 
   beforeAll(async () => {
     mockBroadcastChain = jest.spyOn(pubsub, "broadcastChain");
-    mockMinePendingTxs = jest.spyOn(blockchainPOJO, "minePendingTransactions");
+    mockMinePendingTxs = jest.spyOn(mempoolPOJO, "minePendingTransactions");
     res = await request(app).post("/api/blocks/mine").send(minerInfo);
   });
 
@@ -80,7 +79,7 @@ describe("POST /blocks/mine", () => {
   it("Returns the results of blockchain.minePendingTransactions method", async () => {
     mockBlock = "test blockchain.minePendingTransactions return value";
     jest
-      .spyOn(blockchainPOJO, "minePendingTransactions")
+      .spyOn(mempoolPOJO, "minePendingTransactions")
       .mockReturnValueOnce(mockBlock);
     const response2 = await request(app)
       .post("/api/blocks/mine")
@@ -139,7 +138,7 @@ describe("POST /transactions", () => {
     });
 
     it("Does not add transaction to mempool", async () => {
-      expect(blockchainPOJO.pendingTransactions).toHaveLength(0);
+      expect(mempoolPOJO.pendingTransactions).toHaveLength(0);
     });
   });
 
@@ -168,14 +167,14 @@ describe("POST /transactions", () => {
     });
 
     it("Does not add transaction to mempool", async () => {
-      expect(blockchainPOJO.pendingTransactions).toHaveLength(0);
+      expect(mempoolPOJO.pendingTransactions).toHaveLength(0);
     });
   });
 
   describe("When wallet has sufficient funds and valid key", () => {
     let res, transaction, mockBroadcastTx;
     beforeAll(async () => {
-      blockchainPOJO.minePendingTransactions(
+      mempoolPOJO.minePendingTransactions(
         "043a9d7e34eb6dfd8cf11ec05a774528a4dd899626e78c65655f0152d5c419f335f6c1198bd7bca70049e3bcc2da0b354b32ef9122df1ddae26628b69adc4c7354"
       );
       mockBroadcastTx = jest.spyOn(pubsub, "broadcastTransaction");
@@ -196,13 +195,13 @@ describe("POST /transactions", () => {
     });
 
     it("Returns pending transactions in response", async () => {
-      expect(res.body).toEqual(blockchainPOJO.pendingTransactions);
+      expect(res.body).toEqual(mempoolPOJO.pendingTransactions);
     });
 
     it("Adds transaction to blockchain POJO mempool and has same properties", async () => {
       const addedTx =
-        blockchainPOJO.pendingTransactions[
-          blockchainPOJO.pendingTransactions.length - 1
+      mempoolPOJO.pendingTransactions[
+        mempoolPOJO.pendingTransactions.length - 1
         ];
       expect(addedTx.fromAddress).toBe(transaction.fromAddress);
       expect(addedTx.toAddress).toBe(transaction.toAddress);

@@ -1,6 +1,6 @@
 import Transaction from "../../../blockchain/Transaction/Transaction";
 import { pubsub } from "../../index";
-import { blockchain } from "../../../database/database";
+import { blockchain, mempool } from "../../../database/database";
 import { Router } from "express";
 const router = Router();
 
@@ -16,9 +16,9 @@ router.post("/", (req, res) => {
   );
   try {
     newTransaction.signTransaction(secretKey);
-    blockchain.addTransaction(newTransaction);
+    mempool.addTransaction(newTransaction);
     pubsub.broadcastTransaction(newTransaction);
-    res.status(201).json(blockchain.pendingTransactions);
+    res.status(201).json(mempool.pendingTransactions);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
