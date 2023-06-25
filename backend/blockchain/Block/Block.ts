@@ -1,8 +1,8 @@
-import hexToBinary from "hex-to-binary"
+import hexToBinary from "hex-to-binary";
 import Transaction from "../Transaction/Transaction";
 import CoinbaseTransaction from "../Transaction/CoinbaseTransaction";
-import { Type } from 'class-transformer';
-import 'reflect-metadata';
+import { Type } from "class-transformer";
+import "reflect-metadata";
 import getSHA256Hash from "../utils/crypto-hash";
 import { TARGET_MINE_RATE_MS } from "../utils/config";
 
@@ -11,10 +11,10 @@ class Block {
     discriminator: {
       property: "__type",
       subTypes: [
-        { value: Transaction, name: 'default' },
-        { value: CoinbaseTransaction, name: 'CoinbaseTransaction' }
-      ]
-     }
+        { value: Transaction, name: "default" },
+        { value: CoinbaseTransaction, name: "CoinbaseTransaction" },
+      ],
+    },
   })
   transactions: Transaction[];
   previousHash: string | null;
@@ -24,71 +24,96 @@ class Block {
   timestamp: number;
   miningDurationMs!: number;
   hash!: string;
-  __type: 'default' | 'GenesisBlock'
+  __type: "default" | "GenesisBlock";
 
-  constructor(transactions: Transaction[], difficulty: number, previousHash: string | null = '', height: number) {
-    this.transactions = transactions
-    this.previousHash = previousHash
-    this.height = height
-    this.difficulty = difficulty
-    this.nonce = 0
-    this.timestamp = Date.now()
-    this.__type = 'default'
-  }
-
-  calculateHash(): string {
-    return getSHA256Hash(this.timestamp, this.transactions, this.previousHash, this.height, this.difficulty, this.nonce)
+  constructor(
+    transactions: Transaction[],
+    difficulty: number,
+    previousHash: string | null = "",
+    height: number
+  ) {
+    this.transactions = transactions;
+    this.previousHash = previousHash;
+    this.height = height;
+    this.difficulty = difficulty;
+    this.nonce = 0;
+    this.timestamp = Date.now();
+    this.__type = "default";
   }
 
   mineBlock(): number {
-    const startOfMining = Date.now()
-    this.hash = this.getProofOfWorkHash()
-    const endOfMining = Date.now()
-    this.miningDurationMs = endOfMining - startOfMining
-    return this.miningDurationMs
+    const startOfMining = Date.now();
+    this.hash = this.getProofOfWorkHash();
+    const endOfMining = Date.now();
+    this.miningDurationMs = endOfMining - startOfMining;
+    return this.miningDurationMs;
   }
 
+  //Helper method for mineBlock
   getProofOfWorkHash(): string {
-    let hash = ""
-    const proofOfWorkReq = "0".repeat(this.difficulty)
+    let hash = "";
+    const proofOfWorkReq = "0".repeat(this.difficulty);
 
     while (hexToBinary(hash).substring(0, this.difficulty) !== proofOfWorkReq) {
-        this.nonce ++
-        hash = this.calculateHash()
+      this.nonce++;
+      hash = this.calculateHash();
     }
-    return hash
+    return hash;
   }
 
+  calculateHash(): string {
+    return getSHA256Hash(
+      this.timestamp,
+      this.transactions,
+      this.previousHash,
+      this.height,
+      this.difficulty,
+      this.nonce
+    );
+  }
+
+  isValid(): boolean {
+    return (
+      this.hasValidTransactions() &&
+      this.hasOnlyOneCoinbaseTx() &&
+      this.timestampIsInPast() &&
+      this.hasProofOfWork()
+    );
+  }
+
+  //Helper methods for isValid
   hasValidTransactions(): boolean {
-    return this.transactions.every(transaction => transaction.isValid())
+    return this.transactions.every((transaction) => transaction.isValid());
   }
 
   hasOnlyOneCoinbaseTx(): boolean {
-    const count = this.transactions.filter(transaction => transaction instanceof CoinbaseTransaction).length;
-    return count === 1
-  }
-  
-  hasValidHash(): boolean {
-    return this.hash === this.calculateHash()
-  }
-
-  firstDCharsAreZero(): boolean {
-    const proofOfWorkReq = "0".repeat(this.difficulty)
-    return hexToBinary(this.hash).substring(0, this.difficulty) === proofOfWorkReq
-  }
-
-  hasProofOfWork(): boolean {
-    return this.hasValidHash() && this.firstDCharsAreZero()
+    const count = this.transactions.filter(
+      (transaction) => transaction instanceof CoinbaseTransaction
+    ).length;
+    return count === 1;
   }
 
   timestampIsInPast(): boolean {
-    if (!this.timestamp) return false
+    if (!this.timestamp) return false;
     //Allow up to 5 minutes in the future, in case of discrepancies between nodes
-    return this.timestamp < (Date.now() + 1000 * 5)
+    return this.timestamp < Date.now() + 1000 * 5;
   }
-  
-  isValid(): boolean {
-    return this.hasValidTransactions() && this.hasProofOfWork() && this.hasOnlyOneCoinbaseTx() && this.timestampIsInPast()
+
+  hasProofOfWork(): boolean {
+    return this.hasValidHash() && this.firstDCharsAreZero();
+  }
+
+  //Helper methods for hasProofOfWork:
+
+  hasValidHash(): boolean {
+    return this.hash === this.calculateHash();
+  }
+
+  firstDCharsAreZero(): boolean {
+    const proofOfWorkReq = "0".repeat(this.difficulty);
+    return (
+      hexToBinary(this.hash).substring(0, this.difficulty) === proofOfWorkReq
+    );
   }
 
   static areBlocksValidlyConnected(block1: Block, block2: Block): boolean {
@@ -100,6 +125,7 @@ class Block {
     );
   }
 
+  //Helper methods for areBlocksValidlyConnected:
   static blocksHashesAreConnected(block1: Block, block2: Block): boolean {
     return block2.previousHash === block1.hash;
   }
