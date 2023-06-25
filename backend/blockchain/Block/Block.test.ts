@@ -291,3 +291,9 @@ describe('isValid', () => {
   })
 })
 
+test.todo('areBlocksValidlyConnected')
+test.todo('blocksHashesAreConnected')
+test.todo('block2ComesAfterBlock1')
+test.todo('difficultyJumpIsValid')
+test.todo('block1HasPlausibleMiningDuration')
+

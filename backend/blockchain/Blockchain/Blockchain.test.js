@@ -96,13 +96,13 @@ describe('isChainValid', () => {
     jest.spyOn(block2, 'isValid').mockImplementation(() => true);
     jest.spyOn(block3, 'isValid').mockImplementation(() => true);
     jest.spyOn(testCoin.chain[0], 'isValid').mockImplementation(() => true);
-    jest.spyOn(Blockchain, 'areBlocksValidlyConnected').mockImplementation(() => true);
+    jest.spyOn(Block, 'areBlocksValidlyConnected').mockImplementation(() => true);
     testCoin.chain.push(block1, block2, block3)
   })
 
   it('Returns false if any two blocks are not validly connected', () => {
     expect(testCoin.isChainValid(testCoin.chain)).toBe(true)
-    jest.spyOn(Blockchain, 'areBlocksValidlyConnected').mockImplementation(() => false);
+    jest.spyOn(Block, 'areBlocksValidlyConnected').mockImplementation(() => false);
     expect(testCoin.isChainValid(testCoin.chain)).toBe(false)
   })
 
@@ -119,11 +119,6 @@ describe('isChainValid', () => {
   })
 });
 
-test.todo('areBlocksValidlyConnected')
-test.todo('blocksHashesAreConnected')
-test.todo('block2ComesAfterBlock1')
-test.todo('difficultyJumpIsValid')
-test.todo('block1HasPlausibleMiningDuration')
 
 describe('addCoinbaseTxToMempool', () => {
   const minerAddress = "minerAddress"
