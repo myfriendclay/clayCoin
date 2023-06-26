@@ -96,10 +96,14 @@ describe("addCoinbaseTxToMempool", () => {
 describe("getMiningReward", () => {
   it("Returns block subsidy + all transaction fees returned by getTotalTransactionFees", () => {
     const totalTxFees = 20;
+    const blockSubsidy = 20;
     jest
       .spyOn(mempool, "getTotalTransactionFees")
       .mockImplementation(() => totalTxFees);
-    const totalMiningReward = totalTxFees + blockchain.blockSubsidy;
+      jest
+      .spyOn(mempool, "getCurrentBlockSubsidy")
+      .mockImplementation(() => blockSubsidy);
+    const totalMiningReward = totalTxFees + blockSubsidy
     expect(mempool.getMiningReward()).toBe(totalMiningReward);
   });
 });

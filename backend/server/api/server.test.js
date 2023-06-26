@@ -1,9 +1,5 @@
 import request from "supertest";
 import app from "./server";
-import {
-  BLOCK_SUBSIDY,
-  INITIAL_DIFFICULTY,
-} from "../../blockchain/utils/config";
 import { pubsub } from "../index";
 import { blockchain as blockchainPOJO, mempool as mempoolPOJO } from "../../database/database";
 
@@ -25,8 +21,7 @@ describe("GET api/blockchain", () => {
     expect(isChainValid).toBe(true);
   });
 
-  test("Blockchain has blocksubsidy and chain", () => {
-    expect(blockchain.blockSubsidy).toBe(BLOCK_SUBSIDY);
+  test("Blockchain has chain", () => {
     expect(blockchain).toHaveProperty("chain");
   });
 

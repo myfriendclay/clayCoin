@@ -6,19 +6,33 @@ import CoinbaseTransaction from "../Transaction/CoinbaseTransaction";
 import {
   TARGET_MINE_RATE_MS,
   BLOCK_SUBSIDY,
+  NUM_OF_BLOCKS_TO_HALF_MINING_REWARD,
 } from "../utils/config";
 import "reflect-metadata";
 import Blockchain from "../Blockchain/Blockchain";
 
 class Mempool {
   pendingTransactions: Transaction[];
-  blockSubsidy: number;
   blockchain: Blockchain;
-//need to pick one source of truth for difficulty and blocksubsidy between this and blockchain- prob here
+  //need to pick one source of truth for difficulty and blocksubsidy between this and blockchain- prob here
   constructor(blockchain: Blockchain) {
     this.pendingTransactions = [];
-    this.blockSubsidy = BLOCK_SUBSIDY;
-    this.blockchain = blockchain
+    this.blockchain = blockchain;
+  }
+
+  getCurrentBlockSubsidy() {
+    const currentNumOfBlocks = this.blockchain.chain.length;
+    if (currentNumOfBlocks < NUM_OF_BLOCKS_TO_HALF_MINING_REWARD) {
+      return BLOCK_SUBSIDY;
+    } else {
+      let numOfHalvings =
+        currentNumOfBlocks / NUM_OF_BLOCKS_TO_HALF_MINING_REWARD;
+      let currentBlockSubsidy = BLOCK_SUBSIDY;
+      for (let i = 0; i < numOfHalvings; i++) {
+        currentBlockSubsidy /= 2;
+      }
+      return currentBlockSubsidy;
+    }
   }
 
   addTransaction(transaction: Transaction) {
@@ -67,11 +81,11 @@ class Mempool {
   }
 
   getMiningReward(): number {
-    return this.getTotalTransactionFees() + this.blockSubsidy;
+    return this.getTotalTransactionFees() + this.getCurrentBlockSubsidy();
   }
 
   addPendingTransactionsToBlock(): Block {
-     const block = new Block(
+    const block = new Block(
       this.pendingTransactions,
       this.getNewMiningDifficulty(),
       this.blockchain.getLatestBlock().hash,
@@ -84,7 +98,7 @@ class Mempool {
     //More secure would be to use a moving average of the last difference in timestamps of last 10 blocks or so. But requires enough nodes so there are constantly new blocks being mined back to back
     const lastMiningTime = this.blockchain.getLatestBlock().miningDurationMs;
 
-    let difficulty = this.blockchain.getLatestBlock().difficulty
+    let difficulty = this.blockchain.getLatestBlock().difficulty;
     if (lastMiningTime < TARGET_MINE_RATE_MS) {
       difficulty++;
     } else if (difficulty > 1) {

@@ -1,9 +1,5 @@
 import Block from "../Block/Block";
 import GenesisBlock from "../Block/GenesisBlock";
-
-import {
-  BLOCK_SUBSIDY,
-} from "../utils/config";
 import { Type } from "class-transformer";
 import "reflect-metadata";
 
@@ -18,11 +14,9 @@ export default class Blockchain {
     },
   })
   chain: Block[];
-  blockSubsidy: number;
 
   constructor() {
     this.chain = [new GenesisBlock()];
-    this.blockSubsidy = BLOCK_SUBSIDY;
   }
 
   getLatestBlock() {
