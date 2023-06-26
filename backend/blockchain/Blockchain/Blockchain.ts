@@ -28,20 +28,8 @@ export default class Blockchain {
     return this.chain;
   }
 
-  replaceChain(newBlockchain: Blockchain): undefined | boolean {
-    if (
-      newBlockchain.chain.length > this.chain.length &&
-      newBlockchain.isChainValid()
-    ) {
-      this.chain = newBlockchain.chain;
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   isChainValid() {
-    // Check if the Genesis block hasn't been tampered with:
+    // Check if the Genesis block has been tampered with:
     if (!this.chain[0].isValid()) {
       return false;
     }
@@ -60,4 +48,14 @@ export default class Blockchain {
     return true;
   }
 
+  replaceChain(newBlockchain: Blockchain): boolean {
+    if (
+      newBlockchain.chain.length <= this.chain.length ||
+      !newBlockchain.isChainValid()
+    ) {
+      return false;
+    }
+    this.chain = newBlockchain.chain;
+    return true;
+  }
 }
