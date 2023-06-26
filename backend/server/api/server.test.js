@@ -25,9 +25,8 @@ describe("GET api/blockchain", () => {
     expect(isChainValid).toBe(true);
   });
 
-  test("Blockchain has blocksubsidy, initial difficulty, empty pending transactions, and chain", () => {
+  test("Blockchain has blocksubsidy and chain", () => {
     expect(blockchain.blockSubsidy).toBe(BLOCK_SUBSIDY);
-    expect(blockchain.difficulty).toBe(INITIAL_DIFFICULTY);
     expect(blockchain).toHaveProperty("chain");
   });
 

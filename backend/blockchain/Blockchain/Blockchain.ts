@@ -2,7 +2,6 @@ import Block from "../Block/Block";
 import GenesisBlock from "../Block/GenesisBlock";
 
 import {
-  INITIAL_DIFFICULTY,
   BLOCK_SUBSIDY,
 } from "../utils/config";
 import { Type } from "class-transformer";
@@ -19,12 +18,10 @@ export default class Blockchain {
     },
   })
   chain: Block[];
-  difficulty: number;
   blockSubsidy: number;
 
   constructor() {
     this.chain = [new GenesisBlock()];
-    this.difficulty = INITIAL_DIFFICULTY;
     this.blockSubsidy = BLOCK_SUBSIDY;
   }
 
@@ -43,7 +40,6 @@ export default class Blockchain {
       newBlockchain.isChainValid()
     ) {
       this.chain = newBlockchain.chain;
-      this.difficulty = newBlockchain.difficulty;
       return true;
     } else {
       return false;

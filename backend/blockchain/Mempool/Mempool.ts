@@ -5,20 +5,17 @@ import CoinbaseTransaction from "../Transaction/CoinbaseTransaction";
 
 import {
   TARGET_MINE_RATE_MS,
-  INITIAL_DIFFICULTY,
   BLOCK_SUBSIDY,
 } from "../utils/config";
 import "reflect-metadata";
 import Blockchain from "../Blockchain/Blockchain";
 
 class Mempool {
-  difficulty: number;
   pendingTransactions: Transaction[];
   blockSubsidy: number;
   blockchain: Blockchain;
-
+//need to pick one source of truth for difficulty and blocksubsidy between this and blockchain- prob here
   constructor(blockchain: Blockchain) {
-    this.difficulty = INITIAL_DIFFICULTY;
     this.pendingTransactions = [];
     this.blockSubsidy = BLOCK_SUBSIDY;
     this.blockchain = blockchain
@@ -74,10 +71,9 @@ class Mempool {
   }
 
   addPendingTransactionsToBlock(): Block {
-    this.difficulty = this.getNewMiningDifficulty();
-    const block = new Block(
+     const block = new Block(
       this.pendingTransactions,
-      this.difficulty,
+      this.getNewMiningDifficulty(),
       this.blockchain.getLatestBlock().hash,
       this.blockchain.chain.length
     );
@@ -88,10 +84,10 @@ class Mempool {
     //More secure would be to use a moving average of the last difference in timestamps of last 10 blocks or so. But requires enough nodes so there are constantly new blocks being mined back to back
     const lastMiningTime = this.blockchain.getLatestBlock().miningDurationMs;
 
-    let difficulty = this.difficulty;
+    let difficulty = this.blockchain.getLatestBlock().difficulty
     if (lastMiningTime < TARGET_MINE_RATE_MS) {
       difficulty++;
-    } else if (this.difficulty > 1) {
+    } else if (difficulty > 1) {
       difficulty--;
     }
     return difficulty;

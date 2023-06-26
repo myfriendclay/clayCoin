@@ -211,16 +211,16 @@ describe("getNewMiningDifficulty", () => {
 
   it("it raises the difficulty for a quickly mined block", () => {
     block.miningDurationMs = TARGET_MINE_RATE_MS - 1;
-    expect(mempool.getNewMiningDifficulty()).toBe(blockchain.difficulty + 1);
+    expect(mempool.getNewMiningDifficulty()).toBe(block.difficulty + 1);
   });
 
   it("it lowers the difficulty for a quickly mined block", () => {
     block.miningDurationMs = TARGET_MINE_RATE_MS + 1;
-    expect(mempool.getNewMiningDifficulty()).toBe(blockchain.difficulty - 1);
+    expect(mempool.getNewMiningDifficulty()).toBe(block.difficulty - 1);
   });
 
   it("it never lowers before 1", () => {
-    mempool.difficulty = 1;
+    block.difficulty = 1;
     block.miningDurationMs = TARGET_MINE_RATE_MS + 1;
     expect(mempool.getNewMiningDifficulty()).toBe(1);
   });

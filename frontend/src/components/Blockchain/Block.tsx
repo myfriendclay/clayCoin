@@ -76,7 +76,7 @@ function Block({ block }: { block: BlockType }) {
         <TableCell width={20}>{transactions.length}</TableCell>
         <TableCell>{difficulty}</TableCell>
         <TableCell>{nonce}</TableCell>
-        <TableCell>{Math.ceil(miningDurationMs / 1000)}</TableCell>
+        <TableCell>{Math.ceil(miningDurationMs)}</TableCell>
         <TableCell>
           {isValidBlock ? (
             <Tooltip title="Block has valid proof of work hash and only valid transactions.">

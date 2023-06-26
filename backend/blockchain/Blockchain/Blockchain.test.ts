@@ -36,9 +36,8 @@ beforeEach(() => {
 });
 
 describe('Constructor', () => {
-  it('Creates blockchain successfully with all 3 properties', () => {
+  it('Creates blockchain successfully with properties', () => {
     expect(blockchain).toHaveProperty('chain');
-    expect(blockchain).toHaveProperty('difficulty');
     expect(blockchain).toHaveProperty('blockSubsidy');
   });
   it('Has only one block on the chain (genesis block)', () => {
