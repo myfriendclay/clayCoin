@@ -6,13 +6,14 @@ import { INITIAL_DIFFICULTY, TARGET_MINE_RATE_MS } from "../utils/config";
 import Wallet from "../Wallet/Wallet";
 import Blockchain from "../Blockchain/Blockchain";
 
+let block: Block;
 let blockchain: Blockchain;
 let mempool: Mempool;
-
 let transaction1: Transaction,
   transaction2: Transaction,
   transaction3: Transaction,
   transaction4: Transaction;
+let pendingTransactions: Transaction[];
 //need to make transactions mocks.. was running into issues doing so
 beforeEach(() => {
   blockchain = new Blockchain();
@@ -46,6 +47,13 @@ beforeEach(() => {
     "test memo3",
     4
   );
+  pendingTransactions = [
+    transaction1,
+    transaction2,
+    transaction3,
+    transaction4,
+  ];
+  block = new Block([], INITIAL_DIFFICULTY, "hash", 2);
 });
 describe("addTransaction", () => {
   beforeEach(() => {
@@ -82,7 +90,7 @@ describe("addTransaction", () => {
 describe("addCoinbaseTxToMempool", () => {
   const minerAddress = "minerAddress";
 
-  test("returns pending transactions of the blockchain", () => {
+  test("returns pending transactions of the mempool", () => {
     const pendingTransactions = mempool.addCoinbaseTxToMempool(minerAddress);
     expect(pendingTransactions).toBe(mempool.pendingTransactions);
   });
@@ -96,38 +104,59 @@ describe("addCoinbaseTxToMempool", () => {
 describe("getMiningReward", () => {
   it("Returns block subsidy + all transaction fees returned by getTotalTransactionFees", () => {
     const totalTxFees = 20;
-    const blockSubsidy = 20;
+    const blockSubsidy = 30;
     jest
       .spyOn(mempool, "getTotalTransactionFees")
       .mockImplementation(() => totalTxFees);
-      jest
+    jest
       .spyOn(mempool, "getCurrentBlockSubsidy")
       .mockImplementation(() => blockSubsidy);
-    const totalMiningReward = totalTxFees + blockSubsidy
+    const totalMiningReward = totalTxFees + blockSubsidy;
     expect(mempool.getMiningReward()).toBe(totalMiningReward);
   });
 });
 
 describe("addPendingTransactionsToBlock", () => {
-  test("adds pending transactions to block", () => {
-    mempool.pendingTransactions.push("tx1");
-    mempool.pendingTransactions.push("tx2");
-    mempool.addPendingTransactionsToBlock();
-    const minedBlock = mempool.addPendingTransactionsToBlock("mining_address");
-    expect(minedBlock.transactions[minedBlock.transactions.length - 2]).toBe(
-      "tx1"
-    );
+  let minedBlock: Block;
+  let latestBlock: Block;
+  let miningDifficulty: number;
+  let hash = "exampleHashValue";
+
+  beforeEach(() => {
+    latestBlock = new Block([], miningDifficulty, "prevHash", 666);
+    latestBlock.hash = hash;
+    miningDifficulty = 55;
+    jest
+      .spyOn(mempool, "getNewMiningDifficulty")
+      .mockImplementation(() => miningDifficulty);
+    jest
+      .spyOn(blockchain, "getLatestBlock")
+      .mockImplementation(() => latestBlock);
+    mempool.pendingTransactions = pendingTransactions;
+    minedBlock = mempool.addPendingTransactionsToBlock();
+  });
+
+  test("Returns a block", () => {
+    expect(minedBlock).toBeInstanceOf(Block);
+  });
+
+  test("adds pending transactions to the block", () => {
+    expect(minedBlock.transactions).toBe(pendingTransactions);
+  });
+  test("Returned mined block has return value of getNewMiningDifficulty as difficulty", () => {
+    expect(minedBlock.difficulty).toBe(miningDifficulty);
+  });
+  test("Returned mined block has previousHash of getLatestBlock result's hash", () => {
+    expect(minedBlock.previousHash).toBe(hash);
+  });
+  test("Returned mined block has height of block chain's length", () => {
+    expect(minedBlock.height).toBe(blockchain.chain.length);
   });
 });
 
 describe("getTotalTransactionFees", () => {
   test("returns total amount of transaction fees in pending transactions", () => {
-    mempool.pendingTransactions = [
-      transaction1,
-      transaction2,
-      transaction3,
-      transaction4,
-    ];
+    mempool.pendingTransactions = pendingTransactions;
     expect(mempool.getTotalTransactionFees()).toBe(10);
   });
 
@@ -143,11 +172,25 @@ describe("getTotalTransactionFees", () => {
     mempool.pendingTransactions = [tx1, tx2];
     expect(mempool.getTotalTransactionFees()).toBe(0);
   });
+
+  test("returns 0 if no transactions", () => {
+    mempool.pendingTransactions = [];
+    expect(mempool.getTotalTransactionFees()).toBe(0);
+  });
 });
 
 describe("minePendingTransactions", () => {
-  test("Calls addCoinbaseTxToMempool method", () => {
-    const miningRewardAddress = "123";
+  let miningRewardAddress: string;
+  let mockAddPendingTransactionsToBlock;
+
+  beforeEach(() => {
+    miningRewardAddress = "123";
+    mockAddPendingTransactionsToBlock = jest
+      .spyOn(mempool, "addPendingTransactionsToBlock")
+      .mockImplementation(() => block);
+  });
+
+  test("Calls addCoinbaseTxToMempool method with miningreward address", () => {
     mempool.addCoinbaseTxToMempool = jest.fn();
     mempool.minePendingTransactions(miningRewardAddress);
     expect(mempool.addCoinbaseTxToMempool).toHaveBeenCalledWith(
@@ -156,50 +199,35 @@ describe("minePendingTransactions", () => {
   });
 
   test("Calls addPendingTransactionsToBlock", () => {
-    const mockAddPendingTransactionsToBlock = jest.spyOn(
-      mempool,
-      "addPendingTransactionsToBlock"
-    );
-    mempool.minePendingTransactions("123");
+    mempool.minePendingTransactions(miningRewardAddress);
     expect(mockAddPendingTransactionsToBlock).toHaveBeenCalled();
   });
 
+  it("Calls mineBlock", () => {
+    const mockMineBlock = jest.spyOn(block, "mineBlock");
+    mempool.minePendingTransactions(miningRewardAddress);
+    expect(mockMineBlock).toHaveBeenCalled();
+  });
+
   it("Calls addBlockToChain with block", () => {
-    const miningRewardAddress = "123";
-    const block = new Block([], INITIAL_DIFFICULTY, "hash", 2);
-    jest
-      .spyOn(mempool, "addPendingTransactionsToBlock")
-      .mockImplementation(() => block);
     blockchain.addBlockToChain = jest.fn();
     mempool.minePendingTransactions(miningRewardAddress);
     expect(blockchain.addBlockToChain).toHaveBeenCalledWith(block);
   });
 
-  it("Calls mineBlock", () => {
-    const miningRewardAddress = "123";
-    const block = new Block([], INITIAL_DIFFICULTY, "hash", 2);
-    jest
-      .spyOn(mempool, "addPendingTransactionsToBlock")
-      .mockImplementation(() => block);
-    const mockMineBlock = jest.spyOn(block, "mineBlock").mockImplementation();
-    mempool.minePendingTransactions(miningRewardAddress);
-    expect(mockMineBlock).toHaveBeenCalled();
-  });
-
   it("Calls resetMempool", () => {
     mempool.resetMempool = jest.fn();
-    mempool.minePendingTransactions("123");
+    mempool.minePendingTransactions(miningRewardAddress);
     expect(mempool.resetMempool).toHaveBeenCalled();
   });
 
-  it("Returns the block", () => {
-    const miningRewardAddress = "123";
+  it("Returns the block it added", () => {
     const returnValue = mempool.minePendingTransactions(miningRewardAddress);
     expect(returnValue).toBe(blockchain.chain[blockchain.chain.length - 1]);
   });
 
   test("Block has proof of work", () => {
-    mempool.minePendingTransactions("mining_address");
+    mempool.minePendingTransactions(miningRewardAddress);
     expect(blockchain.chain[blockchain.chain.length - 1].hasProofOfWork()).toBe(
       true
     );
@@ -207,9 +235,7 @@ describe("minePendingTransactions", () => {
 });
 
 describe("getNewMiningDifficulty", () => {
-  let block: Block;
   beforeEach(() => {
-    block = new Block([], 4, "", 1);
     jest.spyOn(blockchain, "getLatestBlock").mockImplementation(() => block);
   });
 
