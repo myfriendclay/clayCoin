@@ -1,23 +1,35 @@
 import io from 'socket.io-client';
 import { Container } from "@mui/material";
 import { AlertType, BlockType, TransactionType } from "../../types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Transactions from "../Transactions/Transactions";
 import MineMemPool from "./MineMemPool";
 import AddTransaction from "../Transactions/AddTransaction";
+import axios from 'axios';
 
 interface MemPoolProps {
-  mempool: TransactionType[];
   setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
-  setmempool: (mempool: TransactionType[]) => void;
   setAlertDetails: (alertDetails: AlertType) => void;
 }
 
-function MemPool({mempool, setBlockchain, blockchain, setmempool, setAlertDetails} : 
+function MemPool({setBlockchain, blockchain, setAlertDetails} : 
   MemPoolProps) {
 
+    const [mempool, setmempool] = useState<TransactionType[]>([]);
     const { REACT_APP_API_URL } = process.env;
+
+    useEffect(() => {
+      axios
+        .get(`${REACT_APP_API_URL}/api/mempool`)
+        .then((response) => {
+          const { mempool } = response.data
+          setmempool(mempool);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }, [REACT_APP_API_URL]);
 
     useEffect(() => {
       const socket = io(`${REACT_APP_API_URL}`);

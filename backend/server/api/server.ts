@@ -6,6 +6,7 @@ import transactionsRouter from "./transactions/transactions-router";
 import walletsRouter from "./wallets/wallet-router";
 import blockchainRouter from "./blockchain/blockchain-router";
 import blocksRouter from "./blocks/blocks-router";
+import mempoolRouter from './mempool/mempool-router'
 
 //App creation:
 const app = express();
@@ -30,9 +31,10 @@ app.use((err: any, req: any, res: any, next: any) => {
 });
 
 //Routers setup:
-app.use("/api/transactions", transactionsRouter);
-app.use("/api/wallets", walletsRouter);
 app.use("/api/blockchain", blockchainRouter);
 app.use("/api/blocks", blocksRouter);
+app.use("/api/transactions", transactionsRouter);
+app.use("/api/wallets", walletsRouter);
+app.use("/api/mempool", mempoolRouter);
 
 export default app;

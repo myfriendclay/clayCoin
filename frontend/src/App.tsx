@@ -10,7 +10,6 @@ import Logo from "./components/Logo";
 function App() {
   const { REACT_APP_API_URL } = process.env;
   const [blockchain, setBlockchain] = useState<BlockType[]>([]);
-  const [mempool, setmempool] = useState<TransactionType[]>([]);
   const [alertDetails, setAlertDetails] = useState<AlertType>({
     open: false,
     alertMessage: "",
@@ -23,9 +22,7 @@ function App() {
       .get(`${REACT_APP_API_URL}/api/blockchain`)
       .then((response) => {
         const { chain } = response.data.blockchain;
-        const { mempool } = response.data
         setBlockchain(chain);
-        setmempool(mempool);
         setIsChainValid(response.data.isChainValid);
       })
       .catch((err) => {
@@ -37,8 +34,6 @@ function App() {
     <Container maxWidth="xl">
       <Logo />
       <MemPool
-        mempool={mempool}
-        setmempool={setmempool}
         setBlockchain={setBlockchain}
         blockchain={blockchain}
         setAlertDetails={setAlertDetails}

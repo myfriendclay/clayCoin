@@ -16,13 +16,16 @@ export const io = new Server(server, {
   }
 })
 
-//Listen on port and sync chains:
-server.listen(PORT, () => {
-  console.log(`Blockchain node running on port ${PORT}`)
-  if (PORT !== DEFAULT_PORT) {
-    syncChains()
-  }
-})
+//Listen on port and sync chains. Note that if don't include test environment if statement tests will fail to run because port is being used
+if (process.env.NODE_ENV !== 'test') {
+  server.listen(PORT, () => {
+    console.log(`Blockchain node running on port ${PORT}`)
+    if (PORT !== DEFAULT_PORT) {
+      syncChains()
+    }
+  })
+}
+
 
 //Pubsub setup
 export const pubsub = new PubSub( { blockchain, mempool }, io )

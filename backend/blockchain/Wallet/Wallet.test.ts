@@ -1,9 +1,13 @@
+import Block from '../Block/Block'
+import Transaction from '../Transaction/Transaction'
 import Wallet from './Wallet'
+import EC from 'elliptic';
+const ec = new EC.ec('secp256k1')
 
-let wallet
-let chain
-let pendingTransactions
-let publicKey
+let wallet: Wallet
+let chain: Block[]
+let pendingTransactions: Transaction[]
+let publicKey: string
 
 beforeEach(() => {
   wallet = new Wallet()
@@ -42,6 +46,22 @@ describe('Constructor', () => {
 
   it('has a privateKey key', () => {
     expect(wallet).toHaveProperty('privateKey')
+  })
+  it('Generates a valid public key', () => {    
+    const publicKey = ec.keyFromPublic(wallet.publicKey, 'hex').getPublic('hex');
+    expect(publicKey).toBe(wallet.publicKey);
+  })
+
+  it('Generates a valid private key', () => {    
+    const privateKey = ec.keyFromPrivate(wallet.privateKey, 'hex').getPrivate('hex');
+    expect(privateKey).toBe(wallet.privateKey);
+  })
+
+  it('Generates a valid key pair- able to sign a transaction and validate using ec library', () => {    
+    const key = ec.keyFromPrivate(wallet.privateKey, 'hex')
+    const txHash = "testTxHashToSign";
+    const signature = key.sign(txHash);
+    expect(key.verify(txHash, signature)).toBe(true)
   })
 })
 
