@@ -5,10 +5,10 @@ import Transaction from './blockchain/Transaction/Transaction';
 import { plainToInstance } from 'class-transformer';
 
 const credentials = {
-  publishKey: 'pub-c-48b0bafe-494a-4048-a5cf-e3645661414b',
-  subscribeKey: 'sub-c-504dc069-0369-4dee-881b-78d1c660f673',
-  secretKey: 'sec-c-YjcyZjA1NGItYjgzOS00YWVjLWFkYjgtOWQzMzJhNDQxMjk4'
-};
+  publishKey: process.env.PUBNUB_PUBLISH_KEY,
+  subscribeKey: process.env.PUBNUB_SUBSCRIBE_KEY,
+  secretKey: process.env.PUBNUB_SECRET_KEY
+}
 
 const CHANNELS = {
   BLOCKCHAIN: "BLOCKCHAIN",
@@ -27,7 +27,7 @@ export default class PubSub {
     this.blockchain = blockchain
     this.mempool = mempool
     this.io = io
-
+    
     this.pubnub = new PubNub(credentials);
     this.pubnub.subscribe({ channels: Object.values(CHANNELS) });
     this.pubnub.addListener(this.listener());

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Container } from "@mui/material";
-import { BlockType, TransactionType, AlertType } from "./types";
+import { BlockType, AlertType } from "./types";
 import MemPool from "./components/MemPool/MemPool";
 import Blockchain from "./components//Blockchain/Blockchain";
 import AlertBanner from "./components/AlertBanner";
