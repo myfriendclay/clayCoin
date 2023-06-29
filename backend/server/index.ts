@@ -2,7 +2,7 @@ import { createServer } from 'http';
 import { Server } from "socket.io";
 import { PORT, DEFAULT_PORT } from './api/utils/ports';
 import { syncChains } from './api/utils/syncChains';
-import PubSub from '../pubsub';
+import PubSub from '../pubsub/pubsub';
 import { blockchain, mempool } from '../database/database';
 import app from './api/server';
 
