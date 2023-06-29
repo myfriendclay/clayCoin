@@ -15,7 +15,7 @@ export const GENESIS_BLOCK_DATA = {
 };
 
 export const COINBASE_TX = {
-  fromAddress: "04307622101c4342ca10ab09d2e683c69eb44db5c27a6d717c0039a18054cc7fcd15e05c52e41150fb2ad586eb30be6d36b873b7b548be9c408ee7b6a57998de84",
-  secretKey: "e508e87d38428be0b787496c0e6d0ab4555962c9ea34b6de524cc44c7be572b3",
+  fromAddress: process.env.COINBASE_TX_FROM_ADDRESS,
+  secretKey: process.env.COINBASE_TX_SECRET_KEY,
   memo: "Coinbase Tx"
 };

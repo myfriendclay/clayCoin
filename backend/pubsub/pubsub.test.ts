@@ -1,0 +1,7 @@
+test.todo('Constructor should create pubnub instance with credentials passed in')
+test.todo('HandleMessage for Blockchain')
+test.todo('HandleMessage for Transactions')
+test.todo('Listener calls handlemessage')
+test.todo('Publish calls publish message')
+test.todo('BroadcastChain calls publish method with chain')
+test.todo('BroadcastTransaction calls publish method with transaction')
