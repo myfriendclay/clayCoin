@@ -18,6 +18,7 @@ test("can generate a new wallet", async ({ page }) => {
   await page.getByRole("button", { name: "Add Transaction" }).click();
   await page.getByRole("button", { name: "Generate New Wallet" }).click();
   await page.getByRole("button", { name: "COPY PUBLIC KEY" }).click();
+
   await page.getByRole("button", { name: "COPY PRIVATE KEY" }).click();
 });
 

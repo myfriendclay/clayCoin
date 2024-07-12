@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { FormattedDate, FormattedTime } from "react-intl";
+
 import {
   Box,
   Collapse,
@@ -61,7 +63,18 @@ function Block({ block }: { block: BlockType }) {
         </TableCell>
         <TableCell width={20}>{height}</TableCell>
         <TableCell width={150}>
-          {new Date(timestamp).toLocaleString()}
+          <FormattedDate
+            value={timestamp}
+            month="short"
+            day="2-digit"
+            year="numeric"
+          />{" "}
+          <FormattedTime
+            value={timestamp}
+            hour="numeric"
+            minute="numeric"
+            hour12={true}
+          />
         </TableCell>
         <TableCell width={20}>
           <Tooltip title={hash} arrow>
