@@ -2,25 +2,11 @@ import { TableRow, TableCell, Tooltip } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { TransactionType } from "../../types";
 import getTruncatedString from "../../utils/getTruncatedString";
-import { FormattedDate, FormattedTime } from "react-intl";
 
 function Transaction({ transaction }: { transaction: TransactionType }) {
   return (
     <TableRow>
-      <TableCell>
-        <FormattedDate
-          value={transaction.timestamp}
-          month="short"
-          day="2-digit"
-          year="numeric"
-        />{" "}
-        <FormattedTime
-          value={transaction.timestamp}
-          hour="numeric"
-          minute="numeric"
-          hour12={true}
-        />
-      </TableCell>
+      <TableCell>{new Date(transaction.timestamp).toLocaleString()}</TableCell>
       <TableCell>
         <Tooltip title={transaction.fromAddress} arrow>
           <span>{getTruncatedString(transaction.fromAddress, 6)}</span>

@@ -1,15 +1,13 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import { IntlProvider } from "react-intl";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <IntlProvider locale="en">
-      <App />
-    </IntlProvider>
+    <App />
   </React.StrictMode>
 );
+
