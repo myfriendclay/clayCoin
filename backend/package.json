@@ -47,7 +47,7 @@
   },
   "scripts": {
     "test": "jest",
-    "start": "ts-node-esm server/index.ts",
+    "start": "npx nodemon server/index.ts",
     "dev": "npx nodemon server/index.ts",
     "dev-peer": "cross-env GENERATE_PEER_PORT='true' nodemon server/index.ts"
   },
