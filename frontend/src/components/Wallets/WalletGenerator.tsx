@@ -1,7 +1,6 @@
 import { Box, Button, TextField } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
-import getTruncatedString from "../../utils/getTruncatedString";
 import CachedIcon from "@mui/icons-material/Cached";
 
 function WalletGenerator() {
@@ -51,7 +50,8 @@ function WalletGenerator() {
               label="Public Key 🔓"
               size="small"
               sx={{ minWidth: "70%" }}
-              value={getTruncatedString(wallet.publicKey, 8)}
+              // value={getTruncatedString(wallet.publicKey, 8)}
+              value={wallet.publicKey}
             />
             <Button onClick={() => handleCopyClick(wallet.publicKey)}>
               Copy Public Key 🔓
