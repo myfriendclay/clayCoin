@@ -1,8 +1,9 @@
+
 function Logo() {
   return (
     <img
-      width={200}
-      src="https://www.circle.com/hubfs/Circle%20logo%202020/2000x1000.gif"
+      width={150}
+      src={"/logo.png"}
       alt="Circle Logo"
     />
   );
