@@ -7,7 +7,10 @@ import {
 } from "../../../database/database";
 
 describe("POST /blocks/mine", () => {
-  let res, mockBroadcastChain, mockMinePendingTxs, mockBlock;
+  let res: request.Response;
+  let mockBroadcastChain: jest.SpyInstance;
+  let mockMinePendingTxs: jest.SpyInstance;
+  let mockBlock: any;
 
   const minerInfo = {
     miningAddress:
@@ -29,11 +32,11 @@ describe("POST /blocks/mine", () => {
   });
 
   it("Broadcasts block to pubsub", async () => {
-    expect(mockBroadcastChain).toHaveBeenCalled();
+    expect((mockBroadcastChain as jest.Mock)).toHaveBeenCalled();
   });
 
   it("Calls blockchain.minePendingTransactions method", async () => {
-    expect(mockMinePendingTxs).toHaveBeenCalled();
+    expect((mockMinePendingTxs as jest.Mock)).toHaveBeenCalled();
   });
 
   it("Returns the results of blockchain.minePendingTransactions method", async () => {

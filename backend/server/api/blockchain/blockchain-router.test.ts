@@ -3,7 +3,8 @@ import app from "../server";
 import { blockchain as blockchainPOJO } from "../../../database/database";
 
 describe("GET api/blockchain", () => {
-  let res, blockchain;
+  let res: request.Response;
+  let blockchain: any;
 
   beforeAll(async () => {
     res = await request(app).get("/api/blockchain");

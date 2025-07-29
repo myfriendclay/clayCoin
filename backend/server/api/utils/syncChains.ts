@@ -1,5 +1,5 @@
 import request from 'request'
-import { plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 
 import {blockchain} from "../../../database/database";
 
@@ -11,7 +11,13 @@ export const syncChains = () => {
       if (!error && response.statusCode === 200) {
         try {
           const rootChain = JSON.parse(body)
-          let blockchainInstance = plainToClass(Blockchain, rootChain.blockchain);
+          let blockchainResult = plainToInstance(Blockchain, rootChain.blockchain);
+          
+          // Handle case where plainToInstance returns an array
+          const blockchainInstance: Blockchain = Array.isArray(blockchainResult) 
+            ? blockchainResult[0] 
+            : blockchainResult;
+          
           console.log('Replace chain on a sync with', blockchainInstance.chain.length)
           await blockchain.replaceChain(blockchainInstance)
         } catch (syncError) {

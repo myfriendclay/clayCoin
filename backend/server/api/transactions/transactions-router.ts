@@ -1,6 +1,6 @@
 import Transaction from "../../../blockchain/Transaction/Transaction";
 import { pubsub } from "../../index";
-import { blockchain, mempool } from "../../../database/database";
+import { mempool } from "../../../database/database";
 import { Router } from "express";
 const router = Router();
 
