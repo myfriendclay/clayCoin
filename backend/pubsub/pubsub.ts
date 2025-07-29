@@ -39,19 +39,43 @@ export default class PubSub {
 
     switch (channel) {
       case CHANNELS.BLOCKCHAIN:
-        let blockchainInstance = plainToInstance(Blockchain, parsedMessage);
-        const chainWasReplaced = this.blockchain.replaceChain(blockchainInstance)
-        if (chainWasReplaced) {
-          this.mempool.resetMempool()
-          this.io.emit('updateBlockchain', blockchainInstance)
-          this.io.emit('clearMempool')
-        }
+        this.handleBlockchainMessage(parsedMessage);
         break;
       case CHANNELS.TRANSACTIONS:
-        let transactionInstance = plainToInstance(Transaction, parsedMessage);
-        this.mempool.addTransaction(transactionInstance)
-        this.io.emit('updateMempool', transactionInstance)
+        this.handleTransactionMessage(parsedMessage);
         break;
+    }
+  }
+
+  async handleTransactionMessage(parsedMessage: any) {
+    try {
+      let transactionInstance = plainToInstance(Transaction, parsedMessage);
+      await this.mempool.addTransaction(transactionInstance);
+      this.io.emit('updateMempool', transactionInstance);
+    } catch (error: any) {
+      // Handle duplicate transactions gracefully - this is normal in distributed systems
+      if (error.message === 'Transaction already in mempool') {
+        // Don't log this as an error - it's expected behavior when nodes receive broadcasts
+        // of transactions they already have
+        return;
+      }
+      
+      // Log other types of errors (invalid transactions, insufficient funds, etc.)
+      console.error('Error handling transaction message:', error);
+    }
+  }
+
+  async handleBlockchainMessage(parsedMessage: any) {
+    try {
+      let blockchainInstance = plainToInstance(Blockchain, parsedMessage);
+      const chainWasReplaced = await this.blockchain.replaceChain(blockchainInstance);
+      if (chainWasReplaced) {
+        await this.mempool.resetMempool();
+        this.io.emit('updateBlockchain', blockchainInstance);
+        this.io.emit('clearMempool');
+      }
+    } catch (error) {
+      console.error('Error handling blockchain message:', error);
     }
   }
 

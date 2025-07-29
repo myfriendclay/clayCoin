@@ -4,22 +4,30 @@ import { Router } from "express";
 const router = Router();
 
 //@ts-ignore
-router.post("/mine", (req, res) => {
-  const { miningAddress } = req.body;
-  const newBlock = mempool.minePendingTransactions(miningAddress);
-  pubsub.broadcastChain();
-  res.status(201).json(newBlock);
+router.post("/mine", async (req, res) => {
+  try {
+    const { miningAddress } = req.body;
+    const newBlock = await mempool.minePendingTransactions(miningAddress);
+    pubsub.broadcastChain();
+    res.status(201).json(newBlock);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-router.get("/:hash/isBlockValid", (req, res) => {
-  const { hash } = req.params;
-  const block = blockchain.chain.find((blck) => blck.hash === hash);
-  if (block === undefined) {
-    res.status(404).json({ error: "Block not found" });
-    return;
+router.get("/:hash/isBlockValid", async (req, res) => {
+  try {
+    const { hash } = req.params;
+    const block = await blockchain.getBlockByHash(hash);
+    if (!block) {
+      res.status(404).json({ error: "Block not found" });
+      return;
+    }
+    let isValidBlock = block.isValid();
+    res.status(200).json({ isValidBlock });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
-  let isValidBlock = block.isValid()
-  res.status(200).json({ isValidBlock });
 });
 
 export default router;

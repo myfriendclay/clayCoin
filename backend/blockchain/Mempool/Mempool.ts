@@ -10,14 +10,42 @@ import {
 } from "../utils/config";
 import "reflect-metadata";
 import Blockchain from "../Blockchain/Blockchain";
+import DatabaseService from "../../database/DatabaseService";
 
 class Mempool {
   pendingTransactions: Transaction[];
   blockchain: Blockchain;
-  //need to pick one source of truth for difficulty and blocksubsidy between this and blockchain- prob here
-  constructor(blockchain: Blockchain) {
+  private dbService: DatabaseService;
+  
+  constructor(blockchain: Blockchain, dbService?: DatabaseService) {
     this.pendingTransactions = [];
     this.blockchain = blockchain;
+    this.dbService = dbService || new DatabaseService();
+  }
+
+  async initialize(): Promise<void> {
+    await this.dbService.initialize();
+    await this.loadPendingTransactions();
+  }
+
+  private async loadPendingTransactions(): Promise<void> {
+    try {
+      const transactions = await this.dbService.getPendingTransactions();
+      this.pendingTransactions = transactions;
+      console.log(`Loaded ${transactions.length} pending transactions from database`);
+    } catch (error) {
+      console.error('Failed to load pending transactions:', error);
+      throw error;
+    }
+  }
+
+  private async savePendingTransactions(): Promise<void> {
+    try {
+      await this.dbService.savePendingTransactions(this.pendingTransactions);
+    } catch (error) {
+      console.error('Failed to save pending transactions:', error);
+      throw error;
+    }
   }
 
   getCurrentBlockSubsidy() {
@@ -35,7 +63,7 @@ class Mempool {
     }
   }
 
-  addTransaction(transaction: Transaction) {
+  async addTransaction(transaction: Transaction): Promise<void> {
     if (!transaction.isValid()) {
       throw new Error("Cannot add invalid transaction to chain");
     }
@@ -62,15 +90,17 @@ class Mempool {
     }
 
     this.pendingTransactions.push(transaction);
+    await this.savePendingTransactions();
   }
 
   //Transaction helpers:
-  addCoinbaseTxToMempool(miningRewardAddress: string): Transaction[] {
+  async addCoinbaseTxToMempool(miningRewardAddress: string): Promise<Transaction[]> {
     const coinbaseTx = new CoinbaseTransaction(
       miningRewardAddress,
       this.getMiningReward()
     );
     this.pendingTransactions.push(coinbaseTx);
+    await this.savePendingTransactions();
     return this.pendingTransactions;
   }
 
@@ -107,17 +137,22 @@ class Mempool {
     return difficulty;
   }
 
-  minePendingTransactions(miningRewardAddress: string): Block {
-    this.addCoinbaseTxToMempool(miningRewardAddress);
+  async minePendingTransactions(miningRewardAddress: string): Promise<Block> {
+    await this.addCoinbaseTxToMempool(miningRewardAddress);
     const block = this.addPendingTransactionsToBlock();
     block.mineBlock();
-    this.blockchain.addBlockToChain(block);
-    this.resetMempool();
+    await this.blockchain.addBlockToChain(block);
+    await this.resetMempool();
     return block;
   }
 
-  resetMempool() {
+  async resetMempool(): Promise<void> {
     this.pendingTransactions = [];
+    await this.dbService.clearPendingTransactions();
+  }
+
+  async close(): Promise<void> {
+    await this.dbService.close();
   }
 }
 
