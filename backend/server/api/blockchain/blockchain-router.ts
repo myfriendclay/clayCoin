@@ -1,8 +1,8 @@
 import { blockchain } from "../../../database/database";
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 const router = Router();
 
-router.get("/", (req: any, res: any) => {
+router.get("/", (_req: Request, res: Response) => {
   const response = {
     blockchain: blockchain,
     length: blockchain.chain.length,

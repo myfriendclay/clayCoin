@@ -1,10 +1,9 @@
 import { pubsub } from "../../index";
 import { blockchain, mempool } from "../../../database/database";
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 const router = Router();
 
-//@ts-ignore
-router.post("/mine", async (req, res) => {
+router.post("/mine", async (req: Request<{}, {}, { miningAddress: string }>, res: Response) => {
   try {
     const { miningAddress } = req.body;
     const newBlock = await mempool.minePendingTransactions(miningAddress);
@@ -15,7 +14,7 @@ router.post("/mine", async (req, res) => {
   }
 });
 
-router.get("/:hash/isBlockValid", async (req, res) => {
+router.get("/:hash/isBlockValid", async (req: Request<{ hash: string }>, res: Response) => {
   try {
     const { hash } = req.params;
     const block = await blockchain.getBlockByHash(hash);

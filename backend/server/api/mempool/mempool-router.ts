@@ -1,9 +1,14 @@
+import { Router, Request, Response } from "express";
 import { mempool } from "../../../database/database";
-import { Router } from "express";
+import Transaction from "../../../blockchain/Transaction/Transaction";
+interface MempoolResponse {
+  mempool: Transaction[];
+}
+
 const router = Router();
 
-router.get("/", (req: any, res: any) => {
-  const response = {
+router.get("/", (_req: Request, res: Response<MempoolResponse>) => {
+  const response: MempoolResponse = {
     mempool: mempool.pendingTransactions
   };
   res.json(response);
