@@ -59,6 +59,14 @@ export default class Blockchain {
     }
   }
 
+  /**
+   * Total accumulated proof-of-work of this chain, as the sum of 2^difficulty for every block.
+   * Uses BigInt so extremely long chains do not overflow.
+   */
+  getTotalWork(): bigint {
+    return this.chain.reduce<bigint>((acc, block) => acc + block.getWork(), 0n);
+  }
+
   getLatestBlock() {
     return this.chain[this.chain.length - 1];
   }
@@ -90,10 +98,12 @@ export default class Blockchain {
   }
 
   async replaceChain(newBlockchain: Blockchain): Promise<boolean> {
-    if (
-      newBlockchain.chain.length <= this.chain.length ||
-      !newBlockchain.isChainValid()
-    ) {
+    // Only consider replacement if the incoming chain is valid *and* has more accumulated work.
+    if (!newBlockchain.isChainValid()) {
+      return false;
+    }
+
+    if (newBlockchain.getTotalWork() <= this.getTotalWork()) {
       return false;
     }
     

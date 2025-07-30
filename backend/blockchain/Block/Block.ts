@@ -116,6 +116,15 @@ class Block {
     );
   }
 
+  /**
+   * Returns the amount of proof-of-work represented by this block, expressed as 2^difficulty.
+   * A BigInt is used so the value can never overflow the JavaScript number range.
+   */
+  getWork(): bigint {
+    // 1n << d   ===  2^d for BigInt
+    return 1n << BigInt(this.difficulty);
+  }
+
   static areBlocksValidlyConnected(block1: Block, block2: Block): boolean {
     return (
       this.blocksHashesAreConnected(block1, block2) &&
