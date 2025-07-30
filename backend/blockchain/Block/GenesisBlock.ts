@@ -18,7 +18,7 @@ class GenesisBlock extends Block {
   isValid(): boolean {
     const { difficulty, transactions, previousHash, height, protocolHash } =
       GENESIS_BLOCK_DATA;
-
+    
     return (
       this.hasProofOfWork() &&
       this.timestampIsInPast() &&

@@ -6,18 +6,21 @@ export const CONSENSUS_PARAMS = {
   INITIAL_DIFFICULTY: 3,
   BLOCK_SUBSIDY: 50,
   NUM_OF_BLOCKS_TO_HALF_MINING_REWARD: 210000,
+  DIFFICULTY_ADJUSTMENT_INTERVAL: 2016, // Bitcoin value; can lower for tests
+  MAX_DIFFICULTY_STEP: 2,
 };
 
-export const TARGET_MINE_RATE_MS: number = CONSENSUS_PARAMS.TARGET_MINE_RATE_MS;
-export const INITIAL_DIFFICULTY: number = CONSENSUS_PARAMS.INITIAL_DIFFICULTY;
-export const BLOCK_SUBSIDY: number = CONSENSUS_PARAMS.BLOCK_SUBSIDY;
+export const {
+  TARGET_MINE_RATE_MS,
+  INITIAL_DIFFICULTY,
+  BLOCK_SUBSIDY,
+  NUM_OF_BLOCKS_TO_HALF_MINING_REWARD,
+  DIFFICULTY_ADJUSTMENT_INTERVAL,
+  MAX_DIFFICULTY_STEP,
+} = CONSENSUS_PARAMS;
 
-export const NUM_OF_BLOCKS_TO_HALF_MINING_REWARD: number = CONSENSUS_PARAMS.NUM_OF_BLOCKS_TO_HALF_MINING_REWARD;
-
-// Deterministic hash of the consensus parameters – commitment to rule-set
 export const PROTOCOL_HASH: string = getSHA256Hash(CONSENSUS_PARAMS);
 
-//Note for test suite needs to be 100, 3, and 100 respectively to run in reasonable time:
 export const GENESIS_BLOCK_DATA = {
   timestamp: 1,
   previousHash: null,

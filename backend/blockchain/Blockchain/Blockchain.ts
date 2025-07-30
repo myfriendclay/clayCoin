@@ -4,6 +4,8 @@ import { Type } from "class-transformer";
 import "reflect-metadata";
 import DatabaseService from "../../database/DatabaseService";
 
+import { DIFFICULTY_ADJUSTMENT_INTERVAL, TARGET_MINE_RATE_MS, MAX_DIFFICULTY_STEP } from "../utils/config";
+
 export default class Blockchain {
   @Type(() => Block, {
     discriminator: {
@@ -63,6 +65,40 @@ export default class Blockchain {
    * Total accumulated proof-of-work of this chain, as the sum of 2^difficulty for every block.
    * Uses BigInt so extremely long chains do not overflow.
    */
+  // Helper: total time (ms) between two blocks in chain
+  private getWindowTimeMs(startIndex: number, endIndex: number): number {
+    return this.chain[endIndex].timestamp - this.chain[startIndex].timestamp;
+  }
+
+  // Helper: map time ratio → difficulty step change (-2…+2)
+  private getDifficultyStep(ratio: number): number {
+    if (ratio < 0.25) return MAX_DIFFICULTY_STEP;   // +2
+    if (ratio < 0.5)  return 1;
+    if (ratio > 4)    return -MAX_DIFFICULTY_STEP;  // -2
+    if (ratio > 2)    return -1;
+    return 0;
+  }
+
+  /** Expected difficulty for a block at given height, based on previous blocks */
+  getExpectedDifficulty(height: number): number {
+    // Non-adjustment heights (including genesis) → keep previous difficulty
+    if (height < 1 ||
+      height % DIFFICULTY_ADJUSTMENT_INTERVAL !== 0 ||
+      height < DIFFICULTY_ADJUSTMENT_INTERVAL) {
+    return this.chain[Math.max(0, height - 1)].difficulty;
+  }
+
+    const startIndex = height - DIFFICULTY_ADJUSTMENT_INTERVAL;
+    const actualTime   = this.getWindowTimeMs(startIndex, height - 1);
+    const expectedTime = TARGET_MINE_RATE_MS * DIFFICULTY_ADJUSTMENT_INTERVAL;
+
+    const ratio = actualTime / expectedTime;
+    const difficultyChange = this.getDifficultyStep(ratio);
+
+    let newDifficulty = this.chain[height - 1].difficulty + difficultyChange;
+    return Math.max(1, newDifficulty);
+  }
+
   getTotalWork(): bigint {
     return this.chain.reduce<bigint>((acc, block) => acc + block.getWork(), 0n);
   }
@@ -89,7 +125,8 @@ export default class Blockchain {
 
       if (
         !currentBlock.isValid() ||
-        !Block.areBlocksValidlyConnected(previousBlock, currentBlock)
+        !Block.areBlocksValidlyConnected(previousBlock, currentBlock) ||
+        !currentBlock.hasValidDifficulty(this)
       ) {
         return false;
       }

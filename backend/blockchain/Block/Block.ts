@@ -4,7 +4,8 @@ import CoinbaseTransaction from "../Transaction/CoinbaseTransaction";
 import { Type } from "class-transformer";
 import "reflect-metadata";
 import getSHA256Hash from "../utils/crypto-hash";
-import { TARGET_MINE_RATE_MS } from "../utils/config";
+import Blockchain from "../Blockchain/Blockchain";
+
 
 class Block {
   @Type(() => Transaction, {
@@ -120,6 +121,10 @@ class Block {
     return count === 1;
   }
 
+  hasValidDifficulty(blockchain: Blockchain): boolean {
+    return this.difficulty === blockchain.getExpectedDifficulty(this.height);
+  }
+
   timestampIsInPast(): boolean {
     if (!this.timestamp) return false;
     //Allow up to 5 minutes in the future, in case of discrepancies between nodes
@@ -156,7 +161,6 @@ class Block {
     return (
       this.blocksHashesAreConnected(block1, block2) &&
       this.block2ComesAfterBlock1(block1, block2) &&
-      this.difficultyJumpIsValid(block1, block2) &&
       this.block1HasPlausibleMiningDuration(block1, block2)
     );
   }
@@ -171,21 +175,6 @@ class Block {
     //Allow 10 min of buffer in case one node publishes block with newer timestamp first and older block gets added after
     const timeCushion = -1000 * 60 * 10;
     return timestampDifference > timeCushion;
-  }
-
-  static difficultyJumpIsValid(block1: Block, block2: Block): boolean {
-    const difficultyJump = block2.difficulty - block1.difficulty;
-    //Difficulty should never jump down more than one level
-    if (difficultyJump < -1) {
-      return false;
-    }
-
-    //Difficulty increases by at least 1 when below target mine rate
-    //Ultimately for a truly secure blockchain network since miningDurationMs can be faked by bad actor, this should be calculated based on average difference between timestamps of last X blocks. Only works when you have a large enough network of nodes that there is constant block mining one after the other.
-    if (block1.miningDurationMs < TARGET_MINE_RATE_MS) {
-      return block2.difficulty >= block1.difficulty + 1;
-    }
-    return true;
   }
 
   static block1HasPlausibleMiningDuration(

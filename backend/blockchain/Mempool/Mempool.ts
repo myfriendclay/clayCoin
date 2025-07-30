@@ -5,7 +5,6 @@ import CoinbaseTransaction from "../Transaction/CoinbaseTransaction";
 import createError, { isHttpError } from 'http-errors';
 
 import {
-  TARGET_MINE_RATE_MS,
   BLOCK_SUBSIDY,
   NUM_OF_BLOCKS_TO_HALF_MINING_REWARD,
 } from "../utils/config";
@@ -130,16 +129,7 @@ class Mempool {
   }
 
   getNewMiningDifficulty(): number {
-    //More secure would be to use a moving average of the last difference in timestamps of last 10 blocks or so. But requires enough nodes so there are constantly new blocks being mined back to back
-    const lastMiningTime = this.blockchain.getLatestBlock().miningDurationMs;
-
-    let difficulty = this.blockchain.getLatestBlock().difficulty;
-    if (lastMiningTime < TARGET_MINE_RATE_MS) {
-      difficulty++;
-    } else if (difficulty > 1) {
-      difficulty--;
-    }
-    return difficulty;
+    return this.blockchain.getExpectedDifficulty(this.blockchain.chain.length);
   }
 
   async minePendingTransactions(miningRewardAddress: string): Promise<Block> {
