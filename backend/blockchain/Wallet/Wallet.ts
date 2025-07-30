@@ -21,6 +21,20 @@ export default class Wallet {
     return this.privateKey
   }
 
+  static isValidPublicKey(publicKey: string): boolean {
+    try {
+      // Check if the key is hex format
+      if (!/^[0-9a-fA-F]+$/.test(publicKey)) {
+        return false;
+      }
+      // Try to decode the public key using elliptic
+      const key = ec.keyFromPublic(publicKey, 'hex');
+      return key.validate().result;
+    } catch (error) {
+      return false;
+    }
+  }
+
   static getTotalPendingOwedByWallet(publicKey: string, pendingTransactions: TransactionType[]): number {
     const pendingTransactionsForWallet = pendingTransactions.filter(tx => tx.fromAddress === publicKey)
     const totalPendingAmount = pendingTransactionsForWallet.map(tx => tx.amount + tx.fee).reduce((prev, curr) => prev + curr, 0)

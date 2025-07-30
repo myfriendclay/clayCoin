@@ -2,6 +2,7 @@ import Block from "../Block/Block";
 import Transaction from "../Transaction/Transaction";
 import Wallet from "../Wallet/Wallet";
 import CoinbaseTransaction from "../Transaction/CoinbaseTransaction";
+import createError, { isHttpError } from 'http-errors';
 
 import {
   TARGET_MINE_RATE_MS,
@@ -95,6 +96,10 @@ class Mempool {
 
   //Transaction helpers:
   async addCoinbaseTxToMempool(miningRewardAddress: string): Promise<Transaction[]> {
+    if (!Wallet.isValidPublicKey(miningRewardAddress)) {
+      throw createError(400, 'Invalid mining reward address: Must be a valid public key');
+    }
+    
     const coinbaseTx = new CoinbaseTransaction(
       miningRewardAddress,
       this.getMiningReward()
@@ -138,12 +143,20 @@ class Mempool {
   }
 
   async minePendingTransactions(miningRewardAddress: string): Promise<Block> {
-    await this.addCoinbaseTxToMempool(miningRewardAddress);
-    const block = this.addPendingTransactionsToBlock();
-    block.mineBlock();
-    await this.blockchain.addBlockToChain(block);
-    await this.resetMempool();
-    return block;
+    try {
+      await this.addCoinbaseTxToMempool(miningRewardAddress);
+      const block = this.addPendingTransactionsToBlock();
+      block.mineBlock();
+      await this.blockchain.addBlockToChain(block);
+      await this.resetMempool();
+      return block;
+    } catch (error) {
+      // Re-throw http-errors as is, wrap other errors as 500
+      if (isHttpError(error)) {
+        throw error;
+      }
+      throw createError(500, error instanceof Error ? error.message : 'An unknown error occurred');
+    }
   }
 
   async resetMempool(): Promise<void> {
