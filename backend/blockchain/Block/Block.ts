@@ -24,6 +24,8 @@ class Block {
   timestamp: number;
   miningDurationMs!: number;
   hash!: string;
+  // Only present on GenesisBlock as a commitment to the consensus rules
+  protocolHash?: string;
   __type: "default" | "GenesisBlock";
 
   constructor(
@@ -77,8 +79,33 @@ class Block {
       this.hasValidTransactions() &&
       this.hasOnlyOneCoinbaseTx() &&
       this.timestampIsInPast() &&
-      this.hasProofOfWork()
+      this.hasProofOfWork() &&
+      this.validateCoinbaseAmount()
     );
+  }
+
+  /** Returns the single coinbase transaction, or null */
+  private getCoinbaseTx(): CoinbaseTransaction | null {
+    const tx = this.transactions.find(
+      (t) => t instanceof CoinbaseTransaction
+    );
+    return tx ? (tx as CoinbaseTransaction) : null;
+  }
+
+  /**
+   * Verify the coinbase amount equals current subsidy + total fees.
+   * Subsidy halves every NUM_OF_BLOCKS_TO_HALF_MINING_REWARD blocks.
+   */
+  validateCoinbaseAmount(): boolean {
+    const coinbase = this.getCoinbaseTx();
+    if (!coinbase) return false;
+
+    return coinbase.isMiningRewardValid(this.height, this.getTotalFees());
+  }
+
+  /** Sum of fees of all transactions in the block (coinbase fee is 0) */
+  private getTotalFees(): number {
+    return this.transactions.reduce((acc, tx) => acc + tx.fee, 0);
   }
 
   //Helper methods for isValid

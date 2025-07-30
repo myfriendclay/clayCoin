@@ -10,11 +10,13 @@ class GenesisBlock extends Block {
       GENESIS_BLOCK_DATA.height
     );
     this.__type = "GenesisBlock";
+    // commitment to rule-set
+    this.protocolHash = GENESIS_BLOCK_DATA.protocolHash;
     this.mineBlock();
   }
 
   isValid(): boolean {
-    const { difficulty, transactions, previousHash, height } =
+    const { difficulty, transactions, previousHash, height, protocolHash } =
       GENESIS_BLOCK_DATA;
 
     return (
@@ -23,7 +25,8 @@ class GenesisBlock extends Block {
       this.difficulty === difficulty &&
       this.transactions.length === transactions.length &&
       this.previousHash === previousHash &&
-      this.height === height
+      this.height === height &&
+      this.protocolHash === protocolHash
     );
   }
 }
