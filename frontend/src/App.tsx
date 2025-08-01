@@ -7,8 +7,7 @@ import Blockchain from "./components//Blockchain/Blockchain";
 import AlertBanner from "./components/AlertBanner";
 import Logo from "./components/Logo";
 
-function App() {
-  const { REACT_APP_API_URL } = process.env;
+const App: React.FC = () => {
   const [blockchain, setBlockchain] = useState<BlockType[]>([]);
   const [alertDetails, setAlertDetails] = useState<AlertType>({
     open: false,
@@ -19,7 +18,7 @@ function App() {
 
   useEffect(() => {
     axios
-      .get(`${REACT_APP_API_URL}/api/blockchain`)
+      .get(`/api/blockchain`)
       .then((response) => {
         const { chain } = response.data.blockchain;
         setBlockchain(chain);
@@ -28,7 +27,7 @@ function App() {
       .catch((err) => {
         console.error(err);
       });
-  }, [REACT_APP_API_URL]);
+  }, []); 
 
   return (
     <Container maxWidth="xl">

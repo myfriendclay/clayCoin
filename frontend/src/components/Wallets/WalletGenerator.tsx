@@ -4,7 +4,6 @@ import { useState } from "react";
 import CachedIcon from "@mui/icons-material/Cached";
 
 function WalletGenerator() {
-  const { REACT_APP_API_URL } = process.env;
   const emptyWallet = {
     publicKey: "",
     privateKey: "",
@@ -18,7 +17,7 @@ function WalletGenerator() {
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
     event.preventDefault();
     axios
-      .post(`${REACT_APP_API_URL}/api/wallets/`)
+      .post(`/api/wallets/`)
       .then((response) => {
         const walletKeyPair = response.data;
         setWallet({

@@ -3,14 +3,13 @@ import axios from "axios";
 import { useState } from "react";
 
 export function WalletBalanceChecker() {
-  const { REACT_APP_API_URL } = process.env;
   const [walletAddress, setWalletAddress] = useState("");
   const [walletBalance, setWalletBalance] = useState(null);
 
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
     event.preventDefault();
     axios
-      .get(`${REACT_APP_API_URL}/api/wallets/${walletAddress}`)
+      .get(`/api/wallets/${walletAddress}`)
       .then((response) => {
         const balance = response.data.balance;
         setWalletBalance(balance);

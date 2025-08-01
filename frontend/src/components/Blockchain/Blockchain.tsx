@@ -15,6 +15,7 @@ import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
 import { useEffect } from "react";
 import { AlertType, BlockType } from "../../types";
 import Block from "./Block";
+import { API_URL } from "../../config/env";
 
 const headers = [
   " ",
@@ -40,10 +41,8 @@ function Blockchain({
   setBlockchain: (blockchain: BlockType[]) => void;
   setAlertDetails: (alertDetails: AlertType) => void;
 }) {
-  const { REACT_APP_API_URL } = process.env;
-
   useEffect(() => {
-    const socket = io(`${REACT_APP_API_URL}`);
+    const socket = io(`${API_URL}`);
     
     socket.on('updateBlockchain', (blockchain) => {
       setBlockchain(blockchain.chain);
@@ -55,7 +54,7 @@ function Blockchain({
       })
     });
 
-  }, [REACT_APP_API_URL, setBlockchain, setAlertDetails]);
+  }, [setBlockchain, setAlertDetails]);
 
 
   return (

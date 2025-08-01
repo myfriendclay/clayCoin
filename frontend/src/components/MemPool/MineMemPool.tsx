@@ -4,7 +4,6 @@ import axios from "axios";
 import React, { useState } from "react";
 import { AlertType, BlockType, TransactionType } from '../../types';
 import LoadingButton from '@mui/lab/LoadingButton';
-
 interface FormData {
   miningAddress: string;
 }
@@ -26,7 +25,6 @@ function MineMemPool({
     miningAddress: "",
   };
 
-  const { REACT_APP_API_URL } = process.env;
   const [formData, setFormData] = useState<FormData>(blankFormValues);
   const [mining, setMining] = useState<boolean>(false);
 
@@ -39,7 +37,7 @@ function MineMemPool({
     event.preventDefault();
     setMining(true);
     axios
-      .post(`${REACT_APP_API_URL}/api/blocks/mine`, formData)
+      .post(`/api/blocks/mine`, formData)
       .then((response) => {
         const block = response.data;
         setBlockchain([...blockchain, block]);

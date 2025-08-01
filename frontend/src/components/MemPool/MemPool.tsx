@@ -6,48 +6,45 @@ import Transactions from "../Transactions/Transactions";
 import MineMemPool from "./MineMemPool";
 import AddTransaction from "../Transactions/AddTransaction";
 import axios from 'axios';
-
+import { API_URL } from "../../config/env";
 interface MemPoolProps {
   setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
   setAlertDetails: (alertDetails: AlertType) => void;
 }
 
-function MemPool({setBlockchain, blockchain, setAlertDetails} : 
-  MemPoolProps) {
+function MemPool({setBlockchain, blockchain, setAlertDetails} : MemPoolProps) {
+  const [mempool, setmempool] = useState<TransactionType[]>([]);
 
-    const [mempool, setmempool] = useState<TransactionType[]>([]);
-    const { REACT_APP_API_URL } = process.env;
-
-    useEffect(() => {
-      axios
-        .get(`${REACT_APP_API_URL}/api/mempool`)
-        .then((response) => {
-          const { mempool } = response.data
-          setmempool(mempool);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }, [REACT_APP_API_URL]);
-
-    useEffect(() => {
-      const socket = io(`${REACT_APP_API_URL}`);
-      
-      socket.on('updateMempool', (transaction) => {
-        setmempool([...mempool, transaction]);
-        setAlertDetails({
-          open: true,
-          alertMessage: `Mempool updated with more transactions found on network!`,
-          alertType: "info",
-        })
+  useEffect(() => {
+    axios
+      .get(`/api/mempool`)
+      .then((response) => {
+        const { mempool } = response.data
+        setmempool(mempool);
+      })
+      .catch((err) => {
+        console.error(err);
       });
+  }, []);
+
+  useEffect(() => {
+    const socket = io(`${API_URL}`);
+    
+    socket.on('updateMempool', (transaction) => {
+      setmempool([...mempool, transaction]);
+      setAlertDetails({
+        open: true,
+        alertMessage: `Mempool updated with more transactions found on network!`,
+        alertType: "info",
+      })
+    });
   
-      socket.on('clearMempool', () => {
-        setmempool([]);
-      });
+    socket.on('clearMempool', () => {
+      setmempool([]);
+    });
   
-    }, [REACT_APP_API_URL, mempool, setAlertDetails, setmempool]);
+  }, [mempool, setAlertDetails, setmempool]);
 
 
   return (

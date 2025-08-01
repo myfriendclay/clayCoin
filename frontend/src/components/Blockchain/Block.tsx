@@ -17,13 +17,11 @@ import {
 import LockIcon from "@mui/icons-material/Lock";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import axios from "axios";
-
 import { BlockType } from "../../types";
 import getTruncatedString from "../../utils/getTruncatedString";
 import Transactions from "../Transactions/Transactions";
 
 function Block({ block }: { block: BlockType }) {
-  const { REACT_APP_API_URL } = process.env;
   const [open, setOpen] = useState(false);
   const [isValidBlock, setIsValidBlock] = useState(false);
 
@@ -40,14 +38,14 @@ function Block({ block }: { block: BlockType }) {
 
   useEffect(() => {
     axios
-      .get(`${REACT_APP_API_URL}/api/blocks/${hash}/isBlockValid`)
+      .get(`/api/blocks/${hash}/isBlockValid`)
       .then((response) => {
         setIsValidBlock(response.data.isValidBlock);
       })
       .catch((err) => {
         console.error(err);
       });
-  }, [REACT_APP_API_URL, hash]);
+  }, [hash]);
 
   return (
     <>

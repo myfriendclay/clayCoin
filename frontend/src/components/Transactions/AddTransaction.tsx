@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { TransactionType, AlertType } from "../../types";
 import Wallet from "../Wallets/Wallet";
-
 interface FormData {
   fromAddress: string;
   toAddress: string;
@@ -40,7 +39,6 @@ export default function AddTransaction({
     secretKey: "",
   };
 
-  const { REACT_APP_API_URL } = process.env;
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>(blankFormValues);
 
@@ -67,7 +65,7 @@ export default function AddTransaction({
   const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
     event.preventDefault();
     axios
-      .post(`${REACT_APP_API_URL}/api/transactions`, formData)
+      .post(`/api/transactions`, formData)
       .then((response) => {
         const pendingTransactions = response.data;
         setmempool(pendingTransactions);
