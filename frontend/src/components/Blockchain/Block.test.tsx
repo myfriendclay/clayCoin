@@ -1,11 +1,18 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Block from './Block';
-import axios from 'axios';
 import { IntlProvider } from 'react-intl';
 
-// Mock axios
-vi.mock('axios');
+// Mock fetch
+const mockFetch = vi.fn(() => 
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({ isValidBlock: true })
+  })
+);
+
+// Patch: Make mockFetch look more like a real Response object for TypeScript
+global.fetch = mockFetch as unknown as typeof fetch;
 
 // Mock data
 const mockBlock = {
@@ -32,73 +39,87 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 
 describe('Block Component', () => {
   beforeEach(() => {
-    // Mock axios for each test
-    vi.mocked(axios.get).mockResolvedValue({ data: { isValidBlock: true } });
+    vi.clearAllMocks();
   });
 
-  it('renders block information correctly', () => {
+  it('renders block information correctly', async () => {
     render(<Block block={mockBlock} />, { wrapper });
 
-    // Check if basic block information is displayed
-    expect(screen.getByText('1')).toBeInTheDocument(); // height
-    expect(screen.getByText('3')).toBeInTheDocument(); // difficulty
-    expect(screen.getByText('12345')).toBeInTheDocument(); // nonce
-    expect(screen.getByText('1000')).toBeInTheDocument(); // miningDurationMs
-    expect(screen.getByText('0')).toBeInTheDocument(); // transactions length
+    // Wait for async operations to complete
+    await waitFor(() => {
+      // Check if basic block information is displayed
+      expect(screen.getByText('1')).toBeInTheDocument(); // height
+      expect(screen.getByText('3')).toBeInTheDocument(); // difficulty
+      expect(screen.getByText('12345')).toBeInTheDocument(); // nonce
+      expect(screen.getByText('1000')).toBeInTheDocument(); // miningDurationMs
+      expect(screen.getByText('0')).toBeInTheDocument(); // transactions length
+    });
   });
 
   it('expands and collapses when clicked', async () => {
     render(<Block block={mockBlock} />, { wrapper });
 
-    // Initially collapsed
-    expect(screen.queryByText('Strangely, there are no transactions found for this block.')).not.toBeInTheDocument();
+    // Wait for initial render to complete
+    await waitFor(() => {
+      expect(screen.queryByText('Strangely, there are no transactions found for this block.')).not.toBeInTheDocument();
+    });
 
     // Click to expand
     const expandButton = screen.getByLabelText('expand row');
     fireEvent.click(expandButton);
 
-    // Should show empty transactions message
-    expect(screen.getByText('Strangely, there are no transactions found for this block.')).toBeInTheDocument();
+    // Wait for expansion
+    await waitFor(() => {
+      expect(screen.getByText('Strangely, there are no transactions found for this block.')).toBeInTheDocument();
+    });
 
     // Click to collapse
     fireEvent.click(expandButton);
 
-    // Wait for the collapse animation to complete
+    // Wait for collapse
     await waitFor(() => {
       expect(screen.queryByText('Strangely, there are no transactions found for this block.')).not.toBeInTheDocument();
     });
   });
 
   it('shows valid block icon when block is valid', async () => {
-    vi.mocked(axios.get).mockResolvedValueOnce({ data: { isValidBlock: true } });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ isValidBlock: true })
+    });
 
     render(<Block block={mockBlock} />, { wrapper });
 
-    // Look for the LockIcon with correct aria-label
-    const validIcon = await screen.findByLabelText('Block has valid proof of work hash and only valid transactions.');
-    expect(validIcon).toBeInTheDocument();
+    // Wait for the validation check to complete
+    await waitFor(() => {
+      expect(screen.getByLabelText('Block has valid proof of work hash and only valid transactions.')).toBeInTheDocument();
+    });
   });
 
   it('shows invalid block icon when block is invalid', async () => {
-    vi.mocked(axios.get).mockResolvedValueOnce({ data: { isValidBlock: false } });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ isValidBlock: false })
+    });
 
     render(<Block block={mockBlock} />, { wrapper });
 
-    // Look for the DangerousIcon with correct aria-label
-    const invalidIcon = await screen.findByLabelText('Block could not be validated. It cannot be trusted!');
-    expect(invalidIcon).toBeInTheDocument();
+    // Wait for the validation check to complete
+    await waitFor(() => {
+      expect(screen.getByLabelText('Block could not be validated. It cannot be trusted!')).toBeInTheDocument();
+    });
   });
 
   it('handles API error gracefully', async () => {
-    // Mock axios error
-    vi.mocked(axios.get).mockRejectedValueOnce(new Error('API Error'));
+    mockFetch.mockRejectedValueOnce(new Error('API Error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     render(<Block block={mockBlock} />, { wrapper });
 
-    // Wait for error to be logged
-    await new Promise(resolve => setTimeout(resolve, 0));
-    expect(consoleSpy).toHaveBeenCalled();
+    // Wait for the error to be logged
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalled();
+    });
 
     consoleSpy.mockRestore();
   });

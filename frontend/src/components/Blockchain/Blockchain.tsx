@@ -15,7 +15,6 @@ import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
 import { useEffect } from "react";
 import { AlertType, BlockType } from "../../types";
 import Block from "./Block";
-import { API_URL } from "../../config/env";
 
 const headers = [
   " ",
@@ -42,7 +41,7 @@ function Blockchain({
   setAlertDetails: (alertDetails: AlertType) => void;
 }) {
   useEffect(() => {
-    const socket = io(`${API_URL}`);
+    const socket = io('/');
     
     socket.on('updateBlockchain', (blockchain) => {
       setBlockchain(blockchain.chain);
@@ -51,9 +50,14 @@ function Blockchain({
         open: true,
         alertMessage: `Blockchain updated with a longer chain of length ${blockchain.chain.length} found on the network!`,
         alertType: "info",
-      })
+      });
     });
 
+    // Add cleanup function
+    return () => {
+      socket.off('updateBlockchain');
+      socket.disconnect();
+    };
   }, [setBlockchain, setAlertDetails]);
 
 
