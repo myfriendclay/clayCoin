@@ -3,8 +3,8 @@ function Logo() {
   return (
     <img
       width={150}
-      src={"/logo.png"}
-      alt="Circle Logo"
+      src={"/assets/logo.png"}
+      alt="ClayCoin Logo"
     />
   );
 }
