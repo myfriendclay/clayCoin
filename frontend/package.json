@@ -1,6 +1,6 @@
 {
-  "name": "app",
-  "version": "0.1.0",
+  "name": "ClayCoin WebApp",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,8 +10,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.5",
-    "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.11.0",
     "@mui/lab": "^5.0.0-alpha.133",
     "@mui/material": "^5.13.4",
