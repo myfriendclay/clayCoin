@@ -1,22 +1,25 @@
 import { Button, Container, TextField, Typography } from "@mui/material";
-import axios from "axios";
 import { useState } from "react";
 
 export function WalletBalanceChecker() {
   const [walletAddress, setWalletAddress] = useState("");
   const [walletBalance, setWalletBalance] = useState(null);
 
-  const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
+  const handleSubmit = async (event: React.FormEvent<EventTarget>): Promise<void> => {
     event.preventDefault();
-    axios
-      .get(`/api/wallets/${walletAddress}`)
-      .then((response) => {
-        const balance = response.data.balance;
-        setWalletBalance(balance);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    try {
+      const response = await fetch(`/api/wallets/${walletAddress}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch wallet balance');
+      }
+
+      const data = await response.json();
+      setWalletBalance(data.balance);
+    } catch (error) {
+      console.error('Error checking balance:', error);
+      setWalletBalance(null);
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {

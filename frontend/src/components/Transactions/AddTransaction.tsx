@@ -1,6 +1,5 @@
 import PaymentIcon from "@mui/icons-material/Payment";
 import { useState } from "react";
-import axios from "axios";
 import {
   Button,
   Dialog,
@@ -62,30 +61,38 @@ export default function AddTransaction({
     setFormData({ ...formData, [id]: numValue || value });
   };
 
-  const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
+  const handleSubmit = async (event: React.FormEvent<EventTarget>): Promise<void> => {
     event.preventDefault();
-    axios
-      .post(`/api/transactions`, formData)
-      .then((response) => {
-        const pendingTransactions = response.data;
-        setmempool(pendingTransactions);
-        setAlertDetails({
-          open: true,
-          alertMessage: "You added a transaction to the mempool!",
-          alertType: "success",
-        });
-        setFormData(blankFormValues);
-        handleClose();
-      })
-      .catch((err) => {
-        const errorMessage = err.response.data.error;
-        console.error(errorMessage);
-        setAlertDetails({
-          open: true,
-          alertMessage: errorMessage,
-          alertType: "error",
-        });
+    try {
+      const response = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || response.statusText);
+      }
+
+      setmempool(data);
+      setAlertDetails({
+        open: true,
+        alertMessage: "You added a transaction to the mempool!",
+        alertType: "success",
+      });
+      setFormData(blankFormValues);
+      handleClose();
+    } catch (error) {
+      setAlertDetails({
+        open: true,
+        alertMessage: error instanceof Error ? error.message : 'An unexpected error occurred',
+        alertType: "error",
+      });
+    }
   };
 
   const formFields = [

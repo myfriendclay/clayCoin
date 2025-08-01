@@ -1,7 +1,6 @@
 import ConstructionIcon from '@mui/icons-material/Construction';
 import { Container, TextField } from "@mui/material";
-import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import { AlertType, BlockType, TransactionType } from '../../types';
 import LoadingButton from '@mui/lab/LoadingButton';
 interface FormData {
@@ -33,35 +32,43 @@ function MineMemPool({
     setFormData({ ...formData, [id || name]: value });
   };
 
-  const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
+  const handleSubmit = async (event: React.FormEvent<EventTarget>): Promise<void> => {
     event.preventDefault();
     setMining(true);
-    axios
-      .post(`/api/blocks/mine`, formData)
-      .then((response) => {
-        const block = response.data;
-        setBlockchain([...blockchain, block]);
-        setmempool([]);
-        setAlertDetails({
-          open: true,
-          alertMessage: `You mined block #${block.height} in ${
-            block.miningDurationMs / 1000
-          } seconds! Difficulty was ${block.difficulty} and magical nonce was ${block.nonce}`,
-          alertType: "success",
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        setAlertDetails({
-          open: true,
-          alertMessage: err.message,
-          alertType: "error",
-        });
-      })
-      .finally(() => {
-        setFormData(blankFormValues);
-        setMining(false);
+    try {
+      const response = await fetch('/api/blocks/mine', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
+
+      if (!response.ok) {
+        throw new Error('Mining failed');
+      }
+
+      const block = await response.json();
+      setBlockchain([...blockchain, block]);
+      setmempool([]);
+      setAlertDetails({
+        open: true,
+        alertMessage: `You mined block #${block.height} in ${
+          block.miningDurationMs / 1000
+        } seconds! Difficulty was ${block.difficulty} and magical nonce was ${block.nonce}`,
+        alertType: "success",
+      });
+    } catch (err) {
+      console.error(err);
+      setAlertDetails({
+        open: true,
+        alertMessage: err instanceof Error ? err.message : 'Mining failed',
+        alertType: "error",
+      });
+    } finally {
+      setFormData(blankFormValues);
+      setMining(false);
+    }
   };
 
   return (

@@ -16,35 +16,33 @@ import {
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
 import DangerousIcon from "@mui/icons-material/Dangerous";
-import axios from "axios";
 import { BlockType } from "../../types";
 import getTruncatedString from "../../utils/getTruncatedString";
 import Transactions from "../Transactions/Transactions";
+
+interface BlockValidResponse {
+  isValidBlock: boolean;
+}
 
 function Block({ block }: { block: BlockType }) {
   const [open, setOpen] = useState(false);
   const [isValidBlock, setIsValidBlock] = useState(false);
 
-  const {
-    hash,
-    timestamp,
-    height,
-    nonce,
-    miningDurationMs,
-    previousHash,
-    transactions,
-    difficulty,
-  } = block;
+  const { hash, timestamp, height, nonce, miningDurationMs, previousHash, transactions, difficulty } = block;
 
   useEffect(() => {
-    axios
-      .get(`/api/blocks/${hash}/isBlockValid`)
-      .then((response) => {
-        setIsValidBlock(response.data.isValidBlock);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    const validateBlock = async () => {
+      try {
+        const response = await fetch(`/api/blocks/${hash}/isBlockValid`);
+        if (!response.ok) throw new Error('Failed to validate block');
+        const data: BlockValidResponse = await response.json();
+        setIsValidBlock(data.isValidBlock);
+      } catch (err) {
+        console.error('Failed to validate block:', err);
+      }
+    };
+
+    validateBlock();
   }, [hash]);
 
   return (

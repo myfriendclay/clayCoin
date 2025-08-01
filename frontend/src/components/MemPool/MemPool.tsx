@@ -5,27 +5,34 @@ import { useEffect, useState } from "react";
 import Transactions from "../Transactions/Transactions";
 import MineMemPool from "./MineMemPool";
 import AddTransaction from "../Transactions/AddTransaction";
-import axios from 'axios';
 import { API_URL } from "../../config/env";
+
 interface MemPoolProps {
   setBlockchain: (mempool: BlockType[]) => void;
   blockchain: BlockType[];
   setAlertDetails: (alertDetails: AlertType) => void;
 }
 
+interface MempoolResponse {
+  mempool: TransactionType[];
+}
+
 function MemPool({setBlockchain, blockchain, setAlertDetails} : MemPoolProps) {
   const [mempool, setmempool] = useState<TransactionType[]>([]);
 
   useEffect(() => {
-    axios
-      .get(`/api/mempool`)
-      .then((response) => {
-        const { mempool } = response.data
-        setmempool(mempool);
-      })
-      .catch((err) => {
+    const fetchMempool = async () => {
+      try {
+        const response = await fetch('/api/mempool');
+        if (!response.ok) throw new Error('Failed to fetch mempool');
+        const data: MempoolResponse = await response.json();
+        setmempool(data.mempool);
+      } catch (err) {
         console.error(err);
-      });
+      }
+    };
+
+    fetchMempool();
   }, []);
 
   useEffect(() => {
@@ -43,9 +50,12 @@ function MemPool({setBlockchain, blockchain, setAlertDetails} : MemPoolProps) {
     socket.on('clearMempool', () => {
       setmempool([]);
     });
-  
-  }, [mempool, setAlertDetails, setmempool]);
 
+    // Clean up socket connection on unmount
+    return () => {
+      socket.disconnect();
+    };
+  }, [mempool, setAlertDetails, setmempool]);
 
   return (
     <Container sx={{ display: 'flex', flexFlow: "column", alignItems: "center", borderBottom: '1px grey dotted', borderTop: '1px grey dotted'}} >

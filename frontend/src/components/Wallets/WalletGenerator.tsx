@@ -1,5 +1,4 @@
 import { Box, Button, TextField } from "@mui/material";
-import axios from "axios";
 import { useState } from "react";
 import CachedIcon from "@mui/icons-material/Cached";
 
@@ -14,20 +13,28 @@ function WalletGenerator() {
 
   const [wallet, setWallet] = useState(emptyWallet);
 
-  const handleSubmit = (event: React.FormEvent<EventTarget>): void => {
+  const handleSubmit = async (event: React.FormEvent<EventTarget>): Promise<void> => {
     event.preventDefault();
-    axios
-      .post(`/api/wallets/`)
-      .then((response) => {
-        const walletKeyPair = response.data;
-        setWallet({
-          publicKey: walletKeyPair.publicKey,
-          privateKey: walletKeyPair.privateKey,
-        });
-      })
-      .catch((err) => {
-        console.error(err);
+    try {
+      const response = await fetch('/api/wallets/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate wallet');
+      }
+
+      const walletKeyPair = await response.json();
+      setWallet({
+        publicKey: walletKeyPair.publicKey,
+        privateKey: walletKeyPair.privateKey,
+      });
+    } catch (error) {
+      console.error('Error generating wallet:', error);
+    }
   };
 
   return (

@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Container } from "@mui/material";
 import { BlockType, AlertType } from "./types";
 import MemPool from "./components/MemPool/MemPool";
 import Blockchain from "./components//Blockchain/Blockchain";
 import AlertBanner from "./components/AlertBanner";
 import Logo from "./components/Logo";
+
+interface BlockchainResponse {
+  blockchain: {
+    chain: BlockType[];
+  };
+  isChainValid: boolean;
+}
 
 const App: React.FC = () => {
   const [blockchain, setBlockchain] = useState<BlockType[]>([]);
@@ -17,17 +23,20 @@ const App: React.FC = () => {
   const [isChainValid, setIsChainValid] = useState<boolean>(false);
 
   useEffect(() => {
-    axios
-      .get(`/api/blockchain`)
-      .then((response) => {
-        const { chain } = response.data.blockchain;
-        setBlockchain(chain);
-        setIsChainValid(response.data.isChainValid);
-      })
-      .catch((err) => {
+    const fetchBlockchain = async () => {
+      try {
+        const response = await fetch('/api/blockchain');
+        if (!response.ok) throw new Error('Failed to fetch blockchain');
+        const data: BlockchainResponse = await response.json();
+        setBlockchain(data.blockchain.chain);
+        setIsChainValid(data.isChainValid);
+      } catch (err) {
         console.error(err);
-      });
-  }, []); 
+      }
+    };
+
+    fetchBlockchain();
+  }, []);
 
   return (
     <Container maxWidth="xl">
@@ -49,6 +58,6 @@ const App: React.FC = () => {
       />
     </Container>
   );
-}
+};
 
 export default App;
