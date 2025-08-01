@@ -1,5 +1,5 @@
 import EC from "elliptic"
-import { BlockType } from "../../types";
+import { BlockType, TransactionType } from "../../types";
 
 const ec = new EC.ec('secp256k1')
 
@@ -31,7 +31,7 @@ export default class Wallet {
       const key = ec.keyFromPublic(publicKey, 'hex');
       return key.validate().result;
     } catch (error) {
-      return false;
+      throw new Error('Invalid public key');
     }
   }
 

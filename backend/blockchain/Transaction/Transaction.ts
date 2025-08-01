@@ -2,6 +2,7 @@ import EC from "elliptic";
 const ec = new EC.ec("secp256k1");
 import { v4 as uuidv4 } from "uuid";
 import getSHA256Hash from "../utils/crypto-hash";
+import Wallet from "../Wallet/Wallet";
 
 class Transaction {
   fromAddress: string;
@@ -65,16 +66,42 @@ class Transaction {
   }
 
   hasRequiredFields(): boolean {
+    if (!this.fromAddress) {
+      throw new Error('fromAddress is missing');
+    }
+    if (!this.toAddress) { 
+      throw new Error('toAddress is missing');
+    }
+
+    if (this.amount <= 0) { 
+      throw new Error('amount must be greater than 0');
+    }
     return !!(this.fromAddress && this.toAddress && this.amount > 0);
+
   }
 
   isValid(): boolean {
-    return (
-      this.hasRequiredFields() &&
-      this.hasValidSignature() &&
-      this.amount > 0 &&
-      this.fee >= 0
-    );
+    if (!this.hasRequiredFields()) {
+      throw new Error('Transaction is missing required fields');
+    }
+    
+    if (!this.hasValidSignature()) {
+      throw new Error('Transaction has invalid signature');
+    }
+
+    if (this.amount <= 0) {
+      throw new Error('Transaction amount must be greater than 0');
+    }
+
+    if (this.fee < 0) {
+      throw new Error('Transaction fee cannot be negative');
+    }
+
+    if (!Wallet.isValidPublicKey(this.toAddress)) {
+      throw new Error(`Invalid recipient public key: ${this.toAddress}`);
+    }
+
+    return true;
   }
 }
 
