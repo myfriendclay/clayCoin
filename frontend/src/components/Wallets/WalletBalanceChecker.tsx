@@ -4,21 +4,23 @@ import { useState } from "react";
 export function WalletBalanceChecker() {
   const [walletAddress, setWalletAddress] = useState("");
   const [walletBalance, setWalletBalance] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<EventTarget>): Promise<void> => {
     event.preventDefault();
+    setError(null);
     try {
       const response = await fetch(`/api/wallets/${walletAddress}`);
+      const data = await response.json();
       
       if (!response.ok) {
-        throw new Error('Failed to fetch wallet balance');
+        throw new Error(data.error || 'Failed to fetch wallet balance');
       }
 
-      const data = await response.json();
       setWalletBalance(data.balance);
     } catch (error) {
-      console.error('Error checking balance:', error);
       setWalletBalance(null);
+      setError(error instanceof Error ? error.message : 'Failed to check balance');
     }
   };
 
@@ -37,6 +39,8 @@ export function WalletBalanceChecker() {
         type="text"
         value={walletAddress}
         onChange={handleChange}
+        error={!!error}
+        helperText={error}
       />
       <Button
         variant="outlined"

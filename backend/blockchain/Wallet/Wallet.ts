@@ -51,6 +51,10 @@ export default class Wallet {
   }
   
   static getAllTransactionsForWallet(publicKey: string, chain: BlockType[]): TransactionType[] {
+    if (!Wallet.isValidPublicKey(publicKey)) {
+      throw new Error(`Invalid public key: ${publicKey}`);  
+    }
+
     const transactions = []
     for (const block of chain) {
       for (const transaction of block.transactions) {
@@ -63,6 +67,10 @@ export default class Wallet {
   }
 
   static getBalanceOfAddress(publicKey: string, chain: BlockType[]): number | null {
+    if (!Wallet.isValidPublicKey(publicKey)) {
+      throw new Error(`Invalid public key: ${publicKey}`);  
+    }
+
     let balance = 0
     for (const block of chain) {
       for (const transaction of block.transactions) {
